@@ -52,66 +52,71 @@ INDEX_HTML = """<!doctype html>
     align-items: center;
     justify-content: space-between;
   }
-  header h1 { font-size: 22px; margin: 0; letter-spacing: 0.5px; }
-  header .scenario { color: var(--dim); font-size: 15px; margin-left: 12px; }
+  /* Sizes below are tuned for projector legibility (lecture-hall viewing
+     distance), not a laptop screen up close -- this dashboard's only real
+     use case is presentation, so there's no smaller "desk mode" to balance
+     against. See REVIEW.md 2026-08-22 (pre-lecture test) for the pass that
+     set these. */
+  header h1 { font-size: 40px; margin: 0; letter-spacing: 0.5px; }
+  header .scenario { color: var(--dim); font-size: 24px; margin-left: 16px; }
   .cols {
     display: flex;
-    height: calc(100vh - 58px);
+    height: calc(100vh - 78px);
   }
   .col {
     flex: 1;
     overflow-y: auto;
-    padding: 18px 22px;
+    padding: 22px 28px;
   }
   .col + .col { border-left: 2px solid var(--border); }
   .col h2 {
-    font-size: 16px;
+    font-size: 22px;
     text-transform: uppercase;
     letter-spacing: 1.5px;
     color: var(--dim);
-    margin: 0 0 16px 0;
+    margin: 0 0 18px 0;
   }
   .event {
-    border-radius: 8px;
-    padding: 14px 16px;
-    margin-bottom: 12px;
-    border-left: 5px solid var(--dim);
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin-bottom: 16px;
+    border-left: 6px solid var(--dim);
     background: var(--panel);
     animation: in 0.4s ease-out;
   }
   @keyframes in { from { opacity: 0; transform: translateY(6px);} to {opacity:1; transform: translateY(0);} }
   .event.attacker { border-left-color: var(--attacker); }
   .event.defender { border-left-color: var(--defender); }
-  .event .top { display:flex; justify-content: space-between; font-size: 13px; color: var(--dim); margin-bottom: 6px; }
+  .event .top { display:flex; justify-content: space-between; font-size: 17px; color: var(--dim); margin-bottom: 8px; }
   .event .actor-tag { font-weight: 700; letter-spacing: 0.5px; }
   .event.attacker .actor-tag { color: var(--attacker); }
   .event.defender .actor-tag { color: var(--defender); }
-  .event .desc { font-size: 19px; line-height: 1.35; }
-  .event .technique { display:inline-block; margin-top: 8px; font-size: 13px; background:#1c2634; color: var(--dim); padding: 3px 8px; border-radius: 5px; }
-  .sev-critical { box-shadow: 0 0 0 2px var(--crit) inset; }
-  .sev-high { box-shadow: 0 0 0 2px var(--high) inset; }
+  .event .desc { font-size: 27px; line-height: 1.35; }
+  .event .technique { display:inline-block; margin-top: 10px; font-size: 17px; background:#1c2634; color: var(--dim); padding: 4px 10px; border-radius: 6px; }
+  .sev-critical { box-shadow: 0 0 0 3px var(--crit) inset; }
+  .sev-high { box-shadow: 0 0 0 3px var(--high) inset; }
 
   .legal-card {
-    border-radius: 8px;
-    padding: 16px 18px;
-    margin-bottom: 14px;
+    border-radius: 10px;
+    padding: 20px 22px;
+    margin-bottom: 18px;
     background: var(--panel);
-    border-left: 5px solid var(--legal);
+    border-left: 6px solid var(--legal);
   }
   .legal-card.tbd { border-left-color: var(--tbd); opacity: 0.85; }
-  .legal-card .statute { font-size: 20px; font-weight: 700; color: var(--legal); }
+  .legal-card .statute { font-size: 27px; font-weight: 700; color: var(--legal); }
   .legal-card.tbd .statute { color: var(--tbd); }
-  .legal-card .plain { font-size: 17px; margin: 8px 0; }
-  .legal-card .meta { font-size: 14px; color: var(--dim); margin-top: 8px; }
-  .badge-tbd { display:inline-block; background: #3a2f00; color: var(--legal); font-size: 12px; padding: 2px 8px; border-radius: 4px; margin-left: 8px; }
+  .legal-card .plain { font-size: 23px; margin: 10px 0; }
+  .legal-card .meta { font-size: 18px; color: var(--dim); margin-top: 10px; }
+  .badge-tbd { display:inline-block; background: #3a2f00; color: var(--legal); font-size: 16px; padding: 3px 10px; border-radius: 5px; margin-left: 10px; }
 
-  .empty { color: var(--dim); font-size: 16px; padding-top: 40px; text-align: center; }
+  .empty { color: var(--dim); font-size: 22px; padding-top: 40px; text-align: center; }
 </style>
 </head>
 <body>
 <header>
   <div><h1>CYBER RANGE</h1><span class="scenario" id="scenario-name">waiting for scenario...</span></div>
-  <div style="color:var(--dim); font-size:13px;">event stream: live</div>
+  <div style="color:var(--dim); font-size:17px;">event stream: live</div>
 </header>
 <div class="cols">
   <div class="col" id="tech-col">

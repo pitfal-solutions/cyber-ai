@@ -46,14 +46,19 @@ with federal CFAA depends on the institution — not yet known. See
 5. ✅ Rehearsal: `reset → run → reset → run` cycle completed twice, ~22s per
    reset, identical results both times, zero manual intervention.
 
-**Still open before the lecture (not done yet):**
-- Test with the laptop's wifi/network adapter physically disconnected —
-  everything so far has been verified with network active.
-- Check dashboard legibility from projector distance, not just a laptop
-  screen.
-- Run the legal-citation verification pass against primary statute text
-  (current content is sourced from real secondary sources, not yet a final
-  legal-review pass) — see
+**Pre-lecture checks:**
+- ✅ Projector legibility — checked and **fixed**, not just confirmed fine.
+  Dashboard fonts were sized for a laptop screen up close (19px event text,
+  17px legal text); bumped to presentation-appropriate sizes (27px/23px,
+  40px header) and verified at both a laptop viewport and 1920×1080. See
+  [REVIEW.md](REVIEW.md).
+- ⏸️ Wifi-disconnected test — **deferred by the founder**, 2026-08-22, to
+  run later. Requires physically disabling the network, which is outside
+  what Claude can do (system-settings changes are off-limits) — this is a
+  founder-only step regardless of when it happens. Do this before the
+  actual lecture, not skipped entirely.
+- Legal-citation verification pass against primary statute text still not
+  started — see
   [routines/refresh-legal-citations.md](routines/refresh-legal-citations.md).
 
 **Out of scope for Phase 1:** anything non-deterministic, student-facing

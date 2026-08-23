@@ -41,6 +41,59 @@ not a log.
 
 ---
 
+## 2026-08-22 (pre-lecture test) — Projector legibility fixed; wifi test deferred by founder
+
+**What:** Founder asked to run the two remaining pre-lecture checks live.
+One found a real bug and got fixed; the other is explicitly deferred, not
+skipped.
+
+**Projector legibility — found a real problem, not a formality.** Checked
+the dashboard's actual CSS font sizes against standard presentation-
+legibility guidance (body text generally wants 26px+ for room-distance
+viewing) before eyeballing anything: event text was 19px, legal-card body
+text 17px, metadata/badges 12-15px — all sized for a laptop screen up
+close, not a projector. Fixed in
+`core/range-dashboard/server.py` — event text → 27px, legal-card statute
+headers → 27px, legal-card body → 23px, header title → 40px, metadata
+throughout roughly 1.3-1.4x larger. Verified visually after rebuilding: ran
+the full attack chain, screenshotted the dashboard at both a laptop-sized
+viewport and a 1920×1080 presentation resolution — layout holds cleanly at
+both, no overflow, no awkward wrapping.
+
+**Wifi-disconnected test — deferred by the founder to run later, not
+performed today.** Before starting it, flagged clearly that disabling the
+Mac's wifi is a system-settings change Claude cannot make even on request
+(see the Prohibited-actions list) — this was always going to be a founder-
+administered step. The founder chose to defer it rather than do it in this
+session. Static verification was still done first as partial reassurance:
+grepped every Python file in `demos/v1-cyber-range/` for `http://`/`https://`
+references and confirmed the only hostnames anywhere are internal Docker
+service names (`juice-shop`, `proxy`, `range-dashboard`) and localhost — no
+code path anywhere makes or could make a real external call. This doesn't
+replace the real test (Docker/Colima networking behavior with the host
+adapter fully down is still unverified), but it's a reasonable partial
+signal while the real test is pending.
+
+**README update:** none needed — this was an internal styling fix and a
+test-scheduling decision, nothing a student running the demo needs to know
+differently. Noting the "no" explicitly per working agreement #8 rather
+than skipping the question.
+
+**Pre-ship checklist results:**
+- Matches roadmap: yes — this is exactly the two Phase 1 open items.
+- Reset tested: yes, reset → run → screenshot cycle, no manual fixes
+  needed after the font-size change.
+- Wifi disconnected: **still not tested** — see above, deferred, not done.
+- Projector legibility: **now checked and fixed**, not just checked.
+
+**Open risks / not yet done:**
+- Wifi-disconnected test — still open, now explicitly on the founder's
+  plate to run before the lecture, whenever they choose to.
+- Legal-citation verification pass against primary statute text — still
+  open, unchanged from prior entries.
+
+---
+
 ## 2026-08-22 (publish) — Pushed public to GitHub, added README, new standing rule: README stays in sync
 
 **What:** Founder asked to push the whole workspace to
