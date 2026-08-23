@@ -41,6 +41,73 @@ not a log.
 
 ---
 
+## 2026-08-22 (publish) — Pushed public to GitHub, added README, new standing rule: README stays in sync
+
+**What:** Founder asked to push the whole workspace to
+`https://github.com/pitfal-solutions/cyber-ai.git`, explicitly as a public
+repo meant to be shared with students — and asked for a good README, plus a
+standing rule that every future update also updates it.
+
+**The remote repo already existed, non-empty** — one prior commit
+("Initial commit," by the founder) containing an Apache 2.0 `LICENSE`, no
+other files. Not overwritten: fetched it, rebased local `main` onto
+`origin/main` (`git checkout -B main origin/main`) so the LICENSE carried
+forward as a tracked file rather than being clobbered by a divergent
+history or a force-push. Confirmed via `gh api` before touching anything —
+didn't assume an empty repo.
+
+**Added `README.md`** at the repo root — the actual public front door,
+distinct from `CLAUDE.md` (which is the internal "how an AI pairs on this
+repo" manual, not written for a student audience). Covers: what the demo
+is and why it's dual-audience, what the three challenges actually are, a
+copy-pasteable quick start, a short honest architecture summary (including
+that the attack is scripted but the detection is real), the legal-content
+sourcing caveat, why it's scripted rather than fully autonomous, and a
+**Responsible use** section — explicit that every technique here targets
+an app built to be attacked (OWASP Juice Shop) and that the same techniques
+against a real system without authorization are the actual crimes the
+demo's own legal panel describes. That last section was not asked for
+explicitly but felt necessary for a public repo of real exploit code aimed
+at students — flagging it here rather than silently deciding it was
+optional.
+
+**New standing rule, added to `CLAUDE.md` as working agreement #8:** this
+repo is public and README-first — any change that affects what's built, how
+to run it, or what's next must update `README.md` in the same change, not
+as a follow-up. Also added to the "When you finish meaningful work"
+checklist so it isn't just a one-time note that gets forgotten. Also added
+a `.gitignore` (OS/Python cruft, plus a defensive rule for the demo's
+runtime `.jsonl` files, even though those actually live in a Docker volume
+today, not the working tree — cheap insurance if that ever changes) and
+updated `CLAUDE.md`'s repo-map table to list `README.md` and `LICENSE`.
+
+**Pushed:** commit `940c712` on top of the founder's `e7311c0`, 35 files,
+to `main`. Confirmed live afterward via `gh api` (file tree matches) and by
+reading the rendered README content back from the GitHub API rather than
+just trusting the push succeeded.
+
+**Pre-ship checklist results:**
+- Matches roadmap: this is publication/packaging, not a roadmap phase —
+  N/A.
+- Small enough to review: no — this was the entire workspace's first
+  publish, unavoidably a large single push. Flagging honestly rather than
+  claiming otherwise.
+- Reviewed before staging: yes — `git status` inspected after `git add -A`,
+  confirmed no secrets/credentials/`.env`-style files in the diff before
+  committing.
+- README kept in sync: yes, by definition — it was written as part of this
+  same change.
+
+**Open risks / not yet done:**
+- No CI, no license header on individual source files, no CONTRIBUTING.md
+  — none of this was asked for; noting as options if the repo grows beyond
+  a single-lecture artifact.
+- The wifi-disconnected test, projector legibility check, and primary-
+  source legal verification pass are all still open from prior entries —
+  unchanged by this publish.
+
+---
+
 ## 2026-08-22 (extend) — Scenario 1 grown from 1 challenge to 3, each independently detected + legally mapped
 
 **What:** Founder asked to add a couple more of Juice Shop's built-in
