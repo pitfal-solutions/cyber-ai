@@ -1,0 +1,37 @@
+networks:
+  # The real isolation boundary. Juice Shop, the attacker, and the detector
+  # live ONLY here -- internal:true means Docker gives this network no route
+  # out at all (verified: with only this network, Docker silently refuses to
+  # even publish a host port -- see REVIEW.md 2026-08-22 for how that was
+  # found). Nothing "attack"-shaped ever joins any other network.
+  cyberrange_net:
+    name: cyberrange_net
+    internal: true
+  # NOT internal, on purpose: exists only so Docker has something to bind a
+  # host-published port to for the presenter's dashboard/browser. Only the
+  # dashboard and the proxy join this, in addition to cyberrange_net -- never
+  # juice-shop, the attacker, or the detector. It doesn't weaken the attack
+  # containers' isolation; it's a second leg on the two view-only services.
+  cyberrange_view:
+    name: cyberrange_view
+
+volumes:
+  cyberrange_events:
+    name: cyberrange_events
+
+services:
+  range-dashboard:
+    build: ./core/range-dashboard
+    container_name: range-dashboard
+    restart: unless-stopped
+    networks:
+      - cyberrange_net
+      - cyberrange_view
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - cyberrange_events:/data
+    environment:
+      - EVENTS_PATH=/data/events.jsonl
+      - LEGAL_MAP_PATH=/data/legal-map.json
+      - PORT=8080

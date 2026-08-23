@@ -1,0 +1,14 @@
+# OS cruft
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+
+# Editor
+.vscode/
+.idea/
+
+# Local runtime state (nothing here should be committed -- the whole point
+# of reset.sh is that this is disposable; see demos/README.md)
+demos/v1-cyber-range/**/*.jsonl
