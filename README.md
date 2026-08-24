@@ -110,26 +110,45 @@ strong starting point rather than a final legal-review pass — see
 [routines/refresh-legal-citations.md](routines/refresh-legal-citations.md)
 for what "final" would actually require.
 
-## Why scripted?
+## Why scripted (the guaranteed scenario is)
 
 Because a live, one-shot classroom demo can't risk a fully autonomous AI
 attacker wandering off-script in front of a room. The attack chain here is
 deterministic and rehearsed — real requests, real vulnerabilities, real
-detection, just a fixed running order. A genuinely autonomous, local-LLM-
-driven version (two small models, one attacking and one defending, both
-running offline) is a designed-but-not-yet-built stretch goal — see
+detection, just a fixed running order. This is the scenario that's
+guaranteed to be presented, no matter what.
+
+**Two genuinely autonomous scenarios now also exist as stretch goals**: in
+each, two small local LLMs — one attacking, one defending, both running
+fully offline via a host-native Ollama — choose their own actions in real
+time, with a live dashboard showing both sides plus a presenter-controlled
+pause/speed. One targets the same Juice Shop app (web-layer techniques —
+SQLi, credential guessing, broken access control); a second targets a
+small network of real OS/server-level hosts instead (weak SSH credentials,
+the real CVE-2011-2523 vsftpd backdoor, anonymous SMB file access) using
+real tools (`nmap`, `hydra`, `smbclient`), added after the first felt too
+repetitive on its own. Both are built and have passed rehearsal runs, but
+**either only ever gets presented live if it survives 3 consecutive clean
+rehearsal runs on the actual demo laptop first** — see
 [specs/local-llm-agents.md](specs/local-llm-agents.md) and
-[ROADMAP.md](ROADMAP.md).
+[specs/network-intrusion.md](specs/network-intrusion.md) for what each
+does and the real issues found (and fixed) while building them, and
+[ROADMAP.md](ROADMAP.md) for the current gate status. If neither clears
+that bar, the scripted scenario above is what the audience sees — that's
+a fine outcome, not a failure.
 
 ## Responsible use
 
-Every technique in this repo targets **OWASP Juice Shop**, an application
-built and maintained specifically to be attacked for education — that's
-its entire purpose, and doing so here breaks no law. **These same
-techniques, run against a system you don't own or don't have explicit
-permission to test, are the real crimes this repo's own legal-overlay
-panel describes.** That's the point of the demo, not an incidental risk of
-it: don't be the case study.
+Every technique in this repo targets either **OWASP Juice Shop** (an
+application built and maintained specifically to be attacked for
+education) or purpose-built training hosts in this repo's own network-
+intrusion scenario (a real backdoor, a real weak credential, a real
+misconfigured file share — all deliberately built for this demo, none of
+it a real production system) — that's their entire purpose, and attacking
+them here breaks no law. **These same techniques, run against a system
+you don't own or don't have explicit permission to test, are the real
+crimes this repo's own legal-overlay panel describes.** That's the point
+of the demo, not an incidental risk of it: don't be the case study.
 
 ## Repo map
 
@@ -145,10 +164,13 @@ it: don't be the case study.
 
 ## Status
 
-One scenario, three challenges, built and verified end-to-end — see
-[ROADMAP.md](ROADMAP.md) for what's shipped versus what's still designed
-(an autonomous agentic scenario, plus ransomware and phishing scenarios on
-the same shared infrastructure).
+The guaranteed lecture scenario — one scripted scenario, three challenges —
+is built and verified end-to-end. Two additional, autonomous AI-vs-AI
+scenarios (one web-layer, one real OS/network-level) are also built and
+have passed rehearsal runs, but neither is yet rehearsal-gated for live use
+(see "Why scripted" above). See [ROADMAP.md](ROADMAP.md) for full status,
+including what's still designed but not built (ransomware and phishing
+scenarios on the same shared infrastructure).
 
 ## License
 

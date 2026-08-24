@@ -21,10 +21,28 @@ docker compose --project-directory . -f core/docker-compose.core.yml -f "${SCENA
 
 echo ""
 echo "Dashboard:  http://127.0.0.1:8080"
-echo "Target app: http://127.0.0.1:3000 (through the proxy)"
+# web-exploit and agentic both reuse the Juice Shop proxy's published port;
+# network-intrusion's targets are attacker-only, no host port at all.
+if [ "${SCENARIO}" = "web-exploit" ] || [ "${SCENARIO}" = "agentic" ]; then
+  echo "Target app: http://127.0.0.1:3000 (through the proxy)"
+fi
 echo ""
-echo "When ready to narrate the attack:"
-echo "  ${SCENARIO_DIR}/run-attack.sh"
+# Scenario-aware on purpose: scripted scenarios trigger on cue with
+# run-attack.sh, agentic-style scenarios start both host-side brain loops
+# with their own run-*.sh (see specs/local-llm-agents.md) -- printing the
+# wrong filename here would send the presenter looking for a script that
+# doesn't exist.
+if [ -f "${SCENARIO_DIR}/run-attack.sh" ]; then
+  echo "When ready to narrate the attack:"
+  echo "  ${SCENARIO_DIR}/run-attack.sh"
+else
+  RUN_SCRIPT=$(find "${SCENARIO_DIR}" -maxdepth 1 -name "run-*.sh" | head -1)
+  if [ -n "$RUN_SCRIPT" ]; then
+    echo "When ready to start both AI brain loops (requires Ollama running"
+    echo "natively -- see specs/local-llm-agents.md):"
+    echo "  ${RUN_SCRIPT}"
+  fi
+fi
 echo ""
 echo "To reset to a clean state:"
 echo "  ${SCENARIO_DIR}/reset.sh"

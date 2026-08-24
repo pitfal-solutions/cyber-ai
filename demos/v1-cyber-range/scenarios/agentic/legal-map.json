@@ -1,0 +1,60 @@
+{
+  "_note": "Same fact patterns as scenarios/web-exploit/legal-map.json, reused as-is: the agentic scenario's attacker tools (tool-api/server.py) hit the exact same real endpoints with the exact same real payloads, just in an LLM-chosen order instead of a fixed script -- the underlying vulnerabilities, and therefore the legal analysis, don't change. Sourced 2026-08-22 from Justia-mirrored C.R.S. text, a Colorado criminal-defense firm's practitioner summary (shouselaw.com), and general CFAA structure. This is a strong starting point, not a final legal-review pass -- see ../../context/legal-framework.md and ../../routines/refresh-legal-citations.md. Verify against the official Colorado Revised Statutes and current CFAA text before this is presented as authoritative to a law-enforcement audience.",
+
+  "cfaa-1030a2": {
+    "statute": "18 U.S.C. § 1030(a)(2) -- Computer Fraud and Abuse Act (federal)",
+    "plain_language": "Intentionally accessing a computer without authorization, or exceeding authorized access, and thereby obtaining information from a protected computer. The SQL-injection login bypass is exactly this: the attacker never had valid credentials, tricked the login query into authenticating them anyway, and obtained account information as a result.",
+    "elements": [
+      "intentional access",
+      "without authorization, or exceeding authorized access",
+      "obtaining information from a protected computer"
+    ],
+    "penalty": "Baseline is a misdemeanor (up to 1 year). Aggravating factors -- value obtained over $5,000, access for commercial advantage or private financial gain, access in furtherance of another crime, or a repeat offense -- elevate it to a felony (up to 5 years; up to 10 for a repeat offense). Exact classification depends on case facts -- verify against current 18 U.S.C. § 1030(c) text before citing a specific number to an audience.",
+    "evidentiary_note": "The proxy's access log entry capturing the exact injection payload in the login request body is the kind of artifact that establishes intent -- this wasn't a fat-fingered password, it's a crafted attempt to manipulate the query."
+  },
+
+  "co-18-5.5-102": {
+    "statute": "Colo. Rev. Stat. § 18-5.5-102 -- Colorado Computer Crime Act (state)",
+    "plain_language": "Colorado's own computer-crime statute, prosecuted far more often in practice than federal CFAA cases. Using the bypassed session to pull other users' full account records via /api/Users/{id} -- which authenticates the caller but never checks whether that record actually belongs to them -- is unauthorized access to, and use of, data the attacker was never entitled to see.",
+    "elements": [
+      "knowingly accessing a computer, network, or data without authorization",
+      "use of that access to obtain data, or additional access"
+    ],
+    "penalty": "Bare unauthorized access is a class 2 misdemeanor (up to 120 days, fine up to $750); a second conviction under this section becomes a class 6 felony. Where a value/loss figure applies, Colorado tiers it: under $500 = class 2 misdemeanor, $500-$1,000 = class 1 misdemeanor, $1,000-$20,000 = class 4 felony, $20,000+ = class 3 felony. Which tier fits this scenario depends on how 'value' is argued for exposed personal data -- flag this nuance live rather than picking a single number with false confidence.",
+    "evidentiary_note": "The detector's alert -- three or more distinct user IDs pulled via the same session within a 10-second window -- is the kind of access pattern that distinguishes 'looked up my own account' from systematic enumeration, which matters for proving intent."
+  },
+
+  "cfaa-1030a2-misconfig": {
+    "statute": "18 U.S.C. § 1030(a)(2) -- Computer Fraud and Abuse Act (federal) -- unauthenticated-exposure fact pattern",
+    "plain_language": "Same statute as the SQLi bypass above, but a genuinely more contested fact pattern worth surfacing to a criminal-justice audience: no login was bypassed, no technical control was defeated -- the file simply had no access control on it at all. Courts have split on whether requesting a URL with no authentication barrier is 'without authorization' under the CFAA (see, e.g., the vacated AT&T/Weev iPad-URL case) versus whether it's closer to leaving a folder on a public sidewalk. This step is deliberately the 'weakest' legal case in the chain -- a good discussion prompt, not a slam dunk.",
+    "elements": [
+      "access to a protected computer",
+      "without authorization -- contested here, since no credential or technical barrier was ever in place"
+    ],
+    "penalty": "Same range as cfaa-1030a2 if charged, but prosecutorial discretion and case law both trend toward not charging pure unauthenticated access with no barrier defeated -- don't present this step's legal exposure with the same confidence as the SQLi bypass.",
+    "evidentiary_note": "The proxy log shows a single unauthenticated GET with a 200 response -- there's no crafted payload, no bypassed check, just a request to a path that should never have been reachable. That absence of any 'attack artifact' is itself the point for this step."
+  },
+
+  "identity-theft-1028": {
+    "statute": "18 U.S.C. § 1028 / § 1028A (federal) and Colo. Rev. Stat. § 18-5-902 (state) -- Identity Theft",
+    "plain_language": "Resetting another person's password via a guessable security question and logging in as them is textbook identity theft -- using another person's identifying information/account access without their permission to obtain something of value (here: full control of their account). Federal § 1028A adds a mandatory, non-discretionary 2-year sentence on top of whatever the underlying felony carries, served consecutively -- judges cannot reduce or run it concurrently. Colorado's § 18-5-902 is the state-level version, prosecuted independently or alongside federal charges.",
+    "elements": [
+      "knowingly uses another person's personal identifying information or account access",
+      "without permission",
+      "to obtain something of value (here: account control) -- or, for the federal aggravated charge, in relation to another listed felony"
+    ],
+    "penalty": "Colorado (§ 18-5-902): most cases are a class 4 felony, 2-6 years plus up to $500,000 in fines; a second offense makes prison mandatory. Federal § 1028A: a mandatory, consecutive 2-year add-on to the underlying felony's sentence -- not discretionary, cannot run concurrently, cannot be reduced for good behavior. Sourced from a Colorado criminal-defense firm's summary (shouselaw.com) and general secondary sources on § 1028A -- verify against primary text before final use.",
+    "evidentiary_note": "The proxy log shows the exact sequence: a security-question lookup, a successful reset (200, not the 401 a wrong guess gets), then a login with the new credentials -- a clean, hard-to-dispute timeline of exactly how the takeover happened."
+  },
+
+  "co-6-1-716": {
+    "statute": "Colo. Rev. Stat. § 6-1-716 -- Notification of Security Breach (state, civil/regulatory)",
+    "plain_language": "Not a charge against the attacker -- this is what the law now requires of the breached organization. Once personal information (like the emails and roles just pulled) is confirmed accessed without authorization, Colorado law obligates the company to notify affected residents.",
+    "elements": [
+      "unauthorized acquisition of unencrypted personal information",
+      "compromising its security, confidentiality, or integrity"
+    ],
+    "penalty": "Not a criminal penalty on the attacker -- a notification duty on the victim organization: notice 'in the most expedient time possible... but not later than 30 days' after the breach is confirmed, plus notice to consumer reporting agencies if over 1,000 Colorado residents are affected.",
+    "evidentiary_note": "This is the moment the incident stops being purely a technical/criminal question and becomes an organizational-response question too -- useful pivot point for the law-enforcement track: what happens after the arrest/charges, on the victim side."
+  }
+}

@@ -66,18 +66,50 @@ access, additional scenarios, auth.
 
 ## Phase 2 — Agentic scenario (stretch goal, same build window if time allows)
 
-Only attempted after Phase 1 is rehearsed and solid. One local LLM plays
+**Status: built, 2026-08-22, one clean run verified on the dev machine —
+not yet rehearsal-gated for the actual lecture.** One local LLM plays
 attacker (tool-calling against a constrained toolset), a second plays
-defender/analyst, both via Ollama, both fully offline. Ships as an
-*additional* scenario module — Phase 1's scripted scenario stays as the
-guaranteed fallback regardless of how this goes. See
-[specs/local-llm-agents.md](specs/local-llm-agents.md) (design only, not yet
-built) and working agreement #7 in `CLAUDE.md` on why exact model names
-aren't pinned yet.
+defender/analyst, both via a host-native Ollama (not Docker — Metal GPU
+passthrough isn't available to containers on macOS, see
+[specs/architecture.md](specs/architecture.md)'s "Local LLM runtime"),
+both fully offline. Ships as an *additional* scenario module
+(`demos/v1-cyber-range/scenarios/agentic/`) — Phase 1's scripted scenario
+stays as the guaranteed fallback regardless of how this goes. Full design,
+what was built, and real bugs found+fixed during the first rehearsal pass:
+[specs/local-llm-agents.md](specs/local-llm-agents.md).
+
+**Still open before this can be presented:**
+- `bench-models.sh` re-run on the actual 48GB demo laptop (the build/
+  rehearsal above happened on a different, 16GB dev machine — see working
+  agreement #7 and local-llm-agents.md's model-selection section).
+- The 3-consecutive-clean-runs gate itself (one clean run ≠ three).
 
 **Go/no-go for presenting this live:** only presented at the lecture if it
-survives at least 3 clean rehearsal runs with no manual intervention. No
-exceptions — see working agreement #1.
+survives at least 3 clean rehearsal runs with no manual intervention, on
+the actual demo laptop. No exceptions — see working agreement #1.
+
+## Phase 2c — Network-intrusion scenario (real OS/server attacks, not just web)
+
+**Status: built, 2026-08-24, 4 live rehearsal runs (2 with real bugs found
+and fixed live, 2 fully clean) — not yet rehearsal-gated.** Founder
+feedback on Phase 2: even after real tuning, the Juice Shop scenario kept
+feeling repetitive — one target, one protocol, a handful of similar HTTP
+techniques. This is a second, additional agentic scenario
+(`demos/v1-cyber-range/scenarios/network-intrusion/`) targeting real
+OS/network-level services instead: three separate hosts (weak SSH
+credentials, the real CVE-2011-2523 vsftpd backdoor, anonymous SMB share
+access), attacked with real industry-standard tools (`nmap`, `hydra`,
+`smbclient`) rather than custom HTTP-client code. Reuses the same core,
+brain/hands split, and every reliability lesson from Phase 2's build —
+this is a target/toolset swap, not a rebuild. Full design, the real CVE/
+tooling research, and the bugs found rehearsing it:
+[specs/network-intrusion.md](specs/network-intrusion.md).
+
+**Still open before this can be presented:** same as Phase 2 above — a
+real `bench-models.sh` pick on the actual demo laptop, and the
+3-consecutive-clean-runs gate. Also additive, not a replacement — both
+Phase 2 and Phase 2c are optional; the scripted Phase 1 scenario is the
+only guaranteed lecture deliverable either way.
 
 ## Phase 3 — Additional scenarios (post-lecture, reuse-driven)
 

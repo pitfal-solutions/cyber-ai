@@ -1,0 +1,26 @@
+{
+  "_note": "Two entries reused from scenarios/web-exploit/legal-map.json (cfaa-1030a2, cfaa-1030a2-misconfig) -- deliberate, verified reuse, not lazy copying: 18 U.S.C. § 1030(a)(2)'s elements (intentional access, without authorization, obtaining information from a protected computer) genuinely fit SSH credential brute-forcing and vsftpd backdoor exploitation the same way they fit the web scenario's SQLi bypass -- both are 'never had valid access, circumvented a control, got in anyway.' The SMB anonymous-share fact pattern is genuinely the same contested-authorization shape as the web scenario's unauthenticated-file-exposure case (no control was ever defeated, the share simply had none), so cfaa-1030a2-misconfig's existing nuance applies as-is. Sourced 2026-08-23 from the same primary sources as the original entries -- see context/legal-framework.md. Still a strong starting point, not a final legal-review pass.",
+
+  "cfaa-1030a2": {
+    "statute": "18 U.S.C. § 1030(a)(2) -- Computer Fraud and Abuse Act (federal)",
+    "plain_language": "Intentionally accessing a computer without authorization, or exceeding authorized access, and thereby obtaining information from a protected computer. SSH credential brute-forcing (guessing a valid password) and exploiting the vsftpd backdoor (triggering a hidden, unauthorized command shell) both fit this exactly: the attacker never had valid access and circumvented a real control to get it.",
+    "elements": [
+      "intentional access",
+      "without authorization, or exceeding authorized access",
+      "obtaining information from a protected computer"
+    ],
+    "penalty": "Baseline is a misdemeanor (up to 1 year). Aggravating factors -- value obtained over $5,000, access for commercial advantage or private financial gain, access in furtherance of another crime, or a repeat offense -- elevate it to a felony (up to 5 years; up to 10 for a repeat offense). Exact classification depends on case facts -- verify against current 18 U.S.C. § 1030(c) text before citing a specific number to an audience.",
+    "evidentiary_note": "The real OpenSSH auth log's failed-then-accepted password sequence, and the FTP connection log's backdoor-trigger username followed by a real shell connection, are the kind of artifacts that establish intent -- not a fat-fingered login, a deliberate exploitation sequence."
+  },
+
+  "cfaa-1030a2-misconfig": {
+    "statute": "18 U.S.C. § 1030(a)(2) -- Computer Fraud and Abuse Act (federal) -- unauthenticated-exposure fact pattern",
+    "plain_language": "Same statute as above, but the same genuinely more contested fact pattern already flagged in the web-exploit scenario: connecting to an SMB share configured for guest/anonymous access defeats no technical control -- the share simply had none. Courts have split on whether accessing a resource with no authentication barrier at all counts as 'without authorization' under the CFAA. This is deliberately the 'weakest' legal case among this scenario's findings.",
+    "elements": [
+      "access to a protected computer",
+      "without authorization -- contested here, since no credential or technical barrier was ever in place"
+    ],
+    "penalty": "Same range as cfaa-1030a2 if charged, but prosecutorial discretion and case law both trend toward not charging pure unauthenticated access with no barrier defeated -- don't present this step's legal exposure with the same confidence as the SSH/backdoor findings.",
+    "evidentiary_note": "The Samba connection log shows a guest/nobody-authenticated session reading a specific file -- there's no crafted payload, no bypassed check, just a connection to a share that should never have allowed anonymous access."
+  }
+}

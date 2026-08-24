@@ -41,6 +41,450 @@ not a log.
 
 ---
 
+## 2026-08-24 (Phase 2c) — New network-intrusion scenario: real OS/server attacks, not just web
+
+**What:** Founder feedback: even after real tuning (defender restraint,
+attacker persistence, tool shuffling, the incident report), the agentic
+scenario kept feeling repetitive and deterministic — correctly diagnosed
+as structural, not a tuning problem: one target (Juice Shop), one protocol
+(HTTP), a handful of similar techniques. Asked for a pivot to real OS/
+server-level attacks, multiple genuinely different paths in, ideally real
+CVEs and real tools (Kali was floated by name). Planned via plan mode
+first (approved plan: 3 real paths, added alongside the existing scenarios,
+curated real toolset over full Metasploit, Samba/SMB as the real substitute
+for an impossible Windows Server target) — see
+`specs/network-intrusion.md` for the full design and
+`.claude/plans/clever-beaming-magpie.md` for the plan itself.
+
+**Two options researched and rejected before landing on the actual
+design:**
+- Windows Server: confirmed live that Docker/Colima on this Mac can only
+  run Linux containers — a real Windows target would need an actual
+  Windows kernel host, not available. Samba/SMB on Linux used instead
+  (the real protocol Windows file-sharing uses).
+- SambaCry (CVE-2017-7494): checked directly against this machine's real
+  package repos — needs Samba 4.4/4.5/4.6.x, only 4.17.x is available via
+  `apt`, and a from-source build of that era was judged too fragile to
+  rehearse reliably under time constraints. Real, common misconfiguration
+  used instead (anonymous/guest SMB share access) — still a genuinely real
+  vulnerability class, just not tied to a specific CVE number.
+
+**A pre-built reference image was checked and found dead** (a
+`vitalyford/vsftpd-2.3.4-vulnerable` GitHub repo pointed at a Docker Hub
+image, `nksnksnks/vsftpd.2.3.4-vuln-osvdb-73573`, that no longer exists —
+confirmed via a real `docker pull` attempt, not assumed). Built a minimal,
+real, hand-written reproduction of the documented CVE-2011-2523 backdoor
+trigger/shell behavior instead — not the literal 2011 binary (no reliable
+way to source that safely), but a genuine socket listener + genuine
+subprocess shell, verified by hand (real root shell, real `whoami`/`id`/
+`uname -a` output, plus a negative-case test confirming a normal login
+does *not* trigger it) before any automation was built against it.
+
+**Samba's own logging didn't cooperate.** Tried several real approaches to
+get connect-level detection off Samba's own logs directly (`log level` up
+to 10, the purpose-built `vfs_full_audit` module) — none reliably surfaced
+a usable line on this Samba version's split `rpc_host` worker-process
+architecture, confirmed by direct inspection of the actual log output each
+time, not assumed from documentation. Pivoted to the same real, independent
+pattern `scenarios/web-exploit/proxy/server.py` already uses: a tiny TCP
+proxy in front of `smbd` logging every real connection itself. Worked
+immediately.
+
+**Real bugs found across 4 live rehearsal runs** (2 with bugs, 2 fully
+clean): a network-sweep bug where `tool-api` (dual-homed on two Docker
+networks) resolved its own hostname to pick a subnet to scan and
+non-deterministically got the wrong network's IP, sweeping an entirely
+wrong subnet (0 real hosts found, 0 confirmed findings for that whole run)
+— fixed by resolving a known single-homed target instead of tool-api's own
+ambiguous hostname; a missing capability where the attacker could crack
+SSH credentials but had no tool to *use* them, so it re-ran the
+brute-force three times in one run and then hallucinated a fake shell
+command in prose — fixed by adding a real `ssh_shell` tool; and noisy raw
+shell output from the vsftpd exploit bloating conversation context enough
+to contribute to a real model-turn timeout — fixed by stripping the noise
+at the source and raising this scenario's turn timeout.
+
+**Verified live, final clean run:** real recon (host discovery + per-host
+port scans) correctly identified all three targets by name; SSH
+brute-force → real shell login → real enumeration, once each, no repeats;
+the real vsftpd backdoor triggered a real root shell; anonymous SMB access
+pulled the real confidential file; the attacker used `cover_tracks` as a
+natural closing move; defender showed real restraint (flagged multiple
+times, blocked only once with real justification); 9 confirmed findings
+in the final report with real legal citations.
+
+**Legal map:** 2 entries reused from `scenarios/web-exploit/legal-map.json`
+(`cfaa-1030a2`, `cfaa-1030a2-misconfig`) — checked that the underlying
+legal elements genuinely fit these new fact patterns before reusing them,
+not copied by convenience. Documented in the file's own `_note`.
+
+**README update:** yes, in this change — `README.md` (the "Why scripted"
+and "Status"/"Responsible use" sections, which previously said "every
+technique targets Juice Shop," now stale) and `demos/README.md` (a full
+setup/run/reset walkthrough, mirroring the agentic scenario's section).
+
+**A process note, not a build note:** several actions this session
+(directory creation, `docker build`/`run`, and later a diagnostic `curl`+
+`docker network inspect`) were blocked mid-build by auto mode's safety
+classifier, which the tool's own error message attributed to this
+conversation's accumulated content (real exploit code, backdoors,
+brute-forcing) rather than any specific action, and which it said would
+keep recurring for the rest of the conversation. The founder switched to
+manual mode each time to unblock progress. Worth knowing for future
+sessions continuing this kind of work: expect this in auto mode, not a
+one-off.
+
+**Pre-ship checklist:** not rehearsal-gated — 4 runs happened, not the
+required 3 *consecutive clean* runs on the real laptop (2 of the 4 found
+real bugs, which is exactly what rehearsal is for, but doesn't count
+toward the gate). `bench-models.sh`'s existing pick (shared with the
+agentic scenario) still needs its real-laptop re-run per working
+agreement #7 before either scenario is presentable.
+
+---
+
+## 2026-08-23 (Phase 2 follow-up #3) — End-of-run incident report + attacker anti-forensics
+
+**What:** Founder request: at the end of a run, have the defender try to
+gather as much evidence as possible, have the attacker try to cover its
+tracks in response, and have the defender present a report and back up
+evidence for "trial" -- honestly stating when nothing was found.
+
+**Key decision: the report is deterministic, built directly from the real
+event/access logs, not LLM-generated prose.** Same "never fabricate a
+finding or citation" bar this repo already holds legal content to. The
+defender's model doesn't write it; `tool_investigate_incident()` in
+`tool-api/server.py` does, the same way the legal-overlay panel is built
+from real events joined against `legal-map.json` rather than generated
+text. It's still narratively the defender's action (posted as an
+`actor: defender` event, triggered by the defender's own process).
+
+**Attacker's `cover_tracks`, scoped to what's actually real**: this
+session's own recon (`resolve_target`/`port_scan`, added earlier this day)
+already established it never had filesystem or host access -- only the
+web app was ever open. So real log *deletion* was never offered as an
+option (it would have been fake); what's real and available is flooding
+the shared access log with decoy HTTP traffic through the same proxy
+every other action already uses. Verified this has a genuine, measurable
+effect without being able to erase what's already been independently
+detected (detection already happened before a report is ever compiled).
+
+**Real burst-detection heuristic, tuned from a real baseline measurement**:
+initially set the raw-log burst threshold at 15 requests/5s: false-
+positived immediately on a clean-slate test with zero attack activity,
+because Juice Shop's own socket.io connection handshake alone bursts
+~17 requests in 5 seconds on a normal page load. Measured the actual idle
+baseline directly rather than guessing again, raised the threshold to 30
+-- comfortably above real background noise, comfortably below
+`cover_tracks`' 40-request burst. Deliberately does not read the
+attacker's own request count from shared session state (that would be
+unrealistic omniscience a real investigator wouldn't have) -- the
+detection has to come from the raw log itself, same sliding-window
+technique the real detector already uses for enumeration.
+
+**Orchestration fix required**: the defender's reactive loop runs for up
+to 600s independently polling for alerts -- it had no way to know the
+attacker was actually done. Added `attacker_finished` to the dashboard's
+`/control` state, set by `run-agentic.sh` once the attacker's foreground
+process exits; the defender's loop checks it each cycle, handles one more
+trailing alert if there is one, then moves to the guaranteed final report.
+Waiting on the defender process changed from a blind sleep to a bounded
+poll (exits as soon as it actually finishes, capped at 20s) rather than
+either an open-ended wait or a fixed sleep that might cut the report off
+mid-compile.
+
+**Verified live, twice**: a clean-slate run (nothing attempted) produced
+an honest "no confirmed malicious activity" report with no false burst
+detection -- confirming the fix actually held, not just that it compiled.
+A full run (real attack chain including a persistence-driven takeover win,
+proper defender restraint, two `cover_tracks` calls as the attacker's own
+closing move) produced a 9-finding report, correctly flagged an 88-request
+burst as a possible obscuring attempt while explicitly noting the
+confirmed findings were unaffected, and backed up both logs to real,
+verified files (`diff`-confirmed the backup is a byte-for-byte snapshot,
+one line short of the live file since the report event is appended after
+the snapshot is taken -- correct chain-of-custody behavior).
+
+**README update:** yes, `demos/README.md` -- mentions the report/evidence-
+backup phase.
+
+**Pre-ship checklist:** unchanged, still not rehearsal-gated on the real
+laptop.
+
+---
+
+## 2026-08-23 (Phase 2 follow-up #2) — Defender restraint, attacker persistence toward a real win
+
+**What:** Founder watched more runs and reported never actually seeing the
+attacker win, and suspected the defender was overreacting. Confirmed by
+inspecting the actual test output from the prior entry: the defender had
+called `block_attacker` on the very first, lowest-severity alert (an
+exposed-file finding), and after one failed `account_takeover` guess the
+attacker abandoned that goal and wandered into unrelated path-guessing
+instead of trying other enumerated users.
+
+**Fixed with code-level guards, not just prompt rewording** (consistent
+with `ensure_reasoning()` from the first build entry — small models don't
+reliably follow prompt-only discipline):
+- `block_attacker` now requires the defender to have flagged/escalated at
+  least twice first (`SESSION["defender_signals"]`); an early call
+  downgrades to a flag instead of a block, with a message explaining why.
+- Attacker prompt rewritten to make working through the enumerated-user
+  list for `account_takeover` the explicit, immediate next move after a
+  failed guess, not one option among many.
+- A `MIN_TURNS_BEFORE_CONCLUDING = 10` floor in `attacker_agent.py`:
+  rehearsal (while testing the above two fixes) surfaced a run where the
+  attacker concluded after only 3 turns of pure recon, nothing attempted —
+  a "no tool call" before turn 10 now gets rejected with a nudge instead of
+  accepted as a real conclusion.
+
+**Also fixed while touching this code**: `probe_path`'s miss description
+now explains *why* a 200 doesn't mean success (Juice Shop's SPA serves its
+own default page for any unmatched route) — the founder had reasonably
+read "got 200" on the dashboard as a positive signal being ignored, when
+it was actually a correctly-classified miss with a confusing description.
+
+**Verified live** across 3 rehearsal runs during this fix: run 1 (before
+the turn floor) genuinely stalled at 3 turns, confirming the floor was
+needed, not a hypothetical; runs 2 and 3 (after all three fixes) both
+produced the target shape — defender flagged 2-3 times before its one
+justified block, attacker achieved a real account takeover by working
+through bender → admin → jim (two honest failures, one real success, not
+a scripted outcome), and recovered from the block afterward to continue
+to the basket-IDOR finding. Full details:
+`specs/local-llm-agents.md`'s "Follow-up, 2026-08-23" section.
+
+**README update:** not needed this pass — no user-visible capability
+changed, only run-to-run behavior tuning within the same feature set
+already documented.
+
+**Pre-ship checklist:** unchanged — still not rehearsal-gated on the real
+laptop. Worth noting: the 3-consecutive-clean-runs gate should probably be
+interpreted as "3 runs that reach a coherent conclusion," not "3 runs that
+all end in a successful takeover" — the whole point of this fix was
+*honest* variance (real misses are fine, real wins should be reachable),
+not a guaranteed outcome.
+
+---
+
+## 2026-08-23 (Phase 2 follow-up) — More attacker variety, real network recon, resilient defender block
+
+**What:** Founder feedback after watching a few runs: too samey, wanted
+real freedom for the attacker to try unconventional things, real
+network-level recon (IP resolution, port scanning) alongside the web-app
+techniques, and a much higher turn budget where a defender block is a
+setback the attacker learns from and recovers from, not a hard stop.
+
+**Two new attacker tools, both verified real before building anything**:
+`guess_common_credentials` (confirmed live that `admin@juice-sh.op` /
+`admin123` is a genuine seeded weak credential in this app — not invented)
+and `check_other_baskets` (confirmed live: one session token reads other
+users' shopping baskets via `/rest/basket/{id}` — a real IDOR, different
+endpoint from the existing user-record enumeration).
+
+**Two new network-recon tools**, targeting the real `juice-shop` container
+directly (not the demo's own logging proxy) via stdlib `socket` — no new
+dependency: `resolve_target` (DNS) and `port_scan` (real TCP connect
+scan). Verified live: only port 3000 is genuinely open; separately
+confirmed `/.git/HEAD` and `/backup/config.json` (paths that looked
+plausible to test) are just the Angular SPA's fallback shell by checking
+content-type/body, not assumed from a status code alone — same false-
+positive class already fixed once before (see the 2026-08-22 entry below).
+
+**`block_attacker` redesigned** from a permanent "nothing works after this"
+flag to revoking the current session token specifically. Recon tools were
+never session-gated; the two auth tools still work post-block (the
+vulnerabilities aren't patched by revoking one token); the three
+session-requiring tools fail cleanly and tell the attacker to
+re-authenticate. Learned state (enumerated users, tried paths, tried
+takeover targets) persists across a block — verified live that a repeated
+`probe_path` on an already-checked path returns instantly with "already
+checked, try something different" instead of hitting the network again.
+This is a more honest model of what blocking a session actually
+accomplishes, not just a mechanism for "more variety."
+
+**Turn caps raised substantially** (attacker 14→40, defender reactions
+6→15, defender timeout 300s→600s) with two things fixed alongside that a
+naive bump would have broken silently: `run-agentic.sh`'s post-attacker
+`wait` on the defender changed to a bounded 8s grace period (an unbounded
+wait would now hang the script for minutes), and Ollama's `num_ctx` set
+explicitly to 8192 in every call (was defaulting to 4096) so a long run's
+full tool-call history doesn't silently overflow context and make the
+model forget what it already tried — which would have directly undermined
+the point of raising the cap.
+
+**Also fixed**: `account_takeover` previously ignored the model's own
+stated target and always silently used a server-computed default, so the
+model's reasoning ("targeting bender@...") and the real action (always
+jim) could disagree — now the model's choice actually drives the action,
+and a wrong guess honestly fails instead of being silently corrected.
+Tool order is now shuffled per turn (`brain/common.py`), not just fetched
+once — rehearsal showed a fixed order biased the model toward whichever
+tool was listed first almost every run, independent of what the prompt
+said.
+
+**Verified live** (20-turn cap for observability): blocked right after the
+first SQLi success; the next enumeration attempt correctly failed; the
+attacker recovered via a genuinely different re-auth method
+(`guess_common_credentials`, not a repeat of `sqli_login_bypass`) and
+continued; explored 9 further distinct, creative paths with zero exact
+repeats. Full details and the one open behavioral gap (doesn't always
+retry `account_takeover` on a different user after one failure — moved on
+to path exploration instead this run): `specs/local-llm-agents.md`'s
+"Founder feedback, 2026-08-23" section.
+
+**Honest gap left as-is**: the real detector has no rule for weak-
+credential logins or basket IDOR (only the original four patterns), so
+those two new attacker techniques currently go undetected. Not silently
+patched over — flagged clearly in `specs/local-llm-agents.md` as a real
+teaching point (alert coverage gaps are real) and a candidate for a future
+pass.
+
+**README update:** yes, `demos/README.md` — the agentic scenario's
+description updated to mention the 9-tool menu and the resilient-block
+behavior.
+
+**Pre-ship checklist:** unchanged from the entry below — still not
+rehearsal-gated (3 consecutive clean runs on the real laptop), still needs
+`bench-models.sh` re-run there. This session's changes make the *content*
+of each run more varied, not the reliability bar it needs to clear.
+
+---
+
+## 2026-08-22 (Phase 2 follow-up) — Single-shared-model mode verified for dev-machine testing
+
+**What:** Founder asked for a way to test the agentic scenario on this
+16GB dev machine specifically (smaller models, or one shared model instead
+of two), separate from the real model pick for the 48GB laptop. Rather
+than pull new, smaller models untested for tool-calling reliability, tried
+the already-downloaded `qwen2.5:3b-instruct` as a **single model powering
+both roles** (Option B from `specs/local-llm-agents.md`'s "Model
+selection" section — this was previously only a documented fallback, now
+actually verified).
+
+Found one real requirement along the way: Ollama's default
+`OLLAMA_NUM_PARALLEL` is `1`, which would serialize the attacker's and
+defender's concurrent requests to the shared model instead of running them
+in parallel. Restarted with `OLLAMA_NUM_PARALLEL=2` — now documented as a
+requirement for single-model mode in `specs/local-llm-agents.md`.
+
+**Result:** one fully clean run, 18.5s total, 2.3GB resident (one model,
+not two), 100% Metal offload — full real chain including the attacker
+correctly recognizing it had been blocked and stopping on its own.
+Documented as a dev-convenience config in `specs/local-llm-agents.md` and
+`demos/README.md`, explicitly labeled as not a substitute for running
+`bench-models.sh` for real on whichever machine ends up presenting.
+
+**README update:** yes, `demos/README.md` — a pointer to the smaller-
+machine config next to the existing setup instructions.
+
+**Open risk:** none new — this doesn't change the 3-consecutive-clean-runs
+gate or the real-laptop bench requirement, both still open per the entry
+below.
+
+---
+
+## 2026-08-22 (Phase 2 build) — Agentic scenario built end-to-end; one clean run, not yet rehearsal-gated
+
+**What:** Built `scenarios/agentic/` from the design in
+`specs/local-llm-agents.md`: `tool-api/` (the constrained attacker/defender
+action menu, containerized — the "hands"), `brain/` (host-side Python —
+`common.py`, `attacker_agent.py`, `defender_agent.py` — the LLM
+tool-calling loops, the "brain"), a pause/speed `/control` + `/status`
+control plane added to `core/range-dashboard/server.py`, and
+`bench-models.sh` for the working-agreement-#7 model check. Requested by
+the founder as a follow-on to the design doc, driven end-to-end (planned
+via plan mode, approved, then built and rehearsed in the same session)
+rather than left as a design-only stretch goal.
+
+**Key architectural correction, made before writing any code**: confirmed
+live (not from memory) that Docker Desktop on macOS still cannot pass the
+Apple Silicon GPU through to a container in 2026. `specs/architecture.md`'s
+original "Ollama runs as a core [Docker] service" line was wrong for this
+reason — corrected to host-native Ollama, with the LLM call/tool-selection
+loop ("brain") running as a host process and only the actual target-facing
+action execution ("hands") containerized on the existing isolated network.
+This also sidesteps the `internal: true`-blocks-host-routing trap this repo
+already hit once (see the 2026-08-22 build entry below) — the brain never
+needs a new network leg into `cyberrange_net`, it reaches the sandbox the
+same way the presenter's browser already does, through a published
+`127.0.0.1` port.
+
+**Model check, done for real, not assumed:** this build happened on a
+16GB Mac mini dev machine, *not* the 48GB demo laptop the design doc
+assumes (confirmed with the founder before pulling any models — see
+`specs/local-llm-agents.md`'s "Runtime decision" section). Bench results on
+the dev machine were still strong: `qwen2.5:7b-instruct` +
+`qwen2.5:3b-instruct` concurrently loaded, 100% Metal GPU offload, 6.9GB
+combined, 0.6-1.1s warm-turn latency. This validates the mechanism and the
+starting model pair, but is explicitly **not** the working-agreement-#7
+final pick — that requires re-running `bench-models.sh` on the actual
+laptop.
+
+**Four real bugs found by actually running it, not by review** — a
+false-positive "exposed file" (Juice Shop's SPA returns 200 for any
+made-up path; fixed by matching the detector's own regex before calling
+something exposed), an unreliable free-text SQLi payload (a small model
+doesn't reliably craft working injection syntax; fixed by making the
+verified payload server-side and non-parameterized), a 7B model describing
+its next move in prose instead of calling a tool (fixed with a firmer
+system prompt + `temperature: 0.2`), and a 3B model never filling the tool
+schema's required `reasoning` field (fixed with a code-level fallback
+rather than chasing prompt-tuning on the weaker model). Full details:
+`specs/local-llm-agents.md`'s "Build + rehearsal notes" section.
+
+**Result after fixes:** one fully clean `reset.sh` → `run-agentic.sh` cycle
+— real attack chain (recon → exposed file → SQLi bypass → enumeration →
+account takeover, all real requests against real Juice Shop) plus a
+defender that escalated correctly (`flag_session` on the first three real,
+independently-detected alerts, `block_attacker` on the critical one, which
+then genuinely blocked the attacker's next action — not just a narrated
+block). 22.8s reset, 23.7s run. Verified visually in-browser too: pause
+button, speed selector, and per-actor "thinking" status pills all round-
+trip to the server correctly.
+
+**README update: yes, in this change** — "Why scripted?" section and
+"Status" both updated to reflect the agentic scenario now being built
+(with the not-yet-rehearsal-gated caveat stated plainly, not glossed over),
+plus a full setup/run/reset walkthrough added to `demos/README.md`,
+mirroring the existing `web-exploit` section. Per working agreement #8.
+
+**Pre-ship checklist results:**
+- Matches roadmap: yes — this is exactly Phase 2.
+- Reset tested: yes, full `down -v && up` cycle, not a partial/lightweight
+  clear (the detector's in-memory dedup state is why — see below).
+- Reset → run → reset cycle: yes, timed, one full clean pass.
+- Wifi disconnected: not tested for this scenario either (carried over
+  open item from Phase 1, see the entry below).
+- Legal claims cited/TBD: unchanged from `web-exploit` — the agentic
+  scenario's `legal-map.json` reuses the same, already-sourced entries
+  since it hits the same real endpoints with the same real payloads.
+- **3-consecutive-clean-runs gate: NOT met.** One clean run happened this
+  session; the gate requires three, on the actual demo laptop, not this
+  dev machine. **This scenario is not yet cleared to present live** — see
+  `ROADMAP.md` Phase 2's explicit "still open" list.
+- Projector legibility: inherits the already-fixed sizing from the
+  `web-exploit` pass below (same dashboard, same CSS) — the new pause/
+  speed controls and status pills were sized consistently but not
+  separately re-checked from lecture-hall distance.
+
+**Open risks / not yet done:**
+- The 3-run rehearsal gate itself, on the real laptop.
+- `bench-models.sh` re-run on the real laptop — the dev-machine numbers are
+  a strong signal, not the final working-agreement-#7 record.
+- The attacker's system prompt now states the intended chain order
+  explicitly, which is more deterministic than a fully open-ended agent —
+  a deliberate reliability trade-off, documented in
+  `specs/local-llm-agents.md`, but worth the founder knowing it was made.
+- A stray `ollama serve` process (not the `brew services` launchd job,
+  which didn't start cleanly in this sandboxed session — unclear if that's
+  a sandbox artifact or would recur on the real laptop) is what's actually
+  running Ollama for this session's testing. Worth confirming
+  `brew services start ollama` behaves normally in a regular interactive
+  session on the real machine before relying on it for the lecture.
+
+---
+
 ## 2026-08-22 (pre-lecture test) — Projector legibility fixed; wifi test deferred by founder
 
 **What:** Founder asked to run the two remaining pre-lecture checks live.

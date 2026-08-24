@@ -17,6 +17,22 @@ LEGAL_MAP_PATH = os.environ.get("LEGAL_MAP_PATH", "/data/legal-map.json")
 PORT = int(os.environ.get("PORT", "8080"))
 LOCK = threading.Lock()
 
+# Pause/speed control plane for the agentic scenario (specs/local-llm-agents.md
+# "Pause / speed control"). Scenario-agnostic like everything else here --
+# scripted scenarios simply never read /control, so this is a no-op for them.
+CONTROL_LOCK = threading.Lock()
+# attacker_finished: set by run-agentic.sh once the attacker brain loop
+# exits, so the defender's separate, independently-polling process knows
+# to wrap up its reactive loop and move to the final incident report
+# instead of watching for up to its own RUN_TIMEOUT. See
+# specs/local-llm-agents.md's "End-of-run incident report" section.
+CONTROL_STATE = {"paused": False, "delay_ms": 3000, "attacker_finished": False}
+
+# Per-actor "thinking..." status for the agentic scenario's brain loops --
+# purely cosmetic (drives the dashboard's status pill), never gates logic.
+STATUS_LOCK = threading.Lock()
+STATUS = {"attacker": "idle", "defender": "idle"}
+
 INDEX_HTML = """<!doctype html>
 <html>
 <head>
@@ -91,10 +107,39 @@ INDEX_HTML = """<!doctype html>
   .event .actor-tag { font-weight: 700; letter-spacing: 0.5px; }
   .event.attacker .actor-tag { color: var(--attacker); }
   .event.defender .actor-tag { color: var(--defender); }
-  .event .desc { font-size: 27px; line-height: 1.35; }
+  .event .desc { font-size: 27px; line-height: 1.35; white-space: pre-line; }
+  /* The end-of-run incident report (specs/local-llm-agents.md) is a
+     multi-line block, not a one-line action description -- the normal
+     27px sizing would make it unreadably huge. */
+  .event.report { border-left-color: var(--legal); }
+  .event.report .desc { font-size: 18px; line-height: 1.5; }
+  .event .reasoning { font-size: 19px; color: var(--dim); font-style: italic; margin-top: 8px; }
   .event .technique { display:inline-block; margin-top: 10px; font-size: 17px; background:#1c2634; color: var(--dim); padding: 4px 10px; border-radius: 6px; }
   .sev-critical { box-shadow: 0 0 0 3px var(--crit) inset; }
   .sev-high { box-shadow: 0 0 0 3px var(--high) inset; }
+
+  /* Agentic-scenario controls -- no-ops for the scripted scenario, which
+     never calls postControl/renders a "thinking" state (see
+     specs/local-llm-agents.md "Pause / speed control"). */
+  .controls { display: flex; align-items: center; gap: 14px; }
+  .status-pill {
+    font-size: 16px; color: var(--dim); background: #1c2634;
+    padding: 6px 12px; border-radius: 20px; letter-spacing: 0.5px;
+  }
+  .status-pill.thinking { color: var(--text); }
+  .status-pill.thinking::before {
+    content: ""; display: inline-block; width: 8px; height: 8px; margin-right: 8px;
+    border-radius: 50%; background: currentColor; animation: pulse 1s ease-in-out infinite;
+  }
+  #status-attacker.thinking { color: var(--attacker); }
+  #status-defender.thinking { color: var(--defender); }
+  @keyframes pulse { 0%,100% { opacity: 0.3; } 50% { opacity: 1; } }
+  #pause-btn, #speed-select {
+    font-size: 16px; font-family: inherit; color: var(--text);
+    background: #1c2634; border: 1px solid var(--border); border-radius: 6px;
+    padding: 7px 14px; cursor: pointer;
+  }
+  #pause-btn.paused { color: var(--legal); border-color: var(--legal); }
 
   .legal-card {
     border-radius: 10px;
@@ -116,7 +161,17 @@ INDEX_HTML = """<!doctype html>
 <body>
 <header>
   <div><h1>CYBER RANGE</h1><span class="scenario" id="scenario-name">waiting for scenario...</span></div>
-  <div style="color:var(--dim); font-size:17px;">event stream: live</div>
+  <div class="controls">
+    <span class="status-pill" id="status-attacker">ATTACKER idle</span>
+    <span class="status-pill" id="status-defender">DEFENDER idle</span>
+    <button id="pause-btn">Pause</button>
+    <select id="speed-select" title="Pacing between agent turns (agentic scenario only)">
+      <option value="6000">Slow</option>
+      <option value="3000" selected>Normal</option>
+      <option value="1000">Fast</option>
+      <option value="0">Instant</option>
+    </select>
+  </div>
 </header>
 <div class="cols">
   <div class="col" id="tech-col">
@@ -130,14 +185,54 @@ INDEX_HTML = """<!doctype html>
 </div>
 <script>
 let lastCount = -1;
+let paused = false;
+
 async function poll() {
   try {
-    const res = await fetch('/events');
-    const data = await res.json();
+    const [evRes, ctrlRes, statusRes] = await Promise.all([
+      fetch('/events'), fetch('/control'), fetch('/status')
+    ]);
+    const data = await evRes.json();
     render(data.events || [], data.legal_map || {});
+    renderControl(await ctrlRes.json());
+    renderStatus(await statusRes.json());
   } catch (e) { /* keep polling silently */ }
   setTimeout(poll, 1000);
 }
+
+function renderControl(control) {
+  paused = !!control.paused;
+  const btn = document.getElementById('pause-btn');
+  btn.textContent = paused ? 'Resume' : 'Pause';
+  btn.classList.toggle('paused', paused);
+  const sel = document.getElementById('speed-select');
+  // Don't stomp the presenter's in-progress selection.
+  if (document.activeElement !== sel) sel.value = String(control.delay_ms ?? 3000);
+}
+
+function renderStatus(status) {
+  for (const actor of ['attacker', 'defender']) {
+    const el = document.getElementById('status-' + actor);
+    const state = (status && status[actor]) || 'idle';
+    el.textContent = actor.toUpperCase() + ' ' + state;
+    el.classList.toggle('thinking', state === 'thinking');
+  }
+}
+
+async function postControl(body) {
+  try {
+    await fetch('/control', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+  } catch (e) { /* next poll will re-sync either way */ }
+}
+
+document.getElementById('pause-btn').addEventListener('click', () => postControl({ paused: !paused }));
+document.getElementById('speed-select').addEventListener('change', e =>
+  postControl({ delay_ms: parseInt(e.target.value, 10) })
+);
 
 function render(events, legalMap) {
   if (events.length === lastCount) return;
@@ -157,9 +252,11 @@ function render(events, legalMap) {
 
   techEl.innerHTML = events.slice().reverse().map(ev => {
     const sevClass = ev.severity ? ('sev-' + ev.severity) : '';
-    return `<div class="event ${ev.actor || ''} ${sevClass}">
+    const reportClass = ev.step_id === 'incident-report' ? 'report' : '';
+    return `<div class="event ${ev.actor || ''} ${sevClass} ${reportClass}">
       <div class="top"><span class="actor-tag">${(ev.actor || 'system').toUpperCase()}</span><span>${ev.ts || ''}</span></div>
       <div class="desc">${escapeHtml(ev.description || ev.step_id || '')}</div>
+      ${ev.reasoning ? `<div class="reasoning">&ldquo;${escapeHtml(ev.reasoning)}&rdquo;</div>` : ''}
       ${ev.attack_technique_id ? `<div class="technique">ATT&amp;CK ${ev.attack_technique_id}</div>` : ''}
     </div>`;
   }).join('');
@@ -252,28 +349,80 @@ class Handler(BaseHTTPRequestHandler):
             self.wfile.write(body)
         elif self.path == "/events":
             self._send_json({"events": read_events(), "legal_map": read_legal_map()})
+        elif self.path == "/control":
+            with CONTROL_LOCK:
+                self._send_json(dict(CONTROL_STATE))
+        elif self.path == "/status":
+            with STATUS_LOCK:
+                self._send_json(dict(STATUS))
         elif self.path == "/health":
             self._send_json({"ok": True})
         else:
             self.send_response(404)
             self.end_headers()
 
+    def _read_json_body(self):
+        length = int(self.headers.get("Content-Length", 0) or 0)
+        raw = self.rfile.read(length) if length else b""
+        return json.loads(raw) if raw else {}
+
     def do_POST(self):
         if self.path == "/events":
-            length = int(self.headers.get("Content-Length", 0) or 0)
-            raw = self.rfile.read(length) if length else b""
             try:
-                ev = json.loads(raw)
+                ev = self._read_json_body()
             except json.JSONDecodeError:
                 self._send_json({"error": "bad json"}, 400)
                 return
             ev.setdefault("ts", time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()))
             append_event(ev)
             self._send_json({"ok": True})
+        elif self.path == "/control":
+            # Presenter's pause/speed controls (UI), each brain loop's
+            # per-turn check, and run-agentic.sh's end-of-run signal
+            # (agentic scenario only) all hit this. Only known keys are
+            # ever accepted -- see specs/local-llm-agents.md "Pause / speed
+            # control" and "End-of-run incident report".
+            try:
+                body = self._read_json_body()
+            except json.JSONDecodeError:
+                self._send_json({"error": "bad json"}, 400)
+                return
+            with CONTROL_LOCK:
+                if "paused" in body:
+                    CONTROL_STATE["paused"] = bool(body["paused"])
+                if "attacker_finished" in body:
+                    CONTROL_STATE["attacker_finished"] = bool(body["attacker_finished"])
+                if "delay_ms" in body:
+                    try:
+                        CONTROL_STATE["delay_ms"] = max(0, int(body["delay_ms"]))
+                    except (TypeError, ValueError):
+                        self._send_json({"error": "delay_ms must be an integer"}, 400)
+                        return
+                self._send_json(dict(CONTROL_STATE))
+        elif self.path == "/status":
+            try:
+                body = self._read_json_body()
+            except json.JSONDecodeError:
+                self._send_json({"error": "bad json"}, 400)
+                return
+            actor = body.get("actor")
+            if actor not in ("attacker", "defender"):
+                self._send_json({"error": "actor must be 'attacker' or 'defender'"}, 400)
+                return
+            with STATUS_LOCK:
+                STATUS[actor] = str(body.get("state", "idle"))
+                self._send_json(dict(STATUS))
         elif self.path == "/reset":
             os.makedirs(os.path.dirname(EVENTS_PATH), exist_ok=True)
             with LOCK:
                 open(EVENTS_PATH, "w").close()
+            with CONTROL_LOCK:
+                CONTROL_STATE["paused"] = False
+                CONTROL_STATE["delay_ms"] = 3000
+                CONTROL_STATE["attacker_finished"] = False
+            with STATUS_LOCK:
+                STATUS["attacker"] = "idle"
+                STATUS["defender"] = "idle"
             self._send_json({"ok": True})
         else:
             self.send_response(404)

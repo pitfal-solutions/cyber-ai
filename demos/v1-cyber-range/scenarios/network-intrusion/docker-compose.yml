@@ -1,0 +1,101 @@
+# Run from the demos/v1-cyber-range project root (see ../../run.sh):
+#   docker compose -f core/docker-compose.core.yml -f scenarios/network-intrusion/docker-compose.yml up -d
+# The `cyberrange_net` network and `cyberrange_events` volume are declared
+# in the core file and merged in automatically. Build contexts below are
+# written relative to the project root -- see scenarios/web-exploit/
+# docker-compose.yml's header comment for why.
+#
+# Three separate target hosts, not one multi-service box -- the attacker
+# genuinely has to discover multiple hosts on the segment (a real nmap
+# sweep, not one target's port list) before picking a vector. None publish
+# a host port -- same pattern as juice-shop in scenarios/web-exploit/,
+# reachable only through the attacker's own network position. See
+# specs/network-intrusion.md.
+
+services:
+  ssh-host:
+    build: ./scenarios/network-intrusion/targets/ssh-host
+    container_name: ni-ssh-host
+    restart: unless-stopped
+    networks:
+      - cyberrange_net
+    volumes:
+      - ni_service_logs:/logs
+
+  ftp-host:
+    build: ./scenarios/network-intrusion/targets/ftp-host
+    container_name: ni-ftp-host
+    restart: unless-stopped
+    networks:
+      - cyberrange_net
+    volumes:
+      - ni_service_logs:/logs
+
+  smb-host:
+    build: ./scenarios/network-intrusion/targets/smb-host
+    container_name: ni-smb-host
+    restart: unless-stopped
+    networks:
+      - cyberrange_net
+    volumes:
+      - ni_service_logs:/logs
+
+  detector:
+    build: ./scenarios/network-intrusion/detector
+    container_name: ni-detector
+    restart: unless-stopped
+    depends_on:
+      - ssh-host
+      - ftp-host
+      - smb-host
+    networks:
+      - cyberrange_net
+    volumes:
+      - cyberrange_events:/data
+      # Same real-log pattern as scenarios/web-exploit/detector -- tails
+      # each target's own real log (real OpenSSH auth log, real Samba log,
+      # and ftp-host's own real connection log), doesn't know the
+      # attacker's script in advance, only reacts to real traffic.
+      - ni_service_logs:/logs:ro
+    environment:
+      - EVENTS_API=http://range-dashboard:8080/events
+
+  tool-api:
+    build:
+      context: ./scenarios/network-intrusion
+      dockerfile: tool-api/Dockerfile
+    container_name: ni-tool-api
+    restart: unless-stopped
+    depends_on:
+      - ssh-host
+      - ftp-host
+      - smb-host
+    networks:
+      - cyberrange_net
+      - cyberrange_view
+    # Published so the host-side brain processes (scenarios/network-intrusion/
+    # brain/, NOT containerized -- see specs/architecture.md's "Local LLM
+    # runtime") can reach the constrained action menu the same way the
+    # presenter's browser already reaches the dashboard.
+    ports:
+      - "127.0.0.1:9100:9100"
+    volumes:
+      - cyberrange_events:/data
+      # For the end-of-run incident report (tool_investigate_incident) to
+      # read the real service logs -- see specs/network-intrusion.md.
+      - ni_service_logs:/logs:ro
+    environment:
+      - EVENTS_API=http://range-dashboard:8080/events
+      - PORT=9100
+      - SSH_HOST=ssh-host
+      - FTP_HOST=ftp-host
+      - SMB_HOST=smb-host
+      - SERVICE_LOG_DIR=/logs
+
+networks:
+  cyberrange_net:
+    name: cyberrange_net
+
+volumes:
+  ni_service_logs:
+    name: ni_service_logs

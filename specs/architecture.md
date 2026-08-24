@@ -29,7 +29,16 @@ demos/v1-cyber-range/
       detector/                 # tails that log, pattern-matches, posts real alert events
       attacker/                 # the verified, deterministic exploit chain
 
-    agentic/                    # Phase 2 — stretch goal, not built yet
+    agentic/                    # Phase 2 — in build, 2026-08-22
+      docker-compose.yml        # Juice Shop + proxy + detector (reused) + tool-api
+      legal-map.json
+      tool-api/                 # constrained action menu, HTTP endpoints ("hands")
+      brain/                    # host-side, NOT a container — common.py (shared
+                                 # Ollama/tool-api/dashboard helpers), attacker_agent.py,
+                                 # defender_agent.py (LLM tool-calling loop via
+                                 # host-native Ollama, see local-llm-agents.md)
+      bench-models.sh           # on-machine model memory/latency check
+      run-agentic.sh / reset.sh
     ransomware-lateral/         # Phase 3 — not built yet
     phishing-atk/               # Phase 3 — not built yet
 ```
@@ -101,7 +110,11 @@ dashboard and legal-overlay panel don't need per-scenario logic:
   "attack_technique_id": "T1190",     // MITRE ATT&CK
   "actor": "attacker",                 // attacker | defender
   "description": "Crafted login payload bypasses authentication",
-  "legal_ref": "cfaa-1030a2"           // key into legal-map.yaml
+  "legal_ref": "cfaa-1030a2",          // key into legal-map.yaml
+  "reasoning": "Login form didn't sanitize the username field"  // optional,
+                                        // agentic scenario only — a short
+                                        // one-liner, not raw chain-of-thought,
+                                        // see local-llm-agents.md
 }
 ```
 
@@ -115,7 +128,25 @@ dashboard and legal-overlay panel don't need per-scenario logic:
 
 ## Local LLM runtime (Phase 2 only)
 
-Ollama runs as a core service (so any future agentic scenario can use it
-without redefining it), but no scenario in Phase 1 depends on it. See
-[local-llm-agents.md](local-llm-agents.md) for the Phase 2 design and
-working agreement #7 for why exact models aren't pinned here.
+**Corrected 2026-08-22** — Ollama runs as a **host-native process**
+(`ollama serve`), not a core Docker service as originally drafted here.
+Docker Desktop on macOS cannot pass the Apple Silicon GPU through to a
+container, so a dockerized Ollama would mean CPU-only inference; running it
+on the host keeps Metal acceleration. This also avoids a second network leg
+for attacker/defender containers to reach a host service, which would
+undercut the isolation invariant below (an `internal: true` network blocks
+*all* outbound routing, including to the host, not just the internet — see
+the network isolation section above and REVIEW.md).
+
+The `scenarios/agentic/` module (Phase 2) instead splits **brain** (the LLM
+call + tool-selection loop, host-side Python, talks to Ollama on
+`127.0.0.1:11434`) from **hands** (a new `tool-api` container, containerized
+on `cyberrange_net` + `cyberrange_view` exactly like the existing
+`web-exploit/attacker/` container, exposing the constrained action menu as
+HTTP endpoints published to `127.0.0.1`). The brain reaches the sandbox only
+through that published port — the same trust boundary the presenter's
+browser already uses to reach the dashboard, not a new one. See
+[local-llm-agents.md](local-llm-agents.md) for the full Phase 2 design,
+including the pause/speed control plane (a `/control` endpoint added to
+`range-dashboard`) and working agreement #7 for why exact models aren't
+pinned here.

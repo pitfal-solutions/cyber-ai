@@ -1,0 +1,11 @@
+CONFIDENTIAL -- HR / Q3 restructuring draft, do not distribute
+
+Draft list of positions under review for the Q3 restructuring. Not final,
+not yet communicated to affected employees or their managers. This file
+should never have been placed on a share with guest access enabled.
+
+- Engineering: 2 contractor roles not renewed
+- Support: 1 headcount reduction pending budget approval
+- Ops: role TBD pending VP sign-off
+
+Next steps: legal review before any communication goes out.
