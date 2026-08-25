@@ -41,6 +41,38 @@ not a log.
 
 ---
 
+## 2026-08-24 (tooling) — One-command machine setup script + README run-instructions for all 3 scenarios
+
+Added `demos/v1-cyber-range/setup.sh`: a single idempotent script covering
+everything previously scattered across `demos/README.md`'s two "One-time
+setup" prose sections — installs Colima/Docker CLI/Compose/Buildx/Ollama
+via Homebrew, starts Colima with the documented resource flags, starts
+Ollama, pulls both default agentic-scenario models, and pre-builds/pulls
+every scenario's Docker images (`web-exploit`, `agentic`,
+`network-intrusion`) so nothing needs the network at showtime — directly
+serving the "runs with zero internet at showtime" quality bar. Every step
+checks current state first, so it's safe to re-run.
+
+Verified with a live run on the existing demo-development machine (already
+had everything installed): clean exit, all three scenarios' images
+built/pulled, matches what `demos/README.md` documents by hand. Homebrew
+itself is checked but **not** auto-installed — installing it needs an
+interactive sudo prompt from the user, so the script prints the official
+install command and exits rather than attempting it non-interactively.
+
+Also updated `README.md`'s "Quick start" (working agreement #8 — README
+stays in sync) to point at `setup.sh` for one-time setup and to add
+run/reset instructions for `agentic` and `network-intrusion`, which were
+previously only documented in `demos/README.md`, not the public front
+door.
+
+**Open item:** noticed `ni-*` and `range-dashboard` containers already
+running on this machine from a prior session's network-intrusion rehearsal
+(REVIEW.md above logs 4 rehearsal runs on 2026-08-24) — left untouched,
+not part of this change.
+
+---
+
 ## 2026-08-24 (Phase 2c) — New network-intrusion scenario: real OS/server attacks, not just web
 
 **What:** Founder feedback: even after real tuning (defender restraint,

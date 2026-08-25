@@ -43,37 +43,88 @@ over and over — in rehearsal, in class, or by you, right now.
 
 ## Quick start
 
-Requires [Docker](https://docs.docker.com/) (any way you like to run it —
-Docker Desktop, [Colima](https://github.com/abiosoft/colima), etc.) and
-`docker compose`.
+Requires macOS. One-time setup (installs Colima, Docker CLI/Compose/Buildx,
+and Ollama via Homebrew; starts them; pulls the two default local-LLM
+models; pre-builds/pre-pulls every scenario's images so nothing needs the
+network at showtime):
 
 ```bash
 cd demos/v1-cyber-range
+./setup.sh
+```
+
+Safe to re-run — every step checks current state first. See the script's
+comments, or [demos/README.md](demos/README.md), for what it does and how
+to override the model pair (`ATTACKER_MODEL`/`DEFENDER_MODEL`).
+
+Three scenarios exist. All run from `demos/v1-cyber-range/`, all share the
+same dashboard (http://127.0.0.1:8080), and all reset to a clean slate with
+their own `reset.sh`.
+
+### `web-exploit` — the guaranteed, scripted scenario
+
+```bash
 ./run.sh web-exploit
 ```
 
-Then open:
-
-- **Dashboard** (the attack/defense timeline + the legal overlay):
-  http://127.0.0.1:8080
-- **Target app** (the live storefront being attacked, viewed through the
-  traffic-logging proxy): http://127.0.0.1:3000
-
-Give it a few seconds to boot, then trigger the attack on cue:
+Open the dashboard (http://127.0.0.1:8080) and the target app, through the
+traffic-logging proxy (http://127.0.0.1:3000) — give it a few seconds to
+boot. Then trigger the attack on cue:
 
 ```bash
 ./scenarios/web-exploit/run-attack.sh
 ```
 
-Watch it land on the dashboard in real time. When you're done, reset to a
-clean slate:
+Watch it land on the dashboard in real time. Reset when done:
 
 ```bash
 ./scenarios/web-exploit/reset.sh
 ```
 
-Full walkthrough, including how to speed up or slow down the pacing:
-[demos/README.md](demos/README.md).
+### `agentic` — two local LLMs vs. the same target app
+
+Stretch-goal scenario (see [Why scripted](#why-scripted-the-guaranteed-scenario-is)
+below) — needs Ollama running, which `./setup.sh` handles.
+
+```bash
+./run.sh agentic
+```
+
+Same dashboard URL, now with a Pause/Resume button and a speed selector.
+Target app is also reachable at http://127.0.0.1:3000. Start both AI brains
+when ready:
+
+```bash
+./scenarios/agentic/run-agentic.sh
+```
+
+Reset:
+
+```bash
+./scenarios/agentic/reset.sh
+```
+
+### `network-intrusion` — two local LLMs vs. a small real network
+
+Second stretch-goal scenario — same two-LLM structure, but the attacker
+targets three real Linux hosts (SSH, FTP, SMB) with real tools (`nmap`,
+`hydra`, `smbclient`) instead of a web app. No host port for the targets
+themselves — only the dashboard is reachable from your browser.
+
+```bash
+./run.sh network-intrusion
+cd scenarios/network-intrusion
+./run-network-intrusion.sh
+```
+
+Reset:
+
+```bash
+./scenarios/network-intrusion/reset.sh
+```
+
+Full walkthrough for every scenario, including how to speed up or slow
+down the pacing: [demos/README.md](demos/README.md).
 
 ## How it's built
 
