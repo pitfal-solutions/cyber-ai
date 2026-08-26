@@ -41,6 +41,38 @@ not a log.
 
 ---
 
+## 2026-08-25 (bugfix) — Fixed orphaned containers left behind when switching scenarios
+
+**What:** Founder reported sometimes seeing an orphaned container on the
+demo laptop. Root cause: no compose file in this repo sets an explicit
+project `name`, so `run.sh`'s `--project-directory .` gives all 3 scenarios
+the same implicit compose project (the directory name). Bringing up a
+different scenario without first running the previous one's `reset.sh`
+left its containers running, unrecognized by the new `up`/`down` — Docker
+Compose calls these "orphans" and does not remove them unless
+`--remove-orphans` is passed. Confirmed live: after a Colima restart,
+`ni-*` containers from an earlier `network-intrusion` run came back
+(`restart: unless-stopped`) and were still present when `web-exploit` was
+brought up next.
+
+**Fix:** added `--remove-orphans` to the `up` call in `run.sh` and to both
+the `down`/`up` calls in all three `reset.sh` scripts. Verified live:
+running `./run.sh web-exploit` while `ni-*` containers were up cleanly
+stopped/removed all of them, leaving exactly `juice-shop`, `range-proxy`,
+`range-detector`, `range-dashboard`; a full `reset.sh` cycle afterward
+completed in ~22s (within the "under a minute" bar) and `down -v
+--remove-orphans` left zero containers behind.
+
+**Not changed:** did not add explicit `name:` fields to give each
+scenario its own compose project — that would isolate them but also mean
+`web-exploit` and `agentic` (which intentionally share the same Juice Shop
+setup and dashboard) could run simultaneously without conflict, which
+isn't how this repo is meant to be demoed (one scenario live at a time,
+same dashboard). `--remove-orphans` matches the actual usage pattern with
+a smaller change.
+
+---
+
 ## 2026-08-24 (tooling) — One-command machine setup script + README run-instructions for all 3 scenarios
 
 Added `demos/v1-cyber-range/setup.sh`: a single idempotent script covering

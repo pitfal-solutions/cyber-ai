@@ -11,10 +11,13 @@ cd "$(dirname "$0")/../.."
 COMPOSE=(docker compose --project-directory . -f core/docker-compose.core.yml -f scenarios/network-intrusion/docker-compose.yml)
 
 echo "== tearing down (containers + volumes) =="
-"${COMPOSE[@]}" down -v
+# --remove-orphans: no compose file sets an explicit project `name`, so all
+# 3 scenarios share one implicit project -- this also cleans up any other
+# scenario's containers left running from a switch without a prior reset.
+"${COMPOSE[@]}" down -v --remove-orphans
 
 echo "== bringing up clean =="
-"${COMPOSE[@]}" up -d --build
+"${COMPOSE[@]}" up -d --build --remove-orphans
 
 echo ""
 echo "Clean. Dashboard: http://127.0.0.1:8080"

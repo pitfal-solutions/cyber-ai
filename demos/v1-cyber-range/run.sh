@@ -17,7 +17,11 @@ echo "== bringing up core + ${SCENARIO} =="
 # everything except it -- see run-attack.sh to trigger the attack on cue.
 # --project-directory pins build-context resolution to this directory
 # regardless of which -f file docker compose treats as "first".
-docker compose --project-directory . -f core/docker-compose.core.yml -f "${SCENARIO_DIR}/docker-compose.yml" up -d --build
+# --remove-orphans: no compose file here sets an explicit project `name`,
+# so all 3 scenarios share one implicit project (this directory's name) --
+# switching scenarios without resetting the previous one first otherwise
+# leaves its containers behind as unrecognized "orphans" of this project.
+docker compose --project-directory . -f core/docker-compose.core.yml -f "${SCENARIO_DIR}/docker-compose.yml" up -d --build --remove-orphans
 
 echo ""
 echo "Dashboard:  http://127.0.0.1:8080"
