@@ -15,6 +15,7 @@ cyberrange_net that ever touches the targets. See specs/architecture.md's
 """
 import json
 import os
+import random
 import re
 import socket
 import subprocess
@@ -34,6 +35,18 @@ SERVICE_LOG_DIR = os.environ.get("SERVICE_LOG_DIR", "/logs")
 WORDLIST = os.path.join(os.path.dirname(__file__), "wordlist.txt")
 SSH_USER = "svc-backup"  # the one weak-password account seeded on ssh-host
 
+# Probability that a gate-passing block actually takes. Tuning the timing
+# race between the two LLMs to a stable ~50/50 proved impossible -- the ratio
+# swings hard with the presenter's live speed setting (defender wins nearly
+# every run at Normal, attacker at Instant). So the *outcome* of a block is
+# deliberately a coin flip: the defender still has to earn the block attempt
+# (real detection, real restraint gate -- all the real machinery is intact),
+# but whether that block lands or the attacker slips it is resolved once per
+# run by this probability. Set to 0.0/1.0 to force a scripted-style outcome
+# for a rehearsed run; default 0.5 for a genuine toss-up. See REVIEW.md
+# "defender rebalance" and specs/network-intrusion.md.
+BLOCK_SUCCESS_PROB = float(os.environ.get("BLOCK_SUCCESS_PROB", "0.5"))
+
 LOCK = threading.Lock()
 SESSION = {
     "known_hosts": {},  # ip -> hostname, from network_sweep
@@ -46,6 +59,7 @@ SESSION = {
     "decoy_probes_sent": 0,
     "ssh_credentials": {},  # ip -> cracked password, from ssh_bruteforce
     "ftp_compromised": {},  # ip -> True once vsftpd_backdoor got a real shell
+    "block_outcome": None,  # None until the one-per-run coin flip; then True/False
 }
 
 
@@ -477,7 +491,40 @@ def tool_flag_session(params):
     return {"success": True, "summary": "Flagged."}
 
 
-MIN_SIGNALS_BEFORE_BLOCK = 2
+# How many prior signals (flags/escalations) the defender must have raised
+# before block_attacker actually attempts a block rather than downgrading to
+# a flag. Two tiers, because a confirmed root shell warrants less hesitation
+# than a brute-force still in progress. These are NOT the balance lever --
+# timing/threshold tuning was measured swinging to one extreme or the other
+# and never a stable 50/50 (see REVIEW.md "defender rebalance"); the actual
+# balance comes from BLOCK_SUCCESS_PROB above. Kept low (1, not the pre-
+# rebalance 2) for a different reason: so the defender reliably *reaches* a
+# block attempt in time for the coin to be flipped, instead of the attacker
+# finishing first by default.
+MIN_SIGNALS_BEFORE_BLOCK = 1           # non-critical alert (brute-force, SMB)
+CRITICAL_MIN_SIGNALS_BEFORE_BLOCK = 1  # confirmed root shell / successful login
+
+
+def _critical_detection_present():
+    """True if the independent detector has already fired a CRITICAL alert
+    (a confirmed root shell via the vsftpd backdoor, or a successful SSH
+    login after a brute-force burst). Read from the real event stream, the
+    same source check_alerts uses -- grounded in what the detector actually
+    saw, not the defender model's self-report, so the instant-block bypass
+    below can't be talked into firing early by a hallucinated 'critical'."""
+    try:
+        with urllib.request.urlopen(EVENTS_API, timeout=5) as resp:
+            data = json.loads(resp.read().decode())
+    except (urllib.error.URLError, json.JSONDecodeError):
+        return False
+    for e in data.get("events", []):
+        if (
+            e.get("actor") == "defender"
+            and str(e.get("step_id", "")).startswith("detect-")
+            and e.get("severity") == "critical"
+        ):
+            return True
+    return False
 
 
 def tool_block_attacker(params):
@@ -488,11 +535,18 @@ def tool_block_attacker(params):
     # access-control response (e.g. a firewall rule), not literal system
     # remediation -- this doesn't patch the SSH weak password, the vsftpd
     # backdoor, or the SMB misconfiguration, it just stops this source from
-    # reaching them. Same defender-signals gate as scenarios/agentic (real
-    # SOC restraint, not a hair-trigger) -- see tool-api's
-    # MIN_SIGNALS_BEFORE_BLOCK there for the rehearsal finding that
-    # motivated this.
-    if SESSION["defender_signals"] < MIN_SIGNALS_BEFORE_BLOCK:
+    # reaching them.
+    #
+    # A confirmed CRITICAL detection (real root shell / successful login,
+    # read from the actual detector stream) lowers the bar to block, but
+    # doesn't remove it entirely -- the defender still needs one prior
+    # signal, i.e. to have already been reacting to this attacker, before a
+    # critical alert lets it block. That one-reaction head start is what
+    # keeps the fast backdoor->plant_marker path winnable for the attacker
+    # at faster paces (see REVIEW.md "defender rebalance").
+    critical = _critical_detection_present()
+    needed = CRITICAL_MIN_SIGNALS_BEFORE_BLOCK if critical else MIN_SIGNALS_BEFORE_BLOCK
+    if SESSION["defender_signals"] < needed:
         with LOCK:
             SESSION["defender_signals"] += 1
         post_event(
@@ -502,12 +556,50 @@ def tool_block_attacker(params):
         )
         return {"success": True, "summary": "Not enough evidence yet to block -- flagged instead."}
 
+    # The defender has earned a block attempt. Whether it actually lands is
+    # a one-per-run coin flip (see BLOCK_SUCCESS_PROB) -- resolved once and
+    # cached, so a failed block isn't quietly retried into an eventual
+    # success (which would make the defender win almost every run). This is
+    # the deliberate randomness that keeps the two-LLM match a real toss-up
+    # regardless of the presenter's speed setting; it is NOT a detection or
+    # exploitation result, and the on-screen text below says so plainly so
+    # nobody in the room mistakes a coin flip for a real technical outcome.
+    with LOCK:
+        if SESSION["block_outcome"] is None:
+            SESSION["block_outcome"] = random.random() < BLOCK_SUCCESS_PROB
+        landed = SESSION["block_outcome"]
+
+    if not landed:
+        post_event(
+            scenario="network-intrusion", actor="attacker", step_id="block-evaded", severity="high",
+            description=(
+                "The defender moved to block this source, but the block did not take and the "
+                "attacker kept its access. (Demo note: whether a block lands is deliberately "
+                "left to chance here, ~50/50, so neither side wins by default -- it is not a "
+                "real detection or evasion result.)"
+            ),
+            reasoning=params.get("reasoning"),
+        )
+        return {
+            "success": False,
+            "summary": "Block attempted but it did not take -- the attacker still has access.",
+        }
+
     with LOCK:
         SESSION["blocked"] = True
         SESSION["times_blocked"] += 1
+    why = (
+        "a confirmed critical detection (real shell / successful login), on top of already-flagged activity, justified blocking now"
+        if critical else
+        "enough suspicious activity had been flagged first"
+    )
     post_event(
         scenario="network-intrusion", actor="defender", step_id="attacker-blocked", severity="high",
-        description="Blocked this source at the network level -- further exploitation attempts from it will be refused. This is access control, not remediation: the underlying weaknesses are still there.",
+        description=(
+            f"Blocked this source at the network level -- {why}. Further exploitation attempts "
+            "from it will be refused. This is access control, not remediation: the underlying "
+            "weaknesses are still there."
+        ),
         reasoning=params.get("reasoning"),
     )
     return {"success": True, "summary": "Source blocked."}
@@ -751,7 +843,8 @@ class Handler(BaseHTTPRequestHandler):
                 SESSION.update({
                     "known_hosts": {}, "scanned_ports": {}, "blocked": False, "times_blocked": 0,
                     "defender_signals": 0, "acknowledged_alerts": [], "tried_smb_files": {},
-                    "decoy_probes_sent": 0, "ssh_credentials": {},
+                    "decoy_probes_sent": 0, "ssh_credentials": {}, "ftp_compromised": {},
+                    "block_outcome": None,
                 })
             self._send_json({"ok": True})
             return

@@ -116,6 +116,14 @@ backdoor — actually write an "ATTACKER WON" marker file to the host's disk
 and read it back to prove the compromise (a real write, cleaned up by
 `reset.sh` like everything else).
 
+Either side can win. The defender still has to earn a block through real
+detection, but whether that block actually lands is a deliberate ~50/50
+coin flip (`BLOCK_SUCCESS_PROB`) rather than a foregone conclusion — a
+failed block is labelled on screen as the chance outcome it is, never as a
+real evasion. See [specs/network-intrusion.md](specs/network-intrusion.md)
+("Why block success is a coin flip") for the reasoning, and set
+`BLOCK_SUCCESS_PROB` to `0.0`/`1.0` to force a scripted outcome.
+
 ```bash
 ./run.sh network-intrusion
 cd scenarios/network-intrusion

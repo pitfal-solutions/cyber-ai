@@ -41,6 +41,54 @@ not a log.
 
 ---
 
+## 2026-08-25 (balance) — network-intrusion: defender rebalanced to ~50/50 via a coin-flip block outcome
+
+**What:** Founder reported the defender almost always lost (the earlier
+restraint gate over-corrected) and asked to get closer to a 50/50 attacker-
+vs-defender win ratio. Tried timing/logic tuning first, then — at the
+founder's suggestion — a coin flip on block success.
+
+**What I tried, and measured (harness in scratchpad, real two-LLM runs):**
+1. Full instant-block on any confirmed critical alert (root shell /
+   successful login) + lower the signal gate 2→1. Measured **5/6 defender**
+   at Normal pace — over-corrected the other way.
+2. Dial back: critical alert still needs one prior signal (a one-reaction
+   head start for the attacker) instead of an instant block. Measured
+   **7/7 defender** at Normal pace — still not converging.
+   Root cause: the ratio is dominated by the presenter's live speed setting,
+   not by these thresholds. At Normal pace the defender simply has enough
+   reaction windows to win almost always; at Instant the attacker outruns
+   it. No single timing tune holds across the paces a presenter actually
+   uses, so timing-only tuning can't produce a stable 50/50.
+3. **Coin flip on block outcome (shipped).** Whether an *earned* block
+   actually lands is decided once per run by `BLOCK_SUCCESS_PROB` (default
+   0.5), cached so a failed block isn't retried into an eventual success.
+   Everything real stays real — detection, the restraint gate, the actual
+   exploitation; only "did the block take" is randomised.
+
+**Honesty guard (this is a teaching surface):** a failed block posts a
+`block-evaded` event whose on-screen text explicitly says the outcome was
+left to chance (~50/50), NOT a real detection or evasion result — same bar
+as the legal citations (never show the room a guess dressed as a fact). The
+kept thresholds (`MIN_SIGNALS_BEFORE_BLOCK=1`, critical-alert bypass needing
+one prior signal) now serve a narrower purpose: make sure the defender
+reliably *reaches* a block attempt so the coin actually gets flipped, rather
+than the attacker finishing first by default.
+
+**Verified:** unit-level — forced 0.0 never blocks (and a retry stays
+evaded), forced 1.0 always blocks, 0.5 → 197/400 (0.49); the flip is cached
+per run. End-to-end — real two-LLM runs at Normal pace now show a genuine
+mix of both outcomes (previously 7/7 defender). Left a longer measurement
+running at push time to confirm the ratio. README + specs updated in the
+same change (working agreement #8).
+
+**Note:** kept as randomness in the *agentic* scenario only — consistent
+with working agreement #1 (the agentic scenarios are explicitly the
+non-deterministic stretch goals; the scripted web-exploit scenario, which
+ships to the lecture, is untouched and still fully deterministic).
+
+---
+
 ## 2026-08-25 (feature) — network-intrusion: attacker can plant a real "ATTACKER WON" marker file
 
 **What:** Founder asked for a visible win action — the attacker writing an

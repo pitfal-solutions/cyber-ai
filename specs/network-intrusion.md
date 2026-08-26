@@ -123,8 +123,37 @@ on purpose: a network-level block on a source is genuinely more effective
 than revoking one web-app session token (which doesn't patch anything).
 Recon tools stay available after a block; the exploitation tools don't, and
 there's no re-authentication bypass path in this domain the way there is in
-`scenarios/agentic`. Still gated on `defender_signals >= 2` (same code-level
-restraint mechanism, same rehearsal lesson) before it takes real effect.
+`scenarios/agentic`. It's gated on a restraint mechanism (the defender must
+have raised at least one prior signal — `MIN_SIGNALS_BEFORE_BLOCK`, with a
+lower bar once the detector has fired a confirmed critical alert), so the
+defender still can't hair-trigger a block on nothing.
+
+### Why block *success* is a coin flip
+
+Whether an earned block actually **lands** is decided by a one-per-run coin
+flip (`BLOCK_SUCCESS_PROB`, default `0.5`), not by the timing race between
+the two models. We tried to tune the timing to a stable ~50/50 attacker-vs-
+defender ratio and it isn't achievable: the ratio swings almost entirely on
+the presenter's live speed setting (at Normal pace the defender reacts fast
+enough to win nearly every run; at Instant the attacker outruns it), so no
+fixed timing tune holds across the paces a presenter actually uses live.
+Measured runs bore this out — every timing-only configuration landed at one
+extreme or the other, never in the middle.
+
+So the *outcome* of a block is randomised while **every other part stays
+real**: the detector still fires on real traffic, the defender still has to
+earn the block through real alerts and the restraint gate, and the attacker
+still does real exploitation. Only "did the firewall rule actually stop
+them, or did they already have enough of a foothold to slip it" is the toss-
+up — which is itself a real property of incident response, not pure
+invention. The flip is resolved once and cached per run (a failed block
+isn't silently retried into an eventual success, which would collapse back
+to the defender always winning). Crucially, a failed block is labelled on
+screen as a deliberate ~50/50 chance outcome, **not** a real detection or
+evasion result — same honesty bar as the legal citations: the room is never
+shown a coin flip dressed up as a technical fact. Set `BLOCK_SUCCESS_PROB`
+to `0.0` or `1.0` on the `tool-api` service to force a scripted outcome for
+a rehearsed run.
 
 ## Real bugs found by actually running it, not by review
 
