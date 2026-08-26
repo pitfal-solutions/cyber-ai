@@ -12,3 +12,9 @@ __pycache__/
 # Local runtime state (nothing here should be committed -- the whole point
 # of reset.sh is that this is disposable; see demos/README.md)
 demos/v1-cyber-range/**/*.jsonl
+
+# Incident-report evidence backups (real demo output, persisted on the host
+# on purpose so reset.sh's `down -v` can't destroy it -- see
+# demos/v1-cyber-range/evidence/README.md). Never committed either way.
+demos/v1-cyber-range/evidence/*
+!demos/v1-cyber-range/evidence/README.md

@@ -41,6 +41,39 @@ not a log.
 
 ---
 
+## 2026-08-25 (bugfix) — "Evidence preserved for trial" was being destroyed by the very reset it's supposed to survive
+
+**What:** Founder asked where `/data/evidence-...` (printed at the end of
+an agentic/network-intrusion incident report) actually lives, and whether
+it should be host-side + gitignored instead. Good catch, and it was worse
+than just hard to find: `tool_investigate_incident()` in both scenarios'
+`tool-api/server.py` was writing backups into `/data`, which is the
+`cyberrange_events` **Docker named volume** — and every `reset.sh` runs
+`docker compose down -v`, which deletes named volumes. Confirmed live:
+after running `reset.sh` for the orphaned-container fix above, `docker
+volume inspect cyberrange_events` returned "no such volume" — any evidence
+file written there was gone. "Evidence preserved for trial" was not true
+under this repo's own normal workflow (a reset between every rehearsal
+run).
+
+**Fix:** added a host bind mount (`./evidence:/evidence`, resolves to
+`demos/v1-cyber-range/evidence/` — see its README.md) to both scenarios'
+`tool-api` service, changed both `server.py`s to write backups there
+instead of `/data`, prefixed filenames with the scenario name (`evidence-
+agentic-...` / `evidence-network-intrusion-...`) since the folder is now
+shared and persistent across runs, and gitignored the folder's contents
+(keeping the README tracked).
+
+**Verified live:** brought up `agentic`, called `POST /investigate`
+directly against `tool-api` (no LLM run needed), confirmed the backup
+landed on the host at `demos/v1-cyber-range/evidence/evidence-agentic-
+events-<ts>.jsonl` owned by the real host user (not root — Colima's
+virtiofs UID mapping just works here), ran a full `reset.sh`, and
+confirmed the file was still there afterward. Deleted the test file before
+committing.
+
+---
+
 ## 2026-08-25 (bugfix) — Fixed orphaned containers left behind when switching scenarios
 
 **What:** Founder reported sometimes seeing an orphaned container on the

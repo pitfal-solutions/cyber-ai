@@ -639,7 +639,7 @@ def tool_investigate_incident():
     backed_up = []
     for label, src in (("events", EVENTS_LOG_PATH), ("access-log", ACCESS_LOG_PATH)):
         if os.path.exists(src):
-            dest = f"/data/evidence-{label}-{ts}.jsonl"
+            dest = f"/evidence/evidence-agentic-{label}-{ts}.jsonl"
             try:
                 shutil.copyfile(src, dest)
                 backed_up.append(dest)

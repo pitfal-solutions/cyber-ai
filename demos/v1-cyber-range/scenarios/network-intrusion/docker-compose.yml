@@ -84,6 +84,11 @@ services:
       # For the end-of-run incident report (tool_investigate_incident) to
       # read the real service logs -- see specs/network-intrusion.md.
       - ni_service_logs:/logs:ro
+      # Host bind mount, not the cyberrange_events volume -- reset.sh's
+      # `down -v` deletes that volume, which would silently destroy
+      # tool_investigate_incident()'s "evidence preserved for trial"
+      # backups before anyone could look at them. See evidence/README.md.
+      - ./evidence:/evidence
     environment:
       - EVENTS_API=http://range-dashboard:8080/events
       - PORT=9100

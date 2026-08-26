@@ -74,6 +74,11 @@ services:
       - "127.0.0.1:9000:9000"
     volumes:
       - cyberrange_events:/data
+      # Host bind mount, not the cyberrange_events volume -- reset.sh's
+      # `down -v` deletes that volume, which would silently destroy
+      # tool_investigate_incident()'s "evidence preserved for trial"
+      # backups before anyone could look at them. See evidence/README.md.
+      - ./evidence:/evidence
     environment:
       - TARGET=http://proxy:3000
       - JUICE_SHOP_HOST=juice-shop

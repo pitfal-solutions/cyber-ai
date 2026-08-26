@@ -498,7 +498,7 @@ def tool_investigate_incident():
     sources.append(("ssh-log", ssh_log))
     for label, src in sources:
         if os.path.exists(src):
-            dest = f"/data/evidence-{label}-{ts}.jsonl"
+            dest = f"/evidence/evidence-network-intrusion-{label}-{ts}.jsonl"
             try:
                 import shutil
                 shutil.copyfile(src, dest)
