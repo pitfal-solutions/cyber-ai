@@ -100,9 +100,23 @@ and pattern-matches, same fired-once/sliding-window style as
 | `ssh_bruteforce` | Real `hydra` run against a 10-entry wordlist | T1110.001 |
 | `ssh_shell` | Real `ssh`/`sshpass` login with cracked credentials, runs real enumeration commands | T1021.004 |
 | `vsftpd_backdoor` | Real protocol trigger + real shell, runs real enumeration commands | T1210 |
+| `plant_marker` | Reuses the real backdoor shell to actually write `/root/ATTACKER_WON.txt` to the host's real filesystem and `cat` it back to confirm — a real, verified write, gated on a prior successful `vsftpd_backdoor` on that host | T1491.001 |
 | `smb_enum` | Real `smbclient -L` (shares) + `ls` per share (files) | T1135 |
-| `smb_download` | Real `smbclient get` | T1039 |
+| `smb_download` | Real `smbclient get` (pulls the fictional `confidential-layoffs.txt` HR memo off the anonymous share) | T1039 |
 | `cover_tracks` | Real burst of decoy TCP connects through the real channel | T1070 |
+
+`plant_marker` exists to make the "read vs. write" distinction concrete for
+the room: `smb_download`/`ssh_shell` show an attacker *reading* data they
+shouldn't; `plant_marker` shows the same root shell *altering* the disk —
+the write access that, in a real breach, is what plants ransomware or
+destroys evidence. It writes one harmless marker instead, and reads it back
+so the "win" is a confirmed real file (visible with `docker exec ni-ftp-host
+cat /root/ATTACKER_WON.txt`), never a claimed one. Legally it reuses
+`cfaa-1030a2` — the same unauthorized-access event as the backdoor shell
+that enabled it — rather than asserting an unverified new citation for
+CFAA's separate damage subsection (§ 1030(a)(5)); see the legal-map note.
+`reset.sh`'s full container recreation wipes the marker, so reset-to-zero
+still holds.
 
 `block_attacker` here is **more final** than `scenarios/agentic`'s version,
 on purpose: a network-level block on a source is genuinely more effective

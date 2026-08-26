@@ -41,6 +41,42 @@ not a log.
 
 ---
 
+## 2026-08-25 (feature) — network-intrusion: attacker can plant a real "ATTACKER WON" marker file
+
+**What:** Founder asked for a visible win action — the attacker writing an
+"ATTACKER WON" file and/or exfiltrating a fake secret. The exfil half
+already existed (`smb_download` pulls the fictional `confidential-layoffs.txt`
+off the anonymous SMB share, contents shown on the dashboard), so only the
+marker was new. Added a `plant_marker` attacker tool: once `vsftpd_backdoor`
+has given a real root shell on the FTP host, it reuses that same real
+backdoor shell to `echo 'ATTACKER WON' > /root/ATTACKER_WON.txt` and `cat`
+it back, reporting success only on a confirmed read-back — a real write to
+the real container filesystem, not a claimed one. Gated on
+`SESSION["ftp_compromised"][ip]` (set on backdoor success), same
+"requires prior real compromise" pattern as `ssh_shell` needing
+`ssh_bruteforce`.
+
+**Why this framing:** it makes the read-vs-write distinction concrete for
+the room — the difference between an attacker *reading* data they shouldn't
+and *altering/destroying* it. Tagged MITRE T1491.001 (Defacement); reuses
+the verified `cfaa-1030a2` citation (same unauthorized-access event as the
+backdoor) rather than asserting CFAA's separate damage subsection
+§ 1030(a)(5), whose elements this demo hasn't verified against a source —
+recorded that reasoning in legal-map.json's `_note` per working agreement
+#4 (never assert an unverified citation on screen).
+
+**Verified live:** (1) gating — `plant_marker` before any shell correctly
+refuses; (2) `vsftpd_backdoor` → real root shell; (3) `plant_marker` writes
++ confirms, and `docker exec ni-ftp-host cat /root/ATTACKER_WON.txt` shows
+the real 13-byte file; (4) dashboard event tagged T1491.001 / cfaa-1030a2 /
+critical; (5) a full 14-turn real LLM attacker run (qwen2.5:7b) chose
+`plant_marker` on its own on turn 4, right after the backdoor; (6)
+`reset.sh` wipes the marker (fresh container) — reset-to-zero still holds.
+README + specs/network-intrusion.md updated in the same change (working
+agreement #8).
+
+---
+
 ## 2026-08-25 (bugfix) — "Evidence preserved for trial" was being destroyed by the very reset it's supposed to survive
 
 **What:** Founder asked where `/data/evidence-...` (printed at the end of

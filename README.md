@@ -109,7 +109,12 @@ Reset:
 Second stretch-goal scenario — same two-LLM structure, but the attacker
 targets three real Linux hosts (SSH, FTP, SMB) with real tools (`nmap`,
 `hydra`, `smbclient`) instead of a web app. No host port for the targets
-themselves — only the dashboard is reachable from your browser.
+themselves — only the dashboard is reachable from your browser. The
+attacker can steal a real (fictional) confidential file off the anonymous
+SMB share, and — once it has a real root shell via the CVE-2011-2523
+backdoor — actually write an "ATTACKER WON" marker file to the host's disk
+and read it back to prove the compromise (a real write, cleaned up by
+`reset.sh` like everything else).
 
 ```bash
 ./run.sh network-intrusion
