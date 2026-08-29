@@ -41,6 +41,49 @@ not a log.
 
 ---
 
+## 2026-08-29 (lecture deck) — the guest-lecture slide deck checked into the repo
+
+**What / why.** Built the actual guest-lecture deck the whole repo exists to
+support and checked it in at [`demos/lecture-deck/`](demos/lecture-deck/):
+a self-contained HTML deck (`who-goes-to-prison-deck.html`) plus the speaker
+script + Legal Reference Pack (`talk-track.md`) and a folder README. The
+talk — *"Who Goes to Prison When the AI Did It?"* — is a three-act arc that
+runs the scenarios live: Act 1 the presenter runs `web-exploit` as the
+attacker (crime + attribution), Act 2 an AI-vs-AI scenario removes the human
+and the room debates liability (Developer/Deployer/Operator/User, with
+*Morris / Van Buren / Flores-Figueroa / Global-Tech* and the Aug-12-2026
+hack-back memo), Act 3 closes on the policy inversion.
+
+**Decisions worth noting.**
+- **Placed under `demos/`, not a new top-level folder** — working agreement
+  (CLAUDE.md "don't create new top-level folders without asking") kept in
+  mind. `demos/lecture-deck/` is a subfolder of an existing top-level dir.
+  Easy to relocate if the founder wants it elsewhere.
+- **Self-contained + system fonts only, no web fonts** — deliberately, so
+  the file opens and presents on the air-gapped demo laptop (`file://…`)
+  identically to online, consistent with the repo's offline-at-showtime bar.
+- **Legal content mirrors the dashboard `legal-map.json` exactly** — same
+  statutes, current post-SB21-271 sentencing ranges, same five cases (see
+  the 2026-08-28 legal-refresh entry below). The folder README documents
+  that the two surfaces must be updated together; same honesty flags carry
+  over (prison ranges verified; fine caps practitioner-sourced; §1030(a)(5)
+  not asserted for the marker-write).
+- **README updated** (working agreement #8): new repo-map row + a pointer in
+  the intro. The deck is going to the **public** repo — it's educational
+  material the founder asked to check in and push; nothing employer-specific
+  or opsec-sensitive is in it (current employer intentionally kept vague).
+
+**Pre-ship checklist notes.** Deck rendering was verified across all three
+acts + the appendix by serving it locally and screenshotting (title, setup,
+both demo-cue slides, legal overlay, attribution, lineup, all reference
+tables). Three real bugs found and fixed in that pass: UTF-8 mojibake
+(added `<meta charset>`), a speaker-notes drawer sliver peeking on-screen,
+and a `nowrap` class truncating the federal-statutes penalty column.
+*Not* done: eyeballing the deck on the actual projector from the back of
+the room, and one live `run` of each scenario to confirm the new dashboard
+"Case law:" line is projector-legible — both are pre-lecture steps, same as
+the open item in the entry below.
+
 ## 2026-08-28 (legal refresh) — verified penalties + case law added to all three legal-maps; dashboard renders a new Case-law line
 
 **What happened / why.** While building a guest-lecture deck (the "Who goes
