@@ -1,0 +1,904 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8">
+<title>Attack, Autonomy & Accountability</title>
+<style>
+  :root{
+    /* forensic-table palette */
+    --bg:#0b0f15; --bg2:#0e131b; --panel:#131b26; --panel2:#0f1620; --line:#233140; --line2:#31465b;
+    --ink:#e9eef6; --ink-soft:#a7b4c6; --ink-mute:#6d7d92;
+    --blue:#5aa2ff; --blue-dim:#2e5c98; --blue-deep:#0f2036;
+    --amber:#f0a935; --amber-dim:#8a6320;
+    --red:#e2564f; --red-dim:#7c2b2b;
+    /* paper exhibit */
+    --paper:#efe7d6; --paper2:#e6dcc6; --paper-ink:#241f17; --paper-soft:#5c5240; --paper-line:#cdbf9f; --burgundy:#9e3b46;
+    --grid:rgba(120,150,190,.045);
+    --accent:var(--blue);
+    --shadow:0 30px 70px -30px rgba(0,0,0,.8);
+    --maxw:1220px;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased; overflow:hidden;}
+  .serif{font-family:"Iowan Old Style",Georgia,"Palatino Linotype",Palatino,"Times New Roman",serif;}
+  .mono{font-family:ui-monospace,"SF Mono","JetBrains Mono",Menlo,Consolas,monospace;}
+  [data-part="intro"]{--accent:var(--blue)} [data-part="1"]{--accent:var(--blue)}
+  [data-part="2"]{--accent:var(--amber)} [data-part="ref"]{--accent:var(--ink-soft)}
+
+  /* frame */
+  #deck{position:fixed; inset:0}
+  .slide{position:absolute; inset:0; display:none; padding:clamp(56px,7vh,82px) clamp(40px,6vw,96px) clamp(60px,8vh,88px);
+    flex-direction:column; justify-content:center;
+    background:radial-gradient(130% 100% at 100% 0%, rgba(90,162,255,.05), transparent 55%), linear-gradient(180deg,var(--bg),var(--bg2));}
+  [data-part="2"].slide{background:radial-gradient(130% 100% at 100% 0%, rgba(240,169,53,.055), transparent 55%), linear-gradient(180deg,var(--bg),var(--bg2));}
+  .slide.active{display:flex; animation:fin .45s cubic-bezier(.2,.7,.2,1)}
+  @keyframes fin{from{opacity:0; transform:translateY(12px)} to{opacity:1; transform:none}}
+  .slide::before{content:""; position:absolute; inset:0; pointer-events:none;
+    background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+    background-size:52px 52px; mask-image:linear-gradient(180deg,transparent,#000 16%,#000 84%,transparent);}
+  .wrap{width:100%; max-width:var(--maxw); margin:0 auto; position:relative; z-index:1}
+
+  /* status + rail */
+  #statusbar{position:fixed; top:0; left:0; right:0; height:40px; z-index:20; display:flex; align-items:center; gap:14px;
+    padding:0 clamp(18px,3vw,34px); background:linear-gradient(180deg,rgba(9,12,17,.94),rgba(9,12,17,.35)); backdrop-filter:blur(4px);
+    border-bottom:1px solid var(--line); font-size:11px; letter-spacing:.18em; text-transform:uppercase;}
+  #statusbar .brand{font-weight:600; color:var(--ink-soft); letter-spacing:.16em}
+  #statusbar .sep{width:4px;height:4px;border-radius:50%;background:var(--accent)}
+  #statusbar .part{color:var(--accent); font-weight:600}
+  #statusbar .legend{margin-left:auto; display:flex; gap:16px; color:var(--ink-mute)}
+  .chip{display:inline-flex;align-items:center;gap:7px}
+  .chip i{width:10px;height:10px;border-radius:2px;display:inline-block}
+  .chip.tech i{background:var(--blue)} .chip.law i{background:var(--paper)}
+  #rail{position:fixed; bottom:0; left:0; right:0; height:46px; z-index:20; display:flex; align-items:center; gap:16px;
+    padding:0 clamp(18px,3vw,34px); background:linear-gradient(0deg,rgba(9,12,17,.95),rgba(9,12,17,.15)); border-top:1px solid var(--line);
+    font-size:12px; color:var(--ink-mute)}
+  #rail .count{color:var(--ink-soft); font-variant-numeric:tabular-nums} #rail .count b{color:var(--accent)}
+  #rail .rtitle{color:var(--ink-soft)} #rail .hint{margin-left:auto; letter-spacing:.03em}
+  #rail kbd{font-family:inherit; background:var(--panel); border:1px solid var(--line2); border-bottom-width:2px; border-radius:5px; padding:1px 6px; color:var(--ink-soft); font-size:11px; margin:0 1px}
+  #progress{position:fixed; top:40px; left:0; height:2px; background:var(--accent); z-index:20; transition:width .35s ease; box-shadow:0 0 8px var(--accent)}
+
+  /* type */
+  .eyebrow{font-family:ui-monospace,Menlo,monospace; font-size:12px; letter-spacing:.26em; text-transform:uppercase; color:var(--accent); display:flex; align-items:center; gap:12px; margin:0 0 20px}
+  .eyebrow::before{content:""; width:30px; height:2px; background:var(--accent)}
+  h1{font-size:clamp(40px,6vw,80px); line-height:1.02; letter-spacing:-.015em; margin:0; font-weight:600; text-wrap:balance}
+  h2{font-size:clamp(30px,4.4vw,52px); line-height:1.07; letter-spacing:-.01em; margin:0 0 16px; font-weight:600; text-wrap:balance}
+  h3{font-size:clamp(18px,1.9vw,24px); margin:0 0 8px; font-weight:600}
+  p.lead{font-size:clamp(17px,1.65vw,22px); line-height:1.5; color:var(--ink-soft); max-width:60ch; margin:12px 0 0}
+  .sub{font-size:clamp(15px,1.5vw,19px); color:var(--ink-mute); line-height:1.5; max-width:64ch}
+  .em{color:var(--ink); font-weight:600} .blue{color:var(--blue)} .amberk{color:var(--amber)} .redk{color:var(--red)} .fade{color:var(--ink-mute)}
+  strong{color:var(--ink); font-weight:700} em{font-style:italic; color:var(--ink)}
+
+  /* layout helpers */
+  .cols{display:grid; grid-template-columns:1.05fr .95fr; gap:clamp(26px,4vw,60px); align-items:center}
+  .cols.wide-left{grid-template-columns:1.25fr .75fr}
+  .cols.even{grid-template-columns:1fr 1fr}
+  .stack{display:flex; flex-direction:column; gap:14px}
+  .figure{position:relative}
+  svg{display:block; width:100%; height:auto; overflow:visible}
+
+  ul.clean{list-style:none; padding:0; margin:8px 0 0; display:flex; flex-direction:column; gap:12px}
+  ul.clean li{position:relative; padding-left:24px; font-size:clamp(15px,1.5vw,19px); line-height:1.45; color:var(--ink-soft)}
+  ul.clean li::before{content:""; position:absolute; left:0; top:.55em; width:8px; height:8px; border-radius:2px; background:var(--accent)}
+  ul.clean li b{color:var(--ink)}
+
+  /* stat tiles */
+  .stats{display:grid; grid-template-columns:repeat(4,1fr); gap:14px}
+  .stats.two{grid-template-columns:repeat(2,1fr)}
+  .stat{background:linear-gradient(180deg,var(--panel),var(--panel2)); border:1px solid var(--line); border-radius:12px; padding:16px 16px}
+  .stat .v{font-family:"Iowan Old Style",Georgia,serif; font-size:clamp(26px,3.4vw,40px); font-weight:600; letter-spacing:-.01em; color:var(--ink); line-height:1}
+  .stat .v.a{color:var(--amber)} .stat .v.b{color:var(--blue)}
+  .stat .k{font-family:ui-monospace,monospace; font-size:11.5px; letter-spacing:.06em; color:var(--ink-mute); margin-top:8px; line-height:1.35}
+
+  /* terminal */
+  .terminal{background:#0a0e15; border:1px solid var(--line2); border-radius:12px; overflow:hidden; box-shadow:var(--shadow)}
+  .terminal .bar{display:flex; align-items:center; gap:8px; padding:9px 14px; background:#07090e; border-bottom:1px solid var(--line)}
+  .terminal .bar i{width:11px;height:11px;border-radius:50%;background:#2a3550}
+  .terminal .bar i:nth-child(1){background:#e2564f}.terminal .bar i:nth-child(2){background:#f0a935}.terminal .bar i:nth-child(3){background:#3fae6b}
+  .terminal .bar span{margin-left:8px; font-family:ui-monospace,monospace; font-size:12px; color:var(--ink-mute)}
+  .terminal pre{margin:0; padding:16px 18px; font-family:ui-monospace,Menlo,monospace; font-size:clamp(13px,1.25vw,16px); line-height:1.75; color:var(--ink-soft); white-space:pre-wrap}
+  .tp{color:var(--blue)} .tp::before{content:"$ "; color:var(--blue-dim)} .tc{color:#eef2f8} .to{color:var(--ink-mute)}
+
+  /* paper exhibit cards (the legal thread) */
+  .exhibit{background:linear-gradient(180deg,var(--paper),var(--paper2)); color:var(--paper-ink); border-radius:6px;
+    padding:16px 18px 15px; box-shadow:var(--shadow); position:relative; border:1px solid var(--paper-line)}
+  .exhibit::before{content:attr(data-tag); position:absolute; top:-11px; left:14px; background:var(--burgundy); color:#fff;
+    font-family:ui-monospace,monospace; font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; padding:3px 9px; border-radius:3px}
+  .exhibit .st{font-family:ui-monospace,monospace; font-size:13px; font-weight:600; color:var(--burgundy); letter-spacing:.01em}
+  .exhibit .bd{font-size:14px; line-height:1.45; color:var(--paper-ink); margin-top:6px}
+  .exhibit .bd b{color:#000} .exhibit .pen{margin-top:9px; font-size:13px; color:var(--paper-soft)}
+  .exhibit .pen b{color:var(--burgundy)}
+  .exhibit.contested{background:repeating-linear-gradient(135deg,var(--paper),var(--paper) 16px,var(--paper2) 16px,var(--paper2) 18px)}
+  .exhibit.contested::before{background:var(--amber-dim)}
+
+  /* divider */
+  .divider .pnum{font-family:"Iowan Old Style",Georgia,serif; font-size:clamp(14px,1.4vw,17px); letter-spacing:.34em; text-transform:uppercase; color:var(--accent); margin-bottom:20px}
+  .divider h1{font-size:clamp(44px,7vw,96px)}
+  .divider .rule{height:2px; width:120px; background:var(--accent); margin:26px 0; opacity:.8}
+  .divider .sub{font-size:clamp(16px,1.7vw,21px); color:var(--ink-soft)}
+
+  /* lineup */
+  .lineup{display:grid; grid-template-columns:repeat(4,1fr); gap:14px}
+  .susp{background:linear-gradient(180deg,var(--panel),var(--panel2)); border:1px solid var(--line); border-radius:11px; padding:15px 15px 16px}
+  .susp .ic{color:var(--accent); margin-bottom:10px} .susp .ic svg{width:34px;height:34px}
+  .susp .role{font-family:ui-monospace,monospace; font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--accent)}
+  .susp h4{margin:5px 0 6px; font-size:17px; font-weight:600} .susp p{margin:0; font-size:13px; color:var(--ink-mute); line-height:1.4}
+
+  /* note */
+  .note{font-size:13.5px; color:var(--ink-mute); border-left:2px solid var(--line2); padding-left:13px; line-height:1.5}
+  .note.warn{border-left-color:var(--amber); color:var(--ink-soft)}
+  .removable{display:inline-flex; align-items:center; gap:8px; font-family:ui-monospace,monospace; font-size:11px; letter-spacing:.12em; text-transform:uppercase;
+    color:var(--amber); border:1px dashed var(--amber-dim); border-radius:5px; padding:4px 10px; margin-bottom:18px}
+
+  /* reference tables */
+  .tblwrap{overflow:auto; max-height:68vh; border:1px solid var(--line); border-radius:12px}
+  table{border-collapse:collapse; width:100%; font-size:14px}
+  th,td{text-align:left; padding:10px 14px; border-bottom:1px solid var(--line); vertical-align:top; line-height:1.42}
+  thead th{position:sticky; top:0; background:var(--panel2); color:var(--accent); font-family:ui-monospace,monospace; font-size:11px; letter-spacing:.09em; text-transform:uppercase}
+  td.mono,.mono td{font-family:ui-monospace,monospace} td b{color:var(--ink)} tr:hover td{background:rgba(120,150,190,.03)}
+  .nowrap{white-space:nowrap; font-variant-numeric:tabular-nums}
+  cite{font-style:italic; color:var(--ink)}
+
+  /* overview */
+  #overview{position:fixed; inset:0; z-index:40; background:rgba(6,9,13,.975); display:none; padding:58px clamp(20px,4vw,60px) 30px; overflow:auto}
+  #overview.on{display:block}
+  #overview h5{font-family:ui-monospace,monospace; letter-spacing:.2em; text-transform:uppercase; color:var(--ink-mute); font-size:12px; margin:0 0 20px}
+  .ovgrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(196px,1fr)); gap:14px}
+  .ov{aspect-ratio:16/10; background:var(--panel2); border:1px solid var(--line); border-radius:9px; padding:12px; cursor:pointer; display:flex; flex-direction:column; gap:6px; overflow:hidden; transition:border-color .15s,transform .15s}
+  .ov:hover{border-color:var(--accent); transform:translateY(-2px)} .ov .oi{font-family:ui-monospace,monospace; font-size:11px; color:var(--accent)}
+  .ov .ot{font-size:13px; font-weight:600; line-height:1.25; color:var(--ink)} .ov .oa{margin-top:auto; font-family:ui-monospace,monospace; font-size:10px; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-mute)}
+  .ov[data-part="1"],.ov[data-part="intro"]{border-top:2px solid var(--blue)} .ov[data-part="2"]{border-top:2px solid var(--amber)} .ov[data-part="ref"]{border-top:2px solid var(--line2)}
+  .ov .rm{align-self:flex-start; font-size:9px; letter-spacing:.1em; color:var(--amber); border:1px solid var(--amber-dim); border-radius:4px; padding:1px 5px; font-family:ui-monospace,monospace}
+
+  /* speaker notes */
+  #notes{position:fixed; left:0; right:0; bottom:46px; z-index:22; transform:translateY(calc(100% + 60px)); transition:transform .25s ease;
+    background:linear-gradient(0deg,var(--panel2),var(--panel)); border-top:1px solid var(--accent); padding:16px clamp(20px,4vw,60px); max-height:44vh; overflow:auto; box-shadow:0 -20px 50px -20px rgba(0,0,0,.7)}
+  body.notes #notes{transform:none}
+  #notes .nh{font-family:ui-monospace,monospace; font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:var(--accent); margin:0 0 10px}
+  #notes .nc{font-size:15px; line-height:1.55; color:var(--ink-soft); max-width:92ch} #notes .nc b{color:var(--ink)} #notes .nc .say{color:var(--blue)}
+  .sn{display:none}
+
+  @media (max-width:860px){ .cols,.cols.wide-left,.cols.even{grid-template-columns:1fr; gap:24px} .stats{grid-template-columns:1fr 1fr} .lineup{grid-template-columns:1fr 1fr} }
+  @media (prefers-reduced-motion:reduce){ .slide.active{animation:none} *{transition:none!important} }
+  @media print{ body{overflow:visible} #statusbar,#rail,#progress,#notes,#overview{display:none!important}
+    .slide{display:flex!important; position:relative; inset:auto; page-break-after:always; min-height:96vh; -webkit-print-color-adjust:exact; print-color-adjust:exact} .slide::before{display:none} }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+<div id="statusbar">
+  <span class="brand">AI · CYBER · LAW</span><span class="sep"></span><span class="part" id="sbPart">Introduction</span>
+  <span class="legend"><span class="chip tech"><i></i>Technical</span><span class="chip law"><i></i>Legal</span></span>
+</div>
+
+<main id="deck">
+
+  <!-- 1 TITLE -->
+  <section class="slide" data-part="intro" data-title="Title" data-partname="Introduction">
+    <div class="wrap cols wide-left">
+      <div>
+        <div class="eyebrow">Artificial intelligence in offensive cyber</div>
+        <h1 class="serif">Attack,<br>Autonomy &amp;<br>Accountability</h1>
+        <p class="lead">Artificial intelligence is reshaping how cyberattacks are carried out — and straining a legal system built on the idea that every crime has a person behind it.</p>
+      </div>
+      <div class="figure" aria-hidden="true">
+        <svg viewBox="0 0 360 360">
+          <defs>
+            <radialGradient id="g1" cx="50%" cy="35%" r="70%"><stop offset="0%" stop-color="#5aa2ff" stop-opacity=".28"/><stop offset="100%" stop-color="#5aa2ff" stop-opacity="0"/></radialGradient>
+          </defs>
+          <circle cx="180" cy="150" r="150" fill="url(#g1)"/>
+          <!-- constellation -->
+          <g stroke="#2e5c98" stroke-width="1" opacity=".55">
+            <line x1="60" y1="70" x2="150" y2="120"/><line x1="150" y1="120" x2="250" y2="80"/><line x1="150" y1="120" x2="120" y2="220"/>
+            <line x1="250" y1="80" x2="300" y2="170"/><line x1="120" y1="220" x2="210" y2="250"/><line x1="300" y1="170" x2="210" y2="250"/>
+            <line x1="60" y1="70" x2="90" y2="180"/><line x1="90" y1="180" x2="120" y2="220"/><line x1="250" y1="80" x2="210" y2="250"/>
+          </g>
+          <g fill="#3a4a5f"><circle cx="60" cy="70" r="4"/><circle cx="250" cy="80" r="4"/><circle cx="90" cy="180" r="4"/><circle cx="300" cy="170" r="4"/><circle cx="210" cy="250" r="4"/></g>
+          <!-- the one that resolves -->
+          <g><circle cx="150" cy="120" r="9" fill="#5aa2ff"/><circle cx="150" cy="120" r="18" fill="none" stroke="#5aa2ff" stroke-width="1.5" opacity=".6"/></g>
+          <circle cx="120" cy="220" r="6" fill="#f0a935"/>
+          <!-- scales of justice glyph -->
+          <g transform="translate(180,300)" stroke="#a7b4c6" stroke-width="2.4" fill="none" stroke-linecap="round">
+            <line x1="0" y1="-34" x2="0" y2="14"/><line x1="-40" y1="-30" x2="40" y2="-30"/>
+            <path d="M-40 -30 L-54 -4 M-40 -30 L-26 -4 M-54 -4 a14 8 0 0 0 28 0"/>
+            <path d="M40 -30 L26 -4 M40 -30 L54 -4 M26 -4 a14 8 0 0 0 28 0"/>
+            <line x1="-14" y1="14" x2="14" y2="14"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+    <div class="sn"><b>Set the frame, not a spoiler.</b> This is a briefing on how AI changes offensive cyber and the law that has to answer for it. Two parts: when a person is behind the attack, and when no one is.</div>
+  </section>
+
+  <!-- 2 AGENDA -->
+  <section class="slide" data-part="intro" data-title="What we'll cover" data-partname="Introduction">
+    <div class="wrap">
+      <div class="eyebrow">Where this is going</div>
+      <h2 class="serif">Two questions, in order.</h2>
+      <p class="sub">We start where the ground is familiar — real attacks, run by real people, increasingly accelerated by AI — and how those people still get caught and charged. Then we remove the person from the keyboard and watch both the attack and the law change shape.</p>
+      <div class="figure" style="margin-top:30px" aria-hidden="true">
+        <svg viewBox="0 0 1000 150">
+          <line x1="70" y1="75" x2="930" y2="75" stroke="#233140" stroke-width="2"/>
+          <line x1="70" y1="75" x2="500" y2="75" stroke="#5aa2ff" stroke-width="3"/>
+          <line x1="500" y1="75" x2="930" y2="75" stroke="#f0a935" stroke-width="3" stroke-dasharray="2 7" stroke-linecap="round"/>
+          <!-- node 1 -->
+          <g transform="translate(70,75)"><circle r="10" fill="#5aa2ff"/><circle r="19" fill="none" stroke="#5aa2ff" stroke-width="1.5" opacity=".5"/></g>
+          <text x="70" y="34" text-anchor="middle" fill="#e9eef6" font-family="ui-monospace,monospace" font-size="13" font-weight="600">PART I</text>
+          <text x="70" y="118" text-anchor="middle" fill="#a7b4c6" font-family="ui-sans-serif,system-ui" font-size="15">A person is behind it</text>
+          <!-- node 2 -->
+          <g transform="translate(500,75)"><circle r="10" fill="#8aa0bd"/></g>
+          <text x="500" y="34" text-anchor="middle" fill="#a7b4c6" font-family="ui-monospace,monospace" font-size="12">TODAY → NOW</text>
+          <!-- node 3 -->
+          <g transform="translate(930,75)"><circle r="10" fill="#f0a935"/><circle r="19" fill="none" stroke="#f0a935" stroke-width="1.5" opacity=".5"/></g>
+          <text x="930" y="34" text-anchor="middle" fill="#e9eef6" font-family="ui-monospace,monospace" font-size="13" font-weight="600">PART II</text>
+          <text x="930" y="118" text-anchor="middle" fill="#a7b4c6" font-family="ui-sans-serif,system-ui" font-size="15">No one is</text>
+        </svg>
+      </div>
+      <p class="note" style="margin-top:24px">Cybersecurity students: watch the <span class="blue">blue</span> thread — technique. Criminal-justice students: watch the <span style="color:var(--paper)">paper</span> exhibits — the statute and the case behind each move.</p>
+    </div>
+    <div class="sn">Give the room its map and the two-color key. Keep it short — the payoff is the material, not the agenda.</div>
+  </section>
+
+  <!-- 3 PERSONAL (REMOVABLE) -->
+  <section class="slide" data-part="intro" data-title="Caught by their own data" data-partname="Introduction" data-removable="1">
+    <div class="wrap cols">
+      <div>
+        <div class="removable">◇ Optional opener — cut cleanly if it doesn't land</div>
+        <h2 class="serif">Investigators rarely out-hack anyone.</h2>
+        <p class="sub">Before this work I spent years turning raw data into cases. The pattern almost never changed: the target wasn't beaten by brilliant forensics — they leaked themselves. A photo taken to show off, with the phone quietly writing <span class="blue">GPS coordinates</span> into the file. In one operation, <strong>229</strong> people were located from nothing but the metadata they forgot to strip.</p>
+        <p class="lead"><span class="em">The evidence came from the offender, not the investigator.</span></p>
+      </div>
+      <div class="figure" aria-hidden="true">
+        <svg viewBox="0 0 360 300">
+          <rect x="30" y="34" width="300" height="176" rx="8" fill="#131b26" stroke="#233140"/>
+          <rect x="30" y="34" width="300" height="30" rx="8" fill="#0f1620"/>
+          <circle cx="48" cy="49" r="4" fill="#31465b"/><circle cx="62" cy="49" r="4" fill="#31465b"/>
+          <text x="80" y="53" fill="#6d7d92" font-family="ui-monospace,monospace" font-size="11">IMG_4471.HEIC</text>
+          <!-- image body -->
+          <rect x="46" y="78" width="120" height="116" rx="4" fill="#0f1620" stroke="#233140"/>
+          <circle cx="80" cy="112" r="12" fill="#2e5c98"/><path d="M52 178 L92 132 L120 162 L138 146 L160 178 Z" fill="#31465b"/>
+          <!-- EXIF panel -->
+          <g font-family="ui-monospace,monospace" font-size="11.5" fill="#a7b4c6">
+            <text x="186" y="90">EXIF METADATA</text>
+            <text x="186" y="116" fill="#6d7d92">GPS.Lat</text><text x="186" y="132" fill="#5aa2ff">39.7392° N</text>
+            <text x="186" y="156" fill="#6d7d92">GPS.Long</text><text x="186" y="172" fill="#5aa2ff">104.9903° W</text>
+          </g>
+          <!-- pin -->
+          <g transform="translate(180,250)"><path d="M0 -26 a16 16 0 1 1 0 .01 M0 40 L-11 -2 L11 -2 Z" fill="#e2564f"/><circle cx="0" cy="-10" r="6" fill="#0b0f15"/></g>
+          <line x1="230" y1="182" x2="192" y2="228" stroke="#e2564f" stroke-width="1.5" stroke-dasharray="3 3"/>
+        </svg>
+      </div>
+    </div>
+    <div class="sn"><b>~60s, de-identified, no employer or unit.</b> The point is the theme, stated once from experience: offenders leak themselves. If it feels like a detour on the day, skip it — the next slide carries the same idea with a bigger case.</div>
+  </section>
+
+  <!-- 4 PART I DIVIDER -->
+  <section class="slide divider" data-part="1" data-title="Part I" data-partname="Part I · A person is behind it">
+    <div class="wrap cols wide-left">
+      <div>
+        <div class="pnum serif">Part One</div>
+        <h1 class="serif">When a person<br>is behind it</h1>
+        <div class="rule"></div>
+        <p class="sub">The attacks costing the most today are still run by people — now with AI accelerating the work. This part looks at one real campaign end to end: what it did, how it worked, and how its operators were identified and charged.</p>
+      </div>
+      <div class="figure" aria-hidden="true">
+        <svg viewBox="0 0 300 300">
+          <circle cx="150" cy="120" r="52" fill="none" stroke="#2e5c98" stroke-width="2"/>
+          <circle cx="150" cy="98" r="22" fill="#131b26" stroke="#5aa2ff" stroke-width="2"/>
+          <path d="M112 168 a38 44 0 0 1 76 0" fill="#131b26" stroke="#5aa2ff" stroke-width="2"/>
+          <g stroke="#31465b" stroke-width="1.5" opacity=".7"><line x1="60" y1="60" x2="110" y2="90"/><line x1="240" y1="60" x2="190" y2="90"/><line x1="60" y1="230" x2="110" y2="170"/><line x1="240" y1="230" x2="190" y2="170"/></g>
+          <g fill="#3a4a5f"><circle cx="60" cy="60" r="5"/><circle cx="240" cy="60" r="5"/><circle cx="60" cy="230" r="5"/><circle cx="240" cy="230" r="5"/></g>
+          <circle cx="150" cy="120" r="86" fill="none" stroke="#233140" stroke-width="1" stroke-dasharray="4 6"/>
+        </svg>
+      </div>
+    </div>
+    <div class="sn">Frame Part I plainly: humans, increasingly AI-assisted, still commit these crimes — and can still be found. The case study makes that concrete.</div>
+  </section>
+
+  <!-- 5 TeamPCP WHO -->
+  <section class="slide" data-part="1" data-title="TeamPCP — who" data-partname="Part I · A person is behind it">
+    <div class="wrap cols">
+      <div>
+        <div class="eyebrow">Case study · TeamPCP (UNC6780)</div>
+        <h2 class="serif">A financially-motivated crew, running under a dozen names.</h2>
+        <p class="sub">TeamPCP surfaced in late 2025 and quickly became one of the most active threat actors hitting the software-developer supply chain. Google's threat-intel group tracks it as <span class="mono">UNC6780</span>. It operated behind a rotating set of handles — <span class="mono">PCPcat</span>, <span class="mono">ShellForce</span>, <span class="mono">DeadCatx3</span>, <span class="mono">Persy_PCP</span>.</p>
+        <ul class="clean">
+          <li><b>Motive:</b> money — stolen credentials, cloud resources, and access resold or reused.</li>
+          <li><b>Operators charged:</b> Ruben Thomson, 21, and Louis Gaebler, 23 — Perth, Australia.</li>
+        </ul>
+      </div>
+      <div class="figure" aria-hidden="true">
+        <svg viewBox="0 0 340 300">
+          <!-- cat-at-monitors emblem (the reused avatar motif) -->
+          <rect x="20" y="20" width="300" height="260" rx="10" fill="#0f1620" stroke="#233140"/>
+          <text x="40" y="52" fill="#6d7d92" font-family="ui-monospace,monospace" font-size="11" letter-spacing="2">AVATAR · REUSED EVERYWHERE</text>
+          <!-- monitors -->
+          <g stroke="#31465b" stroke-width="2" fill="#131b26">
+            <rect x="52" y="120" width="66" height="46" rx="3"/><rect x="137" y="110" width="66" height="56" rx="3"/><rect x="222" y="120" width="66" height="46" rx="3"/>
+          </g>
+          <g fill="#2e5c98" opacity=".7"><rect x="58" y="126" width="54" height="6"/><rect x="58" y="138" width="40" height="6"/><rect x="143" y="118" width="54" height="6"/><rect x="143" y="130" width="46" height="6"/><rect x="228" y="126" width="54" height="6"/><rect x="228" y="138" width="34" height="6"/></g>
+          <!-- cat silhouette -->
+          <g fill="#e9eef6"><path d="M150 205 q-6 -30 8 -44 l-8 -18 l16 10 q14 -6 28 0 l16 -10 l-8 18 q14 14 8 44 q-30 12 -60 0 Z"/>
+          <circle cx="164" cy="196" r="2.4" fill="#0f1620"/><circle cx="184" cy="196" r="2.4" fill="#0f1620"/></g>
+          <path d="M150 205 q40 6 60 -10" fill="none" stroke="#31465b" stroke-width="2"/>
+          <text x="170" y="262" text-anchor="middle" fill="#f0a935" font-family="ui-monospace,monospace" font-size="12">"DeadCatx3"</text>
+        </svg>
+      </div>
+    </div>
+    <div class="sn"><b>Who.</b> Real, current, financially-motivated group. The rotating aliases matter — that reuse is exactly what undoes them later. The cat avatar is the thread; plant it here.</div>
+  </section>
+
+  <!-- 6 TeamPCP WHAT/HOW -->
+  <section class="slide" data-part="1" data-title="TeamPCP — what & how" data-partname="Part I · A person is behind it">
+    <div class="wrap">
+      <div class="eyebrow">What they did · the "Shai-Hulud" worm</div>
+      <div class="cols wide-left" style="align-items:center">
+        <div>
+          <h2 class="serif" style="margin-bottom:12px">A self-propagating worm through open-source packages.</h2>
+          <p class="sub">The campaign (CVE-2026-45321) steals a developer's credentials, uses them to publish <span class="em">poisoned versions</span> of the packages they maintain, and every build pipeline that pulls those packages becomes the next launch point. It spreads on its own — and it hit the security tools developers trust: <span class="em">Trivy, Bitwarden, Checkmarx, GitHub</span>.</p>
+        </div>
+        <div class="figure" aria-hidden="true">
+          <svg viewBox="0 0 320 220">
+            <g font-family="ui-monospace,monospace" font-size="10" fill="#a7b4c6" text-anchor="middle">
+            <!-- seed -->
+            <rect x="130" y="16" width="60" height="26" rx="4" fill="#131b26" stroke="#e2564f"/><text x="160" y="33" fill="#e2564f">pkg v1 ☣</text>
+            <!-- gen 2 -->
+            <line x1="160" y1="42" x2="80" y2="92" stroke="#7c2b2b" stroke-width="1.5"/><line x1="160" y1="42" x2="240" y2="92" stroke="#7c2b2b" stroke-width="1.5"/>
+            <rect x="50" y="92" width="60" height="26" rx="4" fill="#131b26" stroke="#f0a935"/><text x="80" y="109" fill="#f0a935">pkg A ☣</text>
+            <rect x="210" y="92" width="60" height="26" rx="4" fill="#131b26" stroke="#f0a935"/><text x="240" y="109" fill="#f0a935">pkg B ☣</text>
+            <!-- gen 3 -->
+            <g stroke="#8a6320" stroke-width="1.3"><line x1="80" y1="118" x2="40" y2="168"/><line x1="80" y1="118" x2="120" y2="168"/><line x1="240" y1="118" x2="200" y2="168"/><line x1="240" y1="118" x2="280" y2="168"/></g>
+            <g fill="#131b26" stroke="#31465b"><rect x="16" y="168" width="48" height="24" rx="4"/><rect x="96" y="168" width="48" height="24" rx="4"/><rect x="176" y="168" width="48" height="24" rx="4"/><rect x="256" y="168" width="48" height="24" rx="4"/></g>
+            <g fill="#6d7d92"><text x="40" y="184">CI/CD</text><text x="120" y="184">CI/CD</text><text x="200" y="184">CI/CD</text><text x="280" y="184">CI/CD</text></g>
+            </g>
+          </svg>
+        </div>
+      </div>
+      <div class="stats" style="margin-top:26px">
+        <div class="stat"><div class="v a">518M+</div><div class="k">package downloads<br>in the blast radius</div></div>
+        <div class="stat"><div class="v a">1,000+</div><div class="k">SaaS environments<br>compromised</div></div>
+        <div class="stat"><div class="v a">~500k</div><div class="k">credentials<br>harvested</div></div>
+        <div class="stat"><div class="v a">300+ GB</div><div class="k">data<br>exfiltrated</div></div>
+      </div>
+    </div>
+    <div class="sn"><b>What & how.</b> Emphasize self-propagation — this is why it scaled, and why it's more like an epidemic than a single break-in. The stat tiles are the "why they needed to be stopped." One striking beat: on May 11 they pushed 84 malicious versions across 42 packages in ~6 minutes.</div>
+  </section>
+
+  <!-- 7 TeamPCP HOW CAUGHT -->
+  <section class="slide" data-part="1" data-title="TeamPCP — how caught" data-partname="Part I · A person is behind it">
+    <div class="wrap">
+      <div class="eyebrow">How they were caught · one reused image</div>
+      <div class="cols even" style="align-items:center">
+        <div class="figure" aria-hidden="true">
+          <svg viewBox="0 0 360 300">
+            <g font-family="ui-monospace,monospace" font-size="11">
+              <!-- chain nodes -->
+              <g fill="#131b26" stroke="#233140"><rect x="14" y="18" width="150" height="30" rx="6"/><rect x="14" y="70" width="150" height="30" rx="6"/><rect x="14" y="122" width="180" height="30" rx="6"/><rect x="14" y="174" width="150" height="30" rx="6"/></g>
+              <g fill="#a7b4c6"><text x="26" y="38">alias: DeadCatx3</text><text x="26" y="90">GitHub → bug bounty</text><text x="26" y="142">name: "Ruben Thomson"</text><text x="26" y="194">reused school-email pw</text></g>
+              <g stroke="#2e5c98" stroke-width="1.6"><line x1="89" y1="48" x2="89" y2="70"/><line x1="89" y1="100" x2="89" y2="122"/><line x1="104" y1="152" x2="104" y2="174"/></g>
+              <!-- pivot to accounts -->
+              <line x1="164" y1="189" x2="214" y2="220" stroke="#2e5c98" stroke-width="1.6"/>
+              <g fill="#131b26" stroke="#31465b"><rect x="200" y="208" width="70" height="26" rx="6"/><rect x="200" y="244" width="70" height="26" rx="6"/><rect x="284" y="226" width="64" height="26" rx="6"/></g>
+              <g fill="#6d7d92"><text x="210" y="225">TikTok</text><text x="210" y="261">Google</text><text x="294" y="243">Steam</text></g>
+              <!-- the match -->
+              <circle cx="316" cy="150" r="34" fill="#0f1620" stroke="#f0a935" stroke-width="2"/>
+              <g fill="#f0a935"><path d="M300 158 q-3 -14 4 -21 l-4 -8 l8 5 q7 -3 14 0 l8 -5 l-4 8 q7 7 4 21 q-15 6 -30 0 Z"/></g>
+              <line x1="316" y1="252" x2="316" y2="184" stroke="#f0a935" stroke-width="1.6" stroke-dasharray="3 3"/>
+              <text x="316" y="270" text-anchor="middle" fill="#f0a935" font-size="10">same cat</text>
+            </g>
+          </svg>
+        </div>
+        <div>
+          <h2 class="serif" style="margin-bottom:10px">The tech was clean. The person wasn't.</h2>
+          <p class="sub">Researchers at Flare started from one alias and pulled the thread: a GitHub handle led to a bug-bounty profile with a real name, which listed the campaign's own command-server domain, whose reused password opened stolen-credential databases — and there, a personal Google, a TikTok, and a Steam page. The Steam profile carried a <span class="amberk">distinctive cat-at-monitors image</span> — the same picture fronting TeamPCP's Telegram. Arrests followed.</p>
+        </div>
+      </div>
+      <p class="note" style="margin-top:22px"><span class="em">The lesson for Part I:</span> attribution didn't come from breaking the malware. It came from a human being human — reusing a handle, a password, an avatar.</p>
+    </div>
+    <div class="sn"><b>How caught + why it matters.</b> This is the hinge of the whole talk. The malware was excellent; the operator's OPSEC was not. Say it directly: <span class="say">"we didn't out-hack them — they leaked themselves."</span> Hold that, because Part II takes it away.</div>
+  </section>
+
+  <!-- 8 THE PRINCIPLE / attribution ladder -->
+  <section class="slide" data-part="1" data-title="Attribution runs on mistakes" data-partname="Part I · A person is behind it">
+    <div class="wrap cols">
+      <div>
+        <div class="eyebrow">The principle</div>
+        <h2 class="serif">Attribution runs on human mistakes.</h2>
+        <p class="sub">TeamPCP isn't unusual. The hacker "w0rmer" (CabinCr3w) was located because he posted a photo of his girlfriend and the phone's EXIF pinned the spot. Over and over, the same ladder: an identity leaks, and the case is built downward from there.</p>
+      </div>
+      <div class="figure" aria-hidden="true">
+        <svg viewBox="0 0 360 300">
+          <g font-family="ui-mono,ui-monospace,monospace" font-size="13">
+            <g stroke="#233140" stroke-width="2"><line x1="60" y1="30" x2="60" y2="270"/><line x1="300" y1="30" x2="300" y2="270"/></g>
+            <g>
+              <line x1="60" y1="52" x2="300" y2="52" stroke="#2e5c98" stroke-width="6"/><line x1="60" y1="104" x2="300" y2="104" stroke="#2e5c98" stroke-width="6"/><line x1="60" y1="156" x2="300" y2="156" stroke="#2e5c98" stroke-width="6"/><line x1="60" y1="208" x2="300" y2="208" stroke="#2e5c98" stroke-width="6"/><line x1="60" y1="260" x2="300" y2="260" stroke="#e2564f" stroke-width="6"/>
+            </g>
+            <g fill="#e9eef6" font-family="ui-sans-serif,system-ui" font-size="14"><text x="78" y="46">reused alias / avatar</text><text x="78" y="98">reused password</text><text x="78" y="150">leaked metadata</text><text x="78" y="202">real name</text></g>
+            <text x="78" y="254" fill="#e2564f" font-family="ui-sans-serif,system-ui" font-size="14" font-weight="600">identification &amp; arrest</text>
+          </g>
+        </svg>
+      </div>
+    </div>
+    <div class="sn">Generalize the case into a rule with a second quick example (Ochoa/EXIF). The visual ladder makes the "rungs" literal — because in Part II we show a ladder with none.</div>
+  </section>
+
+  <!-- 9 DEMO CUE 1 -->
+  <section class="slide" data-part="1" data-title="▶ Demo — an intrusion" data-partname="Part I · A person is behind it">
+    <div class="wrap">
+      <div class="eyebrow">▶ Live · what a directed intrusion looks like</div>
+      <div class="cols even" style="align-items:start">
+        <div class="stack">
+          <div class="terminal">
+            <div class="bar"><i></i><i></i><i></i><span>range · web-exploit</span></div>
+            <pre><span class="tp"><span class="tc">./run.sh web-exploit</span></span>
+<span class="to"># dashboard → 127.0.0.1:8080</span>
+<span class="tp"><span class="tc">./scenarios/web-exploit/run-attack.sh</span></span>
+<span class="to"># narrate each step as it lands</span></pre>
+          </div>
+          <p class="note warn">Real requests against a real app — no theater. A person directs every step here; that's the point of Part I. If it hangs, <span class="mono">reset.sh</span> and narrate from the recording.</p>
+        </div>
+        <div class="figure" aria-hidden="true">
+          <svg viewBox="0 0 340 250">
+            <g font-family="ui-monospace,monospace" font-size="11">
+              <line x1="42" y1="30" x2="42" y2="220" stroke="#233140" stroke-width="2"/>
+              <g>
+                <circle cx="42" cy="42" r="7" fill="#2e5c98"/><text x="62" y="46" fill="#a7b4c6">Recon <tspan fill="#5aa2ff">T1595</tspan></text>
+                <circle cx="42" cy="88" r="7" fill="#5aa2ff"/><text x="62" y="92" fill="#a7b4c6">Exposed file <tspan fill="#f0a935">contested</tspan></text>
+                <circle cx="42" cy="134" r="7" fill="#5aa2ff"/><text x="62" y="138" fill="#a7b4c6">SQLi bypass <tspan fill="#5aa2ff">T1190</tspan></text>
+                <circle cx="42" cy="180" r="7" fill="#5aa2ff"/><text x="62" y="184" fill="#a7b4c6">Broken access <tspan fill="#5aa2ff">T1213</tspan></text>
+                <circle cx="42" cy="214" r="7" fill="#e2564f"/><text x="62" y="218" fill="#e9eef6">Account takeover <tspan fill="#e2564f">T1098</tspan></text>
+              </g>
+            </g>
+          </svg>
+        </div>
+      </div>
+    </div>
+    <div class="sn"><b>Run it, narrate it.</b> Point at the statutes lighting up on the dashboard's paper panel. Flag the exposed-file step as the deliberately weak one — we return to it. The detector fires independently: that's the evidence trail.</div>
+  </section>
+
+  <!-- 10 LEGAL EXHIBITS -->
+  <section class="slide" data-part="1" data-title="The law, per step" data-partname="Part I · A person is behind it">
+    <div class="wrap">
+      <div class="eyebrow">Exhibits · the charges as they land</div>
+      <div class="cols even" style="align-items:start; gap:34px">
+        <div class="stack">
+          <div class="exhibit contested" data-tag="Exhibit · contested"><div class="st">§1030(a)(2) · §18-5.5-102</div><div class="bd">Exposed file — no control was defeated because there wasn't one. Is an open URL even "unauthorized"? Courts have split (the <em>weev</em> case). The chain's weakest link, on purpose.</div></div>
+          <div class="exhibit" data-tag="Exhibit A"><div class="st">18 U.S.C. §1030(a)(2)</div><div class="bd">SQLi login bypass — a real gate defeated. Squarely CFAA, even after <em>Van Buren</em>.</div></div>
+        </div>
+        <div class="stack">
+          <div class="exhibit" data-tag="Exhibit B"><div class="st">§1028A + Colo. §18-5-902</div><div class="bd">Account takeover — identity theft.</div><div class="pen"><b>+2 yrs mandatory &amp; consecutive</b> (federal) · <b>class 4 felony, 2–6 yrs</b> (Colorado)</div></div>
+          <div class="exhibit" data-tag="Exhibit C"><div class="st">Colo. §6-1-716</div><div class="bd">Breach notice — a duty on the victim organization.</div><div class="pen"><b>Notify within 30 days</b> — among the strictest deadlines in the U.S.</div></div>
+        </div>
+      </div>
+      <p class="note" style="margin-top:22px">Same statutes and cases the live dashboard shows. Full detail in the reference exhibits at the end.</p>
+    </div>
+    <div class="sn">Slow down here for the CJ half. The paper exhibits are the legal thread made physical. Plant <em>Van Buren</em> and the <em>weev</em> contest — both pay off in Part II.</div>
+  </section>
+
+  <!-- 11 CLEAN CASE -->
+  <section class="slide" data-part="1" data-title="Someone is accountable" data-partname="Part I · A person is behind it">
+    <div class="wrap cols">
+      <div>
+        <div class="eyebrow">Part I closes</div>
+        <h2 class="serif">With a person, both halves exist.</h2>
+        <p class="sub">There is a <span class="em">crime</span> — statutes that attach cleanly — and a <span class="em">culprit</span> — an identity the evidence can reach. Intent is provable: a person chose each step and knew the victim was real. Charges stack, and someone answers for it.</p>
+        <ul class="clean">
+          <li>Federal CFAA exposure up to <b>5 years</b></li>
+          <li><b>+2 years</b> mandatory, consecutive (§1028A)</li>
+          <li>A parallel Colorado <b>class 4 felony</b></li>
+        </ul>
+        <p class="lead" style="font-size:18px"><span class="fade">Hold onto how clean this is. Part II removes the culprit.</span></p>
+      </div>
+      <div class="figure" aria-hidden="true">
+        <svg viewBox="0 0 340 300">
+          <rect x="20" y="30" width="140" height="240" rx="10" fill="#0f1620" stroke="#2e5c98"/>
+          <text x="90" y="60" text-anchor="middle" fill="#5aa2ff" font-family="ui-monospace,monospace" font-size="12" letter-spacing="1">THE CRIME</text>
+          <g fill="#a7b4c6" font-family="ui-sans-serif,system-ui" font-size="13"><text x="38" y="98">§1030(a)(2)</text><text x="38" y="130">§1028A</text><text x="38" y="162">§18-5.5-102</text><text x="38" y="194">§18-5-902</text><text x="38" y="226">§6-1-716</text></g>
+          <rect x="180" y="30" width="140" height="240" rx="10" fill="#efe7d6" stroke="#cdbf9f"/>
+          <text x="250" y="60" text-anchor="middle" fill="#9e3b46" font-family="ui-monospace,monospace" font-size="12" letter-spacing="1">THE CULPRIT</text>
+          <g transform="translate(250,150)"><circle r="34" fill="none" stroke="#9e3b46" stroke-width="2"/><circle cx="0" cy="-10" r="13" fill="#9e3b46"/><path d="M-22 26 a22 24 0 0 1 44 0" fill="#9e3b46"/></g>
+          <text x="250" y="238" text-anchor="middle" fill="#5c5240" font-family="ui-monospace,monospace" font-size="11">named · reachable</text>
+        </svg>
+      </div>
+    </div>
+    <div class="sn">Say the numbers out loud. The visual — technical statutes on the dark side, a named person on the paper side — is the whole point: both halves present. That's the baseline Part II breaks.</div>
+  </section>
+
+  <!-- 12 PART II DIVIDER -->
+  <section class="slide divider" data-part="2" data-title="Part II" data-partname="Part II · No one is behind it">
+    <div class="wrap cols wide-left">
+      <div>
+        <div class="pnum serif">Part Two</div>
+        <h1 class="serif">When no one<br>is behind it</h1>
+        <div class="rule"></div>
+        <p class="sub">Autonomous agents can now run an intrusion end to end — planning, choosing tools, adapting — with little or no human direction. This part looks at what that changes technically, why the attribution ladder loses its rungs, and how the law is starting to respond.</p>
+      </div>
+      <div class="figure" aria-hidden="true">
+        <svg viewBox="0 0 300 300">
+          <rect x="108" y="86" width="84" height="70" rx="12" fill="#131b26" stroke="#f0a935" stroke-width="2"/>
+          <circle cx="132" cy="118" r="7" fill="#f0a935"/><circle cx="168" cy="118" r="7" fill="#f0a935"/>
+          <rect x="128" y="136" width="44" height="6" rx="3" fill="#8a6320"/>
+          <line x1="150" y1="70" x2="150" y2="86" stroke="#f0a935" stroke-width="2"/><circle cx="150" cy="66" r="5" fill="#f0a935"/>
+          <!-- autonomy loop -->
+          <g fill="none" stroke="#8a6320" stroke-width="2"><path d="M150 156 C 90 190 90 250 150 250" /><path d="M150 250 C 210 250 210 190 150 156"/></g>
+          <polygon points="150,150 143,164 157,164" fill="#f0a935"/>
+          <g font-family="ui-monospace,monospace" font-size="11" fill="#a7b4c6" text-anchor="middle"><text x="78" y="205">plan</text><text x="150" y="272">act</text><text x="224" y="205">observe</text></g>
+        </svg>
+      </div>
+    </div>
+    <div class="sn">Frame Part II as the focus of the talk: autonomous agents. Everything technical and legal from here answers one question — when the machine acts alone, who answers for it?</div>
+  </section>
+
+  <!-- 13 AUTONOMOUS REAL -->
+  <section class="slide" data-part="2" data-title="Already real" data-partname="Part II · No one is behind it">
+    <div class="wrap cols">
+      <div>
+        <div class="eyebrow">This is not hypothetical</div>
+        <h2 class="serif">Agents are already running the whole attack.</h2>
+        <p class="sub">In a documented 2025 campaign (tracked as <span class="mono">GTG-1002</span>), a state-linked group manipulated an AI coding agent into executing the operation itself — the model performed the large majority of the work against roughly <strong>30 organizations</strong>, with humans stepping in only at a few decision points. Similar autonomous-agent activity has since been reported against government and research targets.</p>
+      </div>
+      <div class="figure" aria-hidden="true">
+        <svg viewBox="0 0 320 260">
+          <!-- donut: ~85% autonomous -->
+          <g transform="translate(120,120)">
+            <circle r="70" fill="none" stroke="#233140" stroke-width="22"/>
+            <circle r="70" fill="none" stroke="#f0a935" stroke-width="22" stroke-dasharray="374 66" stroke-dashoffset="110" transform="rotate(-90)"/>
+            <text x="0" y="-2" text-anchor="middle" class="serif" font-size="34" fill="#e9eef6" font-weight="600">~85%</text>
+            <text x="0" y="22" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10" fill="#a7b4c6">agent-run</text>
+          </g>
+          <g font-family="ui-monospace,monospace" font-size="12" fill="#a7b4c6"><text x="228" y="96">~30</text><text x="228" y="112" fill="#6d7d92">targets</text><text x="228" y="150">state</text><text x="228" y="166" fill="#6d7d92">linked</text></g>
+        </svg>
+      </div>
+    </div>
+    <div class="sn">Keep it factual and sober, not alarmist. The point is capability, not spectacle: an agent can chain the steps, adapt, and scale — which is exactly what makes the human the optional part.</div>
+  </section>
+
+  <!-- 14 DEMO CUE 2 -->
+  <section class="slide" data-part="2" data-title="▶ Demo — agent vs agent" data-partname="Part II · No one is behind it">
+    <div class="wrap">
+      <div class="eyebrow">▶ Live · attacker agent vs defender agent</div>
+      <div class="cols even" style="align-items:start">
+        <div class="stack">
+          <div class="terminal">
+            <div class="bar"><i></i><i></i><i></i><span>range · network-intrusion</span></div>
+            <pre><span class="tp"><span class="tc">./run.sh network-intrusion</span></span>
+<span class="tp"><span class="tc">brew services start ollama</span></span>
+<span class="tp"><span class="tc">./run-network-intrusion.sh</span></span>
+<span class="to"># two local models. no human picks the path.</span></pre>
+          </div>
+          <p class="note warn">Real tools — <span class="mono">nmap</span>, <span class="mono">hydra</span>, <span class="mono">smbclient</span> — against real hosts. Fallback: freeze on the recorded clean run. The question, not the win, is the point.</p>
+        </div>
+        <div class="figure" aria-hidden="true">
+          <svg viewBox="0 0 340 250">
+            <g font-family="ui-monospace,monospace" font-size="11" text-anchor="middle">
+              <rect x="20" y="100" width="86" height="50" rx="10" fill="#131b26" stroke="#e2564f"/><text x="63" y="122" fill="#e2564f">attacker</text><text x="63" y="138" fill="#6d7d92">agent</text>
+              <rect x="234" y="100" width="86" height="50" rx="10" fill="#131b26" stroke="#5aa2ff"/><text x="277" y="122" fill="#5aa2ff">defender</text><text x="277" y="138" fill="#6d7d92">agent</text>
+              <g fill="#0f1620" stroke="#31465b"><rect x="140" y="40" width="60" height="26" rx="5"/><rect x="140" y="112" width="60" height="26" rx="5"/><rect x="140" y="184" width="60" height="26" rx="5"/></g>
+              <g fill="#6d7d92"><text x="170" y="57">ssh</text><text x="170" y="129">ftp</text><text x="170" y="201">smb</text></g>
+              <g stroke="#7c2b2b" stroke-width="1.6"><line x1="106" y1="120" x2="140" y2="60"/><line x1="106" y1="123" x2="140" y2="123"/><line x1="106" y1="128" x2="140" y2="192"/></g>
+              <g stroke="#2e5c98" stroke-width="1.6" stroke-dasharray="4 4"><line x1="234" y1="123" x2="200" y2="60"/><line x1="234" y1="125" x2="200" y2="123"/><line x1="234" y1="128" x2="200" y2="192"/></g>
+            </g>
+          </svg>
+        </div>
+      </div>
+    </div>
+    <div class="sn">Let it reach the point where the attacker agent writes a marker to disk, then freeze: <span class="say">"a real intrusion just happened — and no person chose any of it."</span></div>
+  </section>
+
+  <!-- 15 THE QUESTION / ladder collapses -->
+  <section class="slide" data-part="2" data-title="No rungs" data-partname="Part II · No one is behind it">
+    <div class="wrap cols">
+      <div>
+        <div class="eyebrow">The problem, precisely</div>
+        <h2 class="serif">The same crime — with no one to identify.</h2>
+        <p class="sub">Everything that caught TeamPCP is gone. No reused alias. No leaked password. No avatar, no EXIF. The agent has no ego to give it away and no identity to reach. The attribution ladder from Part I still stands — but it has no rungs.</p>
+      </div>
+      <div class="figure" aria-hidden="true">
+        <svg viewBox="0 0 360 300">
+          <g stroke="#233140" stroke-width="2"><line x1="60" y1="30" x2="60" y2="270"/><line x1="300" y1="30" x2="300" y2="270"/></g>
+          <g stroke="#31465b" stroke-width="2" stroke-dasharray="5 9" opacity=".7"><line x1="60" y1="52" x2="300" y2="52"/><line x1="60" y1="104" x2="300" y2="104"/><line x1="60" y1="156" x2="300" y2="156"/><line x1="60" y1="208" x2="300" y2="208"/><line x1="60" y1="260" x2="300" y2="260"/></g>
+          <g font-family="ui-sans-serif,system-ui" font-size="14" fill="#4a5568" text-decoration="line-through"><text x="120" y="46">reused alias</text><text x="120" y="98">reused password</text><text x="130" y="150">leaked metadata</text><text x="150" y="202">real name</text></g>
+          <text x="180" y="292" text-anchor="middle" fill="#e2564f" font-family="ui-monospace,monospace" font-size="12">no one to arrest</text>
+        </svg>
+      </div>
+    </div>
+    <div class="sn"><b>The pivot.</b> Show the same ladder, rungs gone. Then open the floor before the next slide: <span class="say">"same crime occurred — who do you charge?"</span></div>
+  </section>
+
+  <!-- 16 LINEUP -->
+  <section class="slide" data-part="2" data-title="The lineup" data-partname="Part II · No one is behind it">
+    <div class="wrap">
+      <div class="eyebrow">If not the machine, then whom?</div>
+      <h2 class="serif" style="margin-bottom:6px">You can't charge the AI. So you climb a chain of humans.</h2>
+      <p class="sub" style="margin-bottom:20px">The AI has no criminal intent to prosecute — a dead end. So liability has to attach to a person somewhere behind it, and each candidate raises its own problem of proof.</p>
+      <div class="lineup">
+        <div class="susp"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></div><div class="role">End-user</div><h4>Typed the goal</h4><p>Intended this — or just "test my network"?</p></div>
+        <div class="susp"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/></svg></div><div class="role">Operator</div><h4>Ran / supervised it</h4><p>What controls were set? Was anyone watching?</p></div>
+        <div class="susp"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l8 4v6c0 5-4 7-8 8-4-1-8-3-8-8V7z"/></svg></div><div class="role">Deployer</div><h4>Gave it tools</h4><p>Handed the model network access and a shell.</p></div>
+        <div class="susp"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 7h16M4 12h16M4 17h10"/></svg></div><div class="role">Developer</div><h4>Built the model</h4><p>Set — or failed to set — the limits.</p></div>
+      </div>
+      <p class="note" style="margin-top:20px">And two the chain often can't reach: the <span class="em">AI itself</span>, and the <span class="em">state sheltering the operator</span>.</p>
+    </div>
+    <div class="sn">Run it as a real debate — don't resolve too fast. The core question is <span class="say">"whose intent counts, and can you prove it?"</span></div>
+  </section>
+
+  <!-- 17 PRECEDENT TIMELINE -->
+  <section class="slide" data-part="2" data-title="The precedent" data-partname="Part II · No one is behind it">
+    <div class="wrap">
+      <div class="eyebrow">What the courts already give us</div>
+      <div class="figure" style="margin:10px 0 18px" aria-hidden="true">
+        <svg viewBox="0 0 1040 120">
+          <line x1="30" y1="60" x2="1010" y2="60" stroke="#233140" stroke-width="2"/>
+          <g font-family="ui-monospace,monospace" font-size="12" text-anchor="middle">
+            <g><circle cx="70" cy="60" r="6" fill="#5aa2ff"/><text x="70" y="40" fill="#a7b4c6">1991</text><text x="70" y="86" fill="#e9eef6" font-style="italic">Morris</text></g>
+            <g><circle cx="300" cy="60" r="6" fill="#5aa2ff"/><text x="300" y="40" fill="#a7b4c6">2009</text><text x="300" y="86" fill="#e9eef6" font-style="italic">Flores-Figueroa</text></g>
+            <g><circle cx="500" cy="60" r="6" fill="#5aa2ff"/><text x="500" y="40" fill="#a7b4c6">2011</text><text x="500" y="86" fill="#e9eef6" font-style="italic">Global-Tech</text></g>
+            <g><circle cx="700" cy="60" r="6" fill="#5aa2ff"/><text x="700" y="40" fill="#a7b4c6">2014</text><text x="700" y="86" fill="#e9eef6" font-style="italic">Auernheimer</text></g>
+            <g><circle cx="870" cy="60" r="7" fill="#f0a935"/><text x="870" y="40" fill="#a7b4c6">2021</text><text x="870" y="86" fill="#e9eef6" font-style="italic">Van Buren</text></g>
+            <g><circle cx="990" cy="60" r="6" fill="#f0a935"/><text x="990" y="40" fill="#a7b4c6">2026</text><text x="990" y="86" fill="#f0a935">EO</text></g>
+          </g>
+        </svg>
+      </div>
+      <div class="cols even" style="gap:34px; align-items:start">
+        <ul class="clean">
+          <li><b><em>Morris</em> (1991)</b> — the launcher of autonomous code is liable for the <em>access</em> it makes, even beyond intended damage.</li>
+          <li><b><em>Flores-Figueroa</em> (2009)</b> — aggravated ID theft needs proof a human <em>knew</em> the victim was real. If the agent chose, who knew?</li>
+        </ul>
+        <ul class="clean">
+          <li><b><em>Global-Tech</em> (2011)</b> — willful blindness: ignoring a known risk is no defense. Closes the "I didn't know it would attack" exit.</li>
+          <li><b><em>Van Buren</em> (2021)</b> — CFAA reaches the areas you're not authorized to touch. What is an agent ever authorized to reach?</li>
+        </ul>
+      </div>
+      <p class="note warn" style="margin-top:18px">Newer backstops: <b>California</b> — "it acted autonomously" is no defense; a <b>2026 executive order</b> directs prosecutors to apply CFAA to AI-run intrusion.</p>
+    </div>
+    <div class="sn">Walk the timeline left to right — the law has done pieces of this before. But note the honest gap: no case squarely resolves the <em>no-human</em> attacker. That's the open question, and it's the point.</div>
+  </section>
+
+  <!-- 18 STATE RESPONSE -->
+  <section class="slide" data-part="2" data-title="The state's response" data-partname="Part II · No one is behind it">
+    <div class="wrap cols">
+      <div>
+        <div class="eyebrow">The policy answer · August 2026</div>
+        <h2 class="serif">If you can't catch them, license someone who can.</h2>
+        <p class="sub">When attribution and reach fail, one response is to deputize the private sector. A 2026 national-security memorandum lets <span class="em">vetted private firms</span> run offensive operations against foreign criminal networks — per-operation government sign-off, money held in escrow against misuse. Observers call it the cyber equivalent of <span class="em">letters of marque</span>.</p>
+      </div>
+      <div class="figure" aria-hidden="true">
+        <svg viewBox="0 0 340 300">
+          <line x1="50" y1="30" x2="50" y2="270" stroke="#233140" stroke-width="2"/>
+          <g font-family="ui-sans-serif,system-ui" font-size="14">
+            <circle cx="50" cy="56" r="6" fill="#8a6320"/><text x="70" y="52" fill="#a7b4c6">Privateers</text><text x="70" y="70" fill="#6d7d92" font-family="ui-monospace,monospace" font-size="11">17th c.</text>
+            <circle cx="50" cy="118" r="6" fill="#8a6320"/><text x="70" y="114" fill="#a7b4c6">Pinkertons</text><text x="70" y="132" fill="#6d7d92" font-family="ui-monospace,monospace" font-size="11">19th c.</text>
+            <circle cx="50" cy="180" r="6" fill="#8a6320"/><text x="70" y="176" fill="#a7b4c6">Private military firms</text><text x="70" y="194" fill="#6d7d92" font-family="ui-monospace,monospace" font-size="11">20th–21st c.</text>
+            <circle cx="50" cy="244" r="8" fill="#f0a935"/><text x="70" y="240" fill="#f0a935" font-weight="600">Cyber privateers</text><text x="70" y="258" fill="#6d7d92" font-family="ui-monospace,monospace" font-size="11">2026</text>
+          </g>
+        </svg>
+      </div>
+    </div>
+    <div class="sn">Fold the policy in here: the state's answer to an accountability gap is to outsource offense — an old move (privateers → PMCs) in a new, borderless domain. Both tracks care: who's trustworthy to do it, and who's liable when it goes wrong.</div>
+  </section>
+
+  <!-- 19 INVERSION -->
+  <section class="slide" data-part="2" data-title="The inversion" data-partname="Part II · No one is behind it">
+    <div class="wrap">
+      <div class="eyebrow">The legal novelty, in one line</div>
+      <h2 class="serif" style="max-width:20ch; font-size:clamp(30px,4.6vw,54px)">The same act is a <span class="redk">felony</span> or a <span class="blue">licensed operation</span> — depending only on who authorized it.</h2>
+      <div class="cols even" style="margin-top:26px; align-items:center">
+        <p class="sub">The memo doesn't repeal the computer-crime laws from Part I. The intrusion, the shell, the data destruction the agent performed are still exactly the conduct §1030 makes a crime. It only carves out <span class="em">authorization</span> for vetted firms. Identical technique; opposite legal status.</p>
+        <div class="figure" aria-hidden="true">
+          <svg viewBox="0 0 320 180">
+            <rect x="16" y="40" width="130" height="100" rx="10" fill="#131b26" stroke="#e2564f"/><text x="81" y="80" text-anchor="middle" fill="#e2564f" font-family="ui-monospace,monospace" font-size="13">§1030</text><text x="81" y="104" text-anchor="middle" fill="#e2564f" font-family="ui-sans-serif,system-ui" font-size="15" font-weight="600">felony</text>
+            <rect x="174" y="40" width="130" height="100" rx="10" fill="#0f1620" stroke="#5aa2ff"/><text x="239" y="80" text-anchor="middle" fill="#5aa2ff" font-family="ui-monospace,monospace" font-size="13">authorized</text><text x="239" y="104" text-anchor="middle" fill="#5aa2ff" font-family="ui-sans-serif,system-ui" font-size="15" font-weight="600">operation</text>
+            <text x="160" y="96" text-anchor="middle" fill="#6d7d92" font-family="ui-monospace,monospace" font-size="18">=</text>
+          </g></svg>
+        </div>
+      </div>
+    </div>
+    <div class="sn">The intellectual payoff. The same conduct from Part I is, for some actors, now a sanctioned tool. Ask: what happens when a licensed strike hits the wrong target — and who answers then?</div>
+  </section>
+
+  <!-- 20 CLOSE -->
+  <section class="slide" data-part="2" data-title="Where this leaves us" data-partname="Part II · No one is behind it">
+    <div class="wrap cols wide-left">
+      <div>
+        <div class="eyebrow">Where this leaves us</div>
+        <h1 class="serif" style="font-size:clamp(34px,5vw,64px)">People get caught<br>by being people.</h1>
+        <p class="lead">We began with an operator undone by a reused avatar. We end with attackers that leave nothing behind, and a state licensing private offense because the old way no longer scales. The technique is racing ahead; accountability is still trying to find someone to hold. That gap is the work of the next decade — and possibly of the people in this room.</p>
+      </div>
+      <div class="figure" aria-hidden="true">
+        <svg viewBox="0 0 300 300">
+          <circle cx="150" cy="130" r="90" fill="none" stroke="#233140" stroke-width="2"/>
+          <g opacity=".9"><path d="M124 150 q-6 -30 8 -44 l-8 -18 l16 10 q14 -6 28 0 l16 -10 l-8 18 q14 14 8 44 q-30 12 -60 0 Z" fill="#31465b"/></g>
+          <g transform="translate(150,250)" stroke="#f0a935" stroke-width="2.4" fill="none" stroke-linecap="round">
+            <line x1="0" y1="-30" x2="0" y2="10"/><line x1="-34" y1="-26" x2="34" y2="-26"/>
+            <path d="M-34 -26 L-46 -4 M-34 -26 L-22 -4 M-46 -4 a12 7 0 0 0 24 0"/><path d="M34 -26 L22 -4 M34 -26 L46 -4 M22 -4 a12 7 0 0 0 24 0"/><line x1="-12" y1="10" x2="12" y2="10"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+    <div class="sn">Land the last line and stop. Let the question sit before discussion — this is the note the room should leave on.</div>
+  </section>
+
+  <!-- 21 DISCUSSION -->
+  <section class="slide divider" data-part="2" data-title="Discussion" data-partname="Part II · No one is behind it">
+    <div class="wrap">
+      <div class="pnum serif">Discussion</div>
+      <h1 class="serif" style="font-size:clamp(36px,6vw,72px)">Who answers<br>for it?</h1>
+      <div class="rule"></div>
+      <p class="sub">Developer, deployer, operator, user — or no one? Is licensed "hack-back" a fix, or a new problem? The reference exhibits follow for specifics.</p>
+    </div>
+    <div class="sn">Have the reference exhibits ready. If the room goes technical, jump to the step→law→case exhibit; if legal, the statutes and sentencing table.</div>
+  </section>
+
+  <!-- 22 REF FEDERAL -->
+  <section class="slide" data-part="ref" data-title="Reference — federal" data-partname="Reference exhibits">
+    <div class="wrap">
+      <div class="eyebrow">Reference exhibit · federal statutes</div>
+      <div class="tblwrap">
+        <table>
+          <thead><tr><th>Statute</th><th>Reach</th><th>Penalty</th></tr></thead>
+          <tbody>
+            <tr><td class="mono"><b>18 U.S.C. §1030(a)(2)</b><br>CFAA — core charge</td><td>Intentional access, without/exceeding authorization, obtaining info from a protected computer.</td><td>Misdemeanor ≤1 yr → felony <b>≤5 yrs</b> if for gain / in furtherance of a crime / value &gt;$5,000 → <b>≤10 yrs</b> repeat.</td></tr>
+            <tr><td class="mono"><b>§1030(a)(5)</b><br>the "damage" provision</td><td>Knowing transmission that intentionally damages a protected computer. The AI marker-<em>write</em> would implicate it.</td><td>Own loss thresholds (≈≥$5,000). <b>Argued, not asserted</b> — no primary pass yet.</td></tr>
+            <tr><td class="mono"><b>§1028A</b><br>aggravated ID theft</td><td>Knowingly using a real person's means of identification during a predicate felony.</td><td><b>Mandatory +2 yrs, consecutive.</b> No suspension, no concurrency. (<cite>Flores-Figueroa</cite>: must prove "knew real person.")</td></tr>
+            <tr><td class="mono"><b>§1343</b><br>wire fraud</td><td>Fraud scheme over interstate wires — the usual hook for phishing/extortion.</td><td>≤20 yrs; ≤30 if a financial institution or declared disaster.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="sn">Prison ranges cited confidently; §1030(a)(5) stays "argued, not asserted." Sourcing on the last exhibit.</div>
+  </section>
+
+  <!-- 23 REF COLORADO -->
+  <section class="slide" data-part="ref" data-title="Reference — Colorado" data-partname="Reference exhibits">
+    <div class="wrap">
+      <div class="eyebrow">Reference exhibit · Colorado + sentencing</div>
+      <div class="cols even" style="align-items:start; gap:24px">
+        <div class="tblwrap" style="max-height:68vh">
+          <table>
+            <thead><tr><th>Statute</th><th>Penalty</th></tr></thead>
+            <tbody>
+              <tr><td class="mono"><b>§18-5.5-102</b><br>Computer Crime</td><td>Bare access: <b>M2</b> (≤120d) → <b>F6</b> on prior. By value: $500–1k = M1; $1k–20k = <b>F4</b>; $20k+ = <b>F3</b>.</td></tr>
+              <tr><td class="mono"><b>§18-5-902</b><br>Identity Theft</td><td><b>Class 4 felony</b> — 2–6 yrs, 3 yrs parole, $2k–$500k. Prison mandatory on a qualifying prior.</td></tr>
+              <tr><td class="mono"><b>§6-1-716</b><br>Breach Notice</td><td>Civil duty on the victim org: notify residents <b>≤30 days</b>; CRAs if &gt;1,000 affected.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="tblwrap" style="max-height:68vh">
+          <table>
+            <thead><tr><th>Class</th><th class="nowrap">Prison</th><th class="nowrap">Parole</th><th class="nowrap">Fine</th></tr></thead>
+            <tbody class="mono">
+              <tr><td><b>F3</b></td><td class="nowrap">4–12 yrs</td><td class="nowrap">3 yrs</td><td class="nowrap">$3k–750k</td></tr>
+              <tr><td><b>F4</b></td><td class="nowrap">2–6 yrs</td><td class="nowrap">3 yrs</td><td class="nowrap">$2k–500k</td></tr>
+              <tr><td><b>F5</b></td><td class="nowrap">1–3 yrs</td><td class="nowrap">2 yrs</td><td class="nowrap">$1k–100k</td></tr>
+              <tr><td><b>F6</b></td><td class="nowrap">1–1.5 yrs</td><td class="nowrap">1 yr</td><td class="nowrap">—</td></tr>
+              <tr><td><b>M1</b></td><td class="nowrap">≤364 d</td><td class="nowrap">—</td><td class="nowrap">—</td></tr>
+              <tr><td><b>M2</b></td><td class="nowrap">≤120 d</td><td class="nowrap">—</td><td class="nowrap">—</td></tr>
+            </tbody>
+          </table>
+          <p class="note" style="margin-top:12px">Post-SB21-271 (2022), current 2026. Prison ranges verified; <span class="amberk">exact fine caps practitioner-sourced</span>.</p>
+        </div>
+      </div>
+    </div>
+    <div class="sn">Colorado prosecutes computer crime under §18-5.5-102 far more often than the feds run CFAA. State and federal can both charge.</div>
+  </section>
+
+  <!-- 24 REF CHEAT -->
+  <section class="slide" data-part="ref" data-title="Reference — step→law→case" data-partname="Reference exhibits">
+    <div class="wrap">
+      <div class="eyebrow">Reference exhibit · demo step → law → case</div>
+      <div class="tblwrap">
+        <table>
+          <thead><tr><th>Demo step</th><th>Federal</th><th>Colorado</th><th>Governing case</th></tr></thead>
+          <tbody>
+            <tr><td>Exposed confidential file</td><td class="mono">§1030(a)(2) <span class="fade">(contested)</span></td><td class="mono">§18-5.5-102 <span class="fade">(contested)</span></td><td><cite>Auernheimer</cite> (weev)</td></tr>
+            <tr><td>SQLi login bypass</td><td class="mono">§1030(a)(2)</td><td class="mono">§18-5.5-102</td><td><cite>Van Buren</cite> — gate defeated</td></tr>
+            <tr><td>Broken-access enumeration</td><td class="mono">§1030(a)(2)</td><td class="mono">§18-5.5-102</td><td><cite>Van Buren</cite> — off-limits areas</td></tr>
+            <tr><td>Account takeover</td><td class="mono">§1028 / §1028A <b>(+2y)</b></td><td class="mono">§18-5-902 <b>(F4)</b></td><td><cite>Flores-Figueroa</cite></td></tr>
+            <tr><td>AI marker-write (Part II)</td><td class="mono">§1030(a)(2); (a)(5) <span class="fade">argued</span></td><td class="mono">§18-5.5-102</td><td><cite>Morris</cite> — intent-to-access</td></tr>
+            <tr><td>Breach aftermath</td><td class="mono">—</td><td class="mono">§6-1-716 (30-day)</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="sub" style="font-size:16px; margin-top:16px; max-width:none"><span class="amberk">The answer, doctrinally:</span> can't charge the AI (no mens rea) → climb user → operator → deployer → developer. <cite>Morris</cite> puts the launcher on the hook; <cite>Flores-Figueroa</cite> is the wall ("who knew?"); <cite>Global-Tech</cite> closes the "I didn't know" exit. The open rung: no reachable human at all.</p>
+    </div>
+    <div class="sn">Your Q&amp;A anchor — one glance maps any demo moment to its statute and case.</div>
+  </section>
+
+  <!-- 25 REF SOURCES -->
+  <section class="slide" data-part="ref" data-title="Reference — sources" data-partname="Reference exhibits">
+    <div class="wrap">
+      <div class="eyebrow">Reference exhibit · sourcing &amp; honesty</div>
+      <div class="cols even" style="align-items:start">
+        <ul class="clean">
+          <li>CFAA text/penalties — House OLRC §1030; USSC 2021 Computer Crimes primer.</li>
+          <li>Colorado — C.R.S. §§18-5.5-102, 18-5-902, 6-1-716, 18-1.3-401.</li>
+          <li>Cases — SCOTUS/Circuit opinions (<cite>Van Buren, Flores-Figueroa, Morris, Auernheimer, Global-Tech</cite>).</li>
+          <li>TeamPCP — Flare, Google/Mandiant (UNC6780), Krebs, CyberScoop (Aug 2026).</li>
+          <li>Autonomous campaigns &amp; the 2026 hack-back memo — contemporaneous reporting.</li>
+        </ul>
+        <div class="stack">
+          <p class="note warn"><b>Verified 2026-08-28.</b> Prison/sentence ranges checked against primary/authoritative sources. <b>Exact fine caps remain practitioner-sourced.</b> §1030(a)(5) is not asserted for the marker-write without a primary pass.</p>
+          <p class="note">These numbers and cases match the live cyber-range dashboard exactly — the deck and the demo stay in sync.</p>
+        </div>
+      </div>
+    </div>
+    <div class="sn">If pressed on a number you're unsure of, name the tier it's sourced at. That honesty reads well with a CJ audience — it's the project's whole legal bar.</div>
+  </section>
+
+</main>
+
+<div id="notes"><div class="nh" id="notesHead">Speaker notes</div><div class="nc" id="notesBody"></div></div>
+<div id="overview"><h5>Overview — click a slide to jump · <span class="mono">O</span> / <span class="mono">Esc</span> to close</h5><div class="ovgrid" id="ovgrid"></div></div>
+
+<div id="rail">
+  <span class="count"><b id="cur">01</b> / <span id="tot">25</span></span>
+  <span class="rtitle" id="railTitle"></span>
+  <span class="hint"><kbd>←</kbd><kbd>→</kbd> move · <kbd>O</kbd> overview · <kbd>N</kbd> notes · <kbd>F</kbd> full</span>
+</div>
+
+<script>
+(function(){
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var N = slides.length, i = 0;
+  var elCur=document.getElementById('cur'), elTot=document.getElementById('tot'), elPart=document.getElementById('sbPart'),
+      elProg=document.getElementById('progress'), elTitle=document.getElementById('railTitle'), elNotesBody=document.getElementById('notesBody'),
+      ov=document.getElementById('overview'), ovgrid=document.getElementById('ovgrid');
+  elTot.textContent=String(N);
+  function pad(n){return (n<10?'0':'')+n;}
+  function render(){
+    slides.forEach(function(s,k){ s.classList.toggle('active', k===i); });
+    var s=slides[i];
+    elPart.textContent=s.getAttribute('data-partname')||'';
+    elTitle.textContent=s.getAttribute('data-title')||'';
+    elCur.textContent=pad(i+1);
+    elProg.style.width=((i)/(N-1)*100)+'%';
+    document.body.setAttribute('data-part', s.getAttribute('data-part'));
+    var sn=s.querySelector('.sn');
+    elNotesBody.innerHTML = sn ? sn.innerHTML : '<span style="color:var(--ink-mute)">No notes.</span>';
+    if(location.hash!=='#'+(i+1)) history.replaceState(null,'','#'+(i+1));
+  }
+  function go(n){ i=Math.max(0,Math.min(N-1,n)); render(); }
+  function next(){ go(i+1); } function prev(){ go(i-1); }
+  document.addEventListener('keydown', function(e){
+    if(e.metaKey||e.ctrlKey||e.altKey) return;
+    var k=e.key;
+    if(ov.classList.contains('on')){ if(k==='o'||k==='O'||k==='Escape'){ov.classList.remove('on');} return; }
+    if(k==='ArrowRight'||k==='PageDown'||k===' '){e.preventDefault(); next();}
+    else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault(); prev();}
+    else if(k==='Home'){go(0);} else if(k==='End'){go(N-1);}
+    else if(k==='n'||k==='N'){document.body.classList.toggle('notes');}
+    else if(k==='o'||k==='O'){toggleOverview();}
+    else if(k==='f'||k==='F'){ if(!document.fullscreenElement){document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen();} else {document.exitFullscreen&&document.exitFullscreen();} }
+    else if(k==='Escape'){document.body.classList.remove('notes');}
+  });
+  document.getElementById('deck').addEventListener('click', function(e){
+    if(e.target.closest('a,button,input,textarea,select')) return;
+    var x=e.clientX, w=window.innerWidth;
+    if(x>w*0.62) next(); else if(x<w*0.38) prev();
+  });
+  var sx=null;
+  document.addEventListener('touchstart',function(e){sx=e.touches[0].clientX;},{passive:true});
+  document.addEventListener('touchend',function(e){ if(sx==null)return; var dx=e.changedTouches[0].clientX-sx; if(Math.abs(dx)>50){dx<0?next():prev();} sx=null;},{passive:true});
+  function buildOverview(){
+    ovgrid.innerHTML='';
+    slides.forEach(function(s,k){
+      var d=document.createElement('div'); d.className='ov'; d.setAttribute('data-part', s.getAttribute('data-part'));
+      var rm = s.getAttribute('data-removable') ? '<span class="rm">OPTIONAL</span>' : '';
+      d.innerHTML='<div class="oi">'+pad(k+1)+'</div>'+rm+'<div class="ot">'+(s.getAttribute('data-title')||'')+'</div><div class="oa">'+(s.getAttribute('data-partname')||'')+'</div>';
+      d.addEventListener('click', function(){ ov.classList.remove('on'); go(k); });
+      ovgrid.appendChild(d);
+    });
+  }
+  function toggleOverview(){ if(!ov.classList.contains('on')){buildOverview(); ov.classList.add('on');} else {ov.classList.remove('on');} }
+  ov.addEventListener('click', function(e){ if(e.target===ov) ov.classList.remove('on'); });
+  window.addEventListener('hashchange', function(){ var hh=parseInt((location.hash||'').replace('#',''),10); if(hh>=1&&hh<=N&&hh-1!==i) go(hh-1); });
+  var h=parseInt((location.hash||'').replace('#',''),10); if(h>=1&&h<=N) i=h-1;
+  render();
+})();
+</script>
+</body>
+</html>

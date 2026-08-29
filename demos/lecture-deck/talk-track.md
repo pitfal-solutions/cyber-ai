@@ -1,4 +1,18 @@
-# Talk-track — "Who Goes to Prison When the AI Did It?"
+# Talk-track — legal reference + (superseded) slide script
+
+> **Status (2026-08-29):** the deck was restructured into two parts —
+> *"Attack, Autonomy & Accountability"* (Part I: human-directed / TeamPCP;
+> Part II: autonomous agents, with the legal + policy material folded in).
+> The **slide-by-slide script below predates that restructure** — the
+> authoritative, current speaker notes now live *inside the deck* (press
+> `N`). What remains fully valid and worth keeping here is the **Legal
+> Reference Pack** further down (statutes, sentencing ranges, the five
+> anchor cases, and the demo-step → law → case cheat sheet), which still
+> matches the deck and the dashboard `legal-map.json` files.
+
+---
+
+## (Superseded) original three-act script — "Who Goes to Prison When the AI Did It?"
 
 **Runtime:** 45 min · **Room:** dual-track (cybersecurity + criminal justice)
 **Deliverable after approval:** HTML click-through deck + presenter run-sheet

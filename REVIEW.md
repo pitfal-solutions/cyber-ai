@@ -41,6 +41,53 @@ not a log.
 
 ---
 
+## 2026-08-29 (deck redesign) — restructured to two parts, new visual identity, expanded case study
+
+**What / why.** Founder review of the first deck landed several changes:
+the look read as generic/AI-made; the title and opening line spoiled the
+talk; slides were text-only; the TeamPCP case needed real who/what/how/why;
+and the spine should flow *human-directed → autonomous*, with the policy/
+legal material folded into the autonomous half rather than a separate act.
+Rebuilt accordingly. Deck renamed **`attack-autonomy-accountability.html`**
+(was `who-goes-to-prison-deck.html`).
+
+**Changes.**
+- **New visual identity** — a "forensic table" system deliberately steering
+  clear of the AI-deck clichés the design pass warns about: editorial
+  **serif** headlines (not Inter/Space-Grotesk), a cool signal-blue for the
+  technical thread and warm **paper "exhibit" cards** for the legal thread,
+  and a **custom SVG graphic on every slide** (worm-propagation tree,
+  deanonymization node graph, agent-autonomy loop, precedent timeline,
+  privateering lineage). Still self-contained, system-fonts-only, offline.
+- **Restructured** intro → **Part I** (a person is behind it: TeamPCP who/
+  what/how-caught, attribution principle, live demo, legal exhibits, the
+  clean case) → **Part II** (no one is behind it: autonomous attacks are
+  real, AI-vs-AI demo, ladder-with-no-rungs, the lineup, precedent timeline,
+  the state's hack-back response, the legal inversion) → reference exhibits.
+- **Expanded TeamPCP** into a proper case study, fact-checked against Flare,
+  Google/Mandiant (UNC6780), Krebs, CyberScoop: the Shai-Hulud self-
+  propagating npm/PyPI worm (CVE-2026-45321), hits on Trivy/Bitwarden/
+  Checkmarx/GitHub, 518M+ download footprint, ~500k credentials, 300+GB
+  exfiltrated, operators Ruben Thomson (21) and Louis Gaebler (23) charged
+  in Perth, deanonymized via a reused cat-at-monitors avatar.
+- **Graphics choice:** custom SVG/infographics rather than scraped photos —
+  safer on copyright/privacy for real people, and reads as authored. Easy to
+  swap real imagery in later if the founder approves specific sources.
+
+**Legal content unchanged and still in sync** with the dashboard
+`legal-map.json` files — same statutes, sentencing ranges, and five cases;
+same honesty flags (prison ranges verified; fine caps practitioner-sourced;
+§1030(a)(5) not asserted for the marker-write).
+
+**Verification.** Served locally and checked at projector 16:9
+(1280×720); DOM-measured the grids to confirm full-width two-column layout
+(wrap 1126px, columns filling it) and no clipping — the earlier scaled
+thumbnails were misleading. Known limit: below ~860px width, two-column
+slides stack vertically (a narrow-window fallback, not a projector case).
+`talk-track.md` kept but marked **superseded** for its slide script — the
+authoritative speaker notes now live inside the deck (`N`); its Legal
+Reference Pack stays valid.
+
 ## 2026-08-29 (lecture deck) — the guest-lecture slide deck checked into the repo
 
 **What / why.** Built the actual guest-lecture deck the whole repo exists to
