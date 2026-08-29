@@ -130,6 +130,10 @@
   /* note */
   .note{font-size:13.5px; color:var(--ink-mute); border-left:2px solid var(--line2); padding-left:13px; line-height:1.5}
   .note.warn{border-left-color:var(--amber); color:var(--ink-soft)}
+  a{color:var(--blue); text-decoration:none; border-bottom:1px solid transparent}
+  a:hover,a:focus-visible{border-bottom-color:currentColor} a:focus-visible{outline:2px solid var(--blue); outline-offset:3px; border-radius:2px}
+  .src{font-family:ui-monospace,monospace; font-size:12px; letter-spacing:.02em; color:var(--ink-mute); display:inline-flex; align-items:center; gap:7px; margin-top:18px}
+  .src:hover,.src:focus-visible{color:var(--blue)} .src::before{content:"↗"; color:var(--blue)}
 
   /* discussion band + guide matrix */
   .discuss{display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-top:20px}
@@ -246,14 +250,14 @@
         <div class="qgrid">
           <div class="q">
             <span class="qn">01</span>
-            <h2 class="serif">As AI gets better at attacking, what actually changes about <span class="blue">how it's done?</span></h2>
+            <h2 class="serif">As technology gets better at breaking in, what actually changes about <span class="blue">how it's done?</span></h2>
           </div>
           <div class="q law">
             <span class="qn">02</span>
-            <h2 class="serif">And when a machine is the attacker, <span class="amberk">who does the law hold responsible?</span></h2>
+            <h2 class="serif">And as the tools need less and less of a human, <span class="amberk">who does the law hold responsible?</span></h2>
           </div>
         </div>
-        <p class="sub" style="margin-top:24px">Two threads — the technique and the law — that AI is pulling together. Keep both in view; the answer to one keeps changing the answer to the other.</p>
+        <p class="sub" style="margin-top:24px">Two threads — the technique and the law — that technology keeps pulling together. Keep both in view; the answer to one keeps changing the answer to the other.</p>
       </div>
       <div class="figure" aria-hidden="true">
         <svg viewBox="0 0 320 300">
@@ -263,7 +267,10 @@
           <text x="28" y="60" fill="#5aa2ff" font-family="ui-monospace,monospace" font-size="12">technique</text>
           <text x="28" y="248" fill="#f0a935" font-family="ui-monospace,monospace" font-size="12">the law</text>
           <circle cx="160" cy="150" r="26" fill="#0f1620" stroke="#e9eef6" stroke-width="1.5"/>
-          <text x="160" y="155" text-anchor="middle" fill="#e9eef6" font-family="ui-monospace,monospace" font-size="13" letter-spacing="1">AI</text>
+          <g transform="translate(160,150)" stroke="#e9eef6" stroke-width="1.5" fill="none" stroke-linecap="round">
+            <rect x="-8" y="-8" width="16" height="16" rx="2"/>
+            <path d="M-8 -3 h-4 M-8 3 h-4 M8 -3 h4 M8 3 h4 M-3 -8 v-4 M3 -8 v-4 M-3 8 v4 M3 8 v4"/>
+          </g>
           <path d="M188 150 L300 150" fill="none" stroke="#a7b4c6" stroke-width="1.6" stroke-dasharray="2 7"/>
           <circle cx="304" cy="150" r="6" fill="#a7b4c6"/>
         </svg>
@@ -280,6 +287,7 @@
         <h2 class="serif">The tools already cross over.</h2>
         <p class="sub">I worked the wireless-device side of a multi-jurisdiction burglary investigation across the Denver metro — a case later charged under the <span class="em">Colorado Organized Crime Control Act</span>. The crew wasn't picking locks blindly. They carried gear to <span class="blue">knock Wi-Fi security systems offline</span> — blinding cameras and alarms before they moved.</p>
         <p class="lead"><span class="em">Offensive wireless technique wasn't the exotic part of a "cyber" case — it was an ordinary crew using it to defeat everyday security.</span> They were still identified and charged, through the trail they couldn't jam.</p>
+        <a class="src" href="https://arapahoeco.gov/news_detail_T13_R1398.php" target="_blank" rel="noopener">18th Judicial DA — case release</a>
       </div>
       <div class="figure" aria-hidden="true">
         <svg viewBox="0 0 340 300">
