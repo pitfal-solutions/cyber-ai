@@ -44,14 +44,19 @@ stack vertically.
 
 ## Structure at a glance
 
-Introduction (title · agenda · optional field-note opener) → **Part I**
-(TeamPCP: who / what / how caught · the attribution principle · live demo ·
-legal exhibits · the clean case) → **Part II** (autonomous attacks are real
-· AI-vs-AI demo · the ladder with no rungs · the lineup · precedent timeline
-· the state's response · the legal inversion · close) → reference exhibits.
+Introduction (title · agenda · a field case from Colorado — the presenter's
+first-hand work on a Wi-Fi-jamming organized-burglary investigation) →
+**Part I** (TeamPCP: who / what / how caught · the attribution principle ·
+live demo + class-discussion prompts · a settled-vs-arguable discussion
+guide · a best-practice method for each side) → **Part II** (autonomous
+attacks are real · AI-vs-AI demo · the ladder with no rungs · the lineup ·
+precedent timeline · the state's response · the legal inversion · close) →
+reference exhibits.
 
-The optional field-note opener (slide 3) is tagged **OPTIONAL** in the
-overview — cut it and open on the case study with zero rewiring.
+Part I follows a **demo → discussion → best-practice** arc: run the
+scenario, prompt the room (tactics for the cyber half, charging decisions
+for the justice half), use the settled-vs-arguable guide if they stall, then
+land a clean method both tracks can defend.
 
 ## Keep it in sync
 

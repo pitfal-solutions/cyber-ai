@@ -111,7 +111,7 @@
   .exhibit .bd{font-size:14px; line-height:1.45; color:var(--paper-ink); margin-top:6px}
   .exhibit .bd b{color:#000} .exhibit .pen{margin-top:9px; font-size:13px; color:var(--paper-soft)}
   .exhibit .pen b{color:var(--burgundy)}
-  .exhibit.contested{background:repeating-linear-gradient(135deg,var(--paper),var(--paper) 16px,var(--paper2) 16px,var(--paper2) 18px)}
+  .exhibit.contested{border-style:dashed; border-color:var(--amber-dim)}
   .exhibit.contested::before{background:var(--amber-dim)}
 
   /* divider */
@@ -130,6 +130,29 @@
   /* note */
   .note{font-size:13.5px; color:var(--ink-mute); border-left:2px solid var(--line2); padding-left:13px; line-height:1.5}
   .note.warn{border-left-color:var(--amber); color:var(--ink-soft)}
+
+  /* discussion band + guide matrix */
+  .discuss{display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-top:20px}
+  .dcol{border:1px solid var(--line); border-radius:12px; padding:14px 16px; background:linear-gradient(180deg,var(--panel),var(--panel2))}
+  .dcol.tech{border-top:3px solid var(--blue)} .dcol.law{border-top:3px solid var(--amber)}
+  .dh{font-family:ui-monospace,monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; margin-bottom:11px; display:flex; justify-content:space-between; align-items:center; gap:8px}
+  .dcol.tech .dh{color:var(--blue)} .dcol.law .dh{color:var(--amber)}
+  .dh span{font-size:10px; color:var(--ink-mute); border:1px solid var(--line2); border-radius:4px; padding:1px 6px; letter-spacing:.06em}
+  .dcol ul{list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:8px}
+  .dcol li{font-size:14px; line-height:1.4; color:var(--ink-soft); padding-left:15px; position:relative}
+  .dcol li::before{content:""; position:absolute; left:0; top:.52em; width:6px; height:6px; border-radius:1px; background:var(--ink-mute)}
+  .dcol li b{color:var(--ink)}
+  /* guide matrix (clear vs ambiguous) */
+  .matrix{display:grid; grid-template-columns:96px 1fr 1fr; gap:12px; margin-top:14px; align-items:stretch}
+  .matrix .rh{display:flex; align-items:center; font-family:ui-monospace,monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-mute)}
+  .matrix .ch{font-family:ui-monospace,monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; padding-bottom:4px; display:flex; align-items:center; gap:8px}
+  .matrix .ch.tech{color:var(--blue)} .matrix .ch.law{color:var(--amber)}
+  .cell{border:1px solid var(--line); border-radius:10px; padding:12px 14px; background:linear-gradient(180deg,var(--panel),var(--panel2))}
+  .cell.amb{border-style:dashed; border-color:var(--amber-dim)}
+  .cell .lbl{font-family:ui-monospace,monospace; font-size:10px; letter-spacing:.1em; text-transform:uppercase; margin-bottom:6px}
+  .cell.clear .lbl{color:var(--ink-mute)} .cell.amb .lbl{color:var(--amber)}
+  .cell p{margin:0; font-size:13.5px; line-height:1.42; color:var(--ink-soft)} .cell p b{color:var(--ink)} .cell p + p{margin-top:7px}
+  .cell .st{font-family:ui-monospace,monospace; font-size:12px; color:var(--blue)} .cell.law-c .st{color:var(--amber)}
   .removable{display:inline-flex; align-items:center; gap:8px; font-family:ui-monospace,monospace; font-size:11px; letter-spacing:.12em; text-transform:uppercase;
     color:var(--amber); border:1px dashed var(--amber-dim); border-radius:5px; padding:4px 10px; margin-bottom:18px}
 
@@ -201,13 +224,8 @@
           <!-- the one that resolves -->
           <g><circle cx="150" cy="120" r="9" fill="#5aa2ff"/><circle cx="150" cy="120" r="18" fill="none" stroke="#5aa2ff" stroke-width="1.5" opacity=".6"/></g>
           <circle cx="120" cy="220" r="6" fill="#f0a935"/>
-          <!-- scales of justice glyph -->
-          <g transform="translate(180,300)" stroke="#a7b4c6" stroke-width="2.4" fill="none" stroke-linecap="round">
-            <line x1="0" y1="-34" x2="0" y2="14"/><line x1="-40" y1="-30" x2="40" y2="-30"/>
-            <path d="M-40 -30 L-54 -4 M-40 -30 L-26 -4 M-54 -4 a14 8 0 0 0 28 0"/>
-            <path d="M40 -30 L26 -4 M40 -30 L54 -4 M26 -4 a14 8 0 0 0 28 0"/>
-            <line x1="-14" y1="14" x2="14" y2="14"/>
-          </g>
+          <g stroke="#2e5c98" stroke-width="1" opacity=".4"><line x1="210" y1="250" x2="150" y2="308"/><line x1="120" y1="220" x2="150" y2="308"/></g>
+          <circle cx="150" cy="308" r="4" fill="#3a4a5f"/>
         </svg>
       </div>
     </div>
@@ -243,37 +261,37 @@
     <div class="sn">Give the room its map and the two-color key. Keep it short — the payoff is the material, not the agenda.</div>
   </section>
 
-  <!-- 3 PERSONAL (REMOVABLE) -->
-  <section class="slide" data-part="intro" data-title="Caught by their own data" data-partname="Introduction" data-removable="1">
+  <!-- 3 FIELD EXPERIENCE -->
+  <section class="slide" data-part="intro" data-title="Where physical meets digital" data-partname="Introduction">
     <div class="wrap cols">
       <div>
-        <div class="removable">◇ Optional opener — cut cleanly if it doesn't land</div>
-        <h2 class="serif">Investigators rarely out-hack anyone.</h2>
-        <p class="sub">Before this work I spent years turning raw data into cases. The pattern almost never changed: the target wasn't beaten by brilliant forensics — they leaked themselves. A photo taken to show off, with the phone quietly writing <span class="blue">GPS coordinates</span> into the file. In one operation, <strong>229</strong> people were located from nothing but the metadata they forgot to strip.</p>
-        <p class="lead"><span class="em">The evidence came from the offender, not the investigator.</span></p>
+        <div class="eyebrow">From the field · Colorado</div>
+        <h2 class="serif">The tools already cross over.</h2>
+        <p class="sub">I worked the wireless-device side of a multi-jurisdiction burglary investigation across the Denver metro — a case later charged under the <span class="em">Colorado Organized Crime Control Act</span>. The crew wasn't picking locks blindly. They carried gear to <span class="blue">knock Wi-Fi security systems offline</span> — blinding cameras and alarms before they moved.</p>
+        <p class="lead"><span class="em">Offensive wireless technique wasn't the exotic part of a "cyber" case — it was an ordinary crew using it to defeat everyday security.</span> They were still identified and charged, through the trail they couldn't jam.</p>
       </div>
       <div class="figure" aria-hidden="true">
-        <svg viewBox="0 0 360 300">
-          <rect x="30" y="34" width="300" height="176" rx="8" fill="#131b26" stroke="#233140"/>
-          <rect x="30" y="34" width="300" height="30" rx="8" fill="#0f1620"/>
-          <circle cx="48" cy="49" r="4" fill="#31465b"/><circle cx="62" cy="49" r="4" fill="#31465b"/>
-          <text x="80" y="53" fill="#6d7d92" font-family="ui-monospace,monospace" font-size="11">IMG_4471.HEIC</text>
-          <!-- image body -->
-          <rect x="46" y="78" width="120" height="116" rx="4" fill="#0f1620" stroke="#233140"/>
-          <circle cx="80" cy="112" r="12" fill="#2e5c98"/><path d="M52 178 L92 132 L120 162 L138 146 L160 178 Z" fill="#31465b"/>
-          <!-- EXIF panel -->
-          <g font-family="ui-monospace,monospace" font-size="11.5" fill="#a7b4c6">
-            <text x="186" y="90">EXIF METADATA</text>
-            <text x="186" y="116" fill="#6d7d92">GPS.Lat</text><text x="186" y="132" fill="#5aa2ff">39.7392° N</text>
-            <text x="186" y="156" fill="#6d7d92">GPS.Long</text><text x="186" y="172" fill="#5aa2ff">104.9903° W</text>
+        <svg viewBox="0 0 340 300">
+          <g fill="none" stroke="#31465b" stroke-width="2">
+            <path d="M186 148 a46 46 0 0 1 46 -46"/><path d="M186 148 a30 30 0 0 1 30 -30"/><path d="M186 148 a14 14 0 0 1 14 -14"/>
           </g>
-          <!-- pin -->
-          <g transform="translate(180,250)"><path d="M0 -26 a16 16 0 1 1 0 .01 M0 40 L-11 -2 L11 -2 Z" fill="#e2564f"/><circle cx="0" cy="-10" r="6" fill="#0b0f15"/></g>
-          <line x1="230" y1="182" x2="192" y2="228" stroke="#e2564f" stroke-width="1.5" stroke-dasharray="3 3"/>
+          <g stroke="#5aa2ff" stroke-width="2.2" fill="#0f1620" stroke-linejoin="round">
+            <rect x="66" y="126" width="120" height="46" rx="10"/>
+            <rect x="40" y="118" width="16" height="18" rx="3"/>
+            <path d="M56 136 L66 146" stroke-linecap="round"/>
+            <path d="M186 136 L212 128 L212 170 L186 162 Z"/>
+          </g>
+          <circle cx="146" cy="149" r="13" fill="none" stroke="#5aa2ff" stroke-width="2.2"/><circle cx="146" cy="149" r="4.5" fill="#5aa2ff"/>
+          <g transform="translate(238,92)">
+            <circle r="26" fill="#0f1620" stroke="#f0a935" stroke-width="2.2"/>
+            <g stroke="#f0a935" stroke-width="3" stroke-linecap="round"><line x1="-11" y1="-11" x2="11" y2="11"/><line x1="11" y1="-11" x2="-11" y2="11"/></g>
+          </g>
+          <text x="238" y="150" text-anchor="middle" fill="#f0a935" font-family="ui-monospace,monospace" font-size="11">SIGNAL LOST</text>
+          <text x="66" y="214" fill="#6d7d92" font-family="ui-monospace,monospace" font-size="11">charged: Colo. Organized Crime Control Act</text>
         </svg>
       </div>
     </div>
-    <div class="sn"><b>~60s, de-identified, no employer or unit.</b> The point is the theme, stated once from experience: offenders leak themselves. If it feels like a detour on the day, skip it — the next slide carries the same idea with a bigger case.</div>
+    <div class="sn"><b>Ground it in real, local work.</b> A Colorado case you worked — the wireless-attack devices used to disable Wi-Fi cameras and alarms, prosecuted as organized crime. Two points for the room: offensive cyber technique is already standard kit in ordinary crime, and even a crew that beat the cameras left a trail that identified them. Technique advancing while attribution and the law keep pace — that tension is the whole talk.</div>
   </section>
 
   <!-- 4 PART I DIVIDER -->
@@ -321,10 +339,14 @@
             <rect x="52" y="120" width="66" height="46" rx="3"/><rect x="137" y="110" width="66" height="56" rx="3"/><rect x="222" y="120" width="66" height="46" rx="3"/>
           </g>
           <g fill="#2e5c98" opacity=".7"><rect x="58" y="126" width="54" height="6"/><rect x="58" y="138" width="40" height="6"/><rect x="143" y="118" width="54" height="6"/><rect x="143" y="130" width="46" height="6"/><rect x="228" y="126" width="54" height="6"/><rect x="228" y="138" width="34" height="6"/></g>
-          <!-- cat silhouette -->
-          <g fill="#e9eef6"><path d="M150 205 q-6 -30 8 -44 l-8 -18 l16 10 q14 -6 28 0 l16 -10 l-8 18 q14 14 8 44 q-30 12 -60 0 Z"/>
-          <circle cx="164" cy="196" r="2.4" fill="#0f1620"/><circle cx="184" cy="196" r="2.4" fill="#0f1620"/></g>
-          <path d="M150 205 q40 6 60 -10" fill="none" stroke="#31465b" stroke-width="2"/>
+          <!-- cat (clean line icon) -->
+          <g transform="translate(170,190)" stroke="#e9eef6" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M-20 -20 L-12 -4"/><path d="M20 -20 L12 -4"/>
+            <path d="M-20 -20 C-27 -2 -22 20 0 22 C22 20 27 -2 20 -20"/>
+            <path d="M-4 8 L0 12 L4 8"/>
+            <path d="M6 7 L22 4 M6 11 L22 15 M-6 7 L-22 4 M-6 11 L-22 15"/>
+          </g>
+          <circle cx="161" cy="186" r="2" fill="#e9eef6"/><circle cx="179" cy="186" r="2" fill="#e9eef6"/>
           <text x="170" y="262" text-anchor="middle" fill="#f0a935" font-family="ui-monospace,monospace" font-size="12">"DeadCatx3"</text>
         </svg>
       </div>
@@ -386,7 +408,13 @@
               <g fill="#6d7d92"><text x="210" y="225">TikTok</text><text x="210" y="261">Google</text><text x="294" y="243">Steam</text></g>
               <!-- the match -->
               <circle cx="316" cy="150" r="34" fill="#0f1620" stroke="#f0a935" stroke-width="2"/>
-              <g fill="#f0a935"><path d="M300 158 q-3 -14 4 -21 l-4 -8 l8 5 q7 -3 14 0 l8 -5 l-4 8 q7 7 4 21 q-15 6 -30 0 Z"/></g>
+              <g transform="translate(316,150) scale(0.8)" stroke="#f0a935" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M-18 -18 L-11 -4"/><path d="M18 -18 L11 -4"/>
+                <path d="M-18 -18 C-24 -2 -20 18 0 20 C20 18 24 -2 18 -18"/>
+                <path d="M-3 7 L0 10 L3 7"/>
+                <path d="M5 6 L19 3 M5 10 L19 13 M-5 6 L-19 3 M-5 10 L-19 13"/>
+                <circle cx="-8" cy="-3" r="1.7" fill="#f0a935"/><circle cx="8" cy="-3" r="1.7" fill="#f0a935"/>
+              </g>
               <line x1="316" y1="252" x2="316" y2="184" stroke="#f0a935" stroke-width="1.6" stroke-dasharray="3 3"/>
               <text x="316" y="270" text-anchor="middle" fill="#f0a935" font-size="10">same cat</text>
             </g>
@@ -426,86 +454,115 @@
     <div class="sn">Generalize the case into a rule with a second quick example (Ochoa/EXIF). The visual ladder makes the "rungs" literal — because in Part II we show a ladder with none.</div>
   </section>
 
-  <!-- 9 DEMO CUE 1 -->
+  <!-- 9 DEMO CUE 1 + DISCUSSION -->
   <section class="slide" data-part="1" data-title="▶ Demo — an intrusion" data-partname="Part I · A person is behind it">
     <div class="wrap">
       <div class="eyebrow">▶ Live · what a directed intrusion looks like</div>
-      <div class="cols even" style="align-items:start">
-        <div class="stack">
-          <div class="terminal">
-            <div class="bar"><i></i><i></i><i></i><span>range · web-exploit</span></div>
-            <pre><span class="tp"><span class="tc">./run.sh web-exploit</span></span>
-<span class="to"># dashboard → 127.0.0.1:8080</span>
+      <div class="cols even" style="align-items:center; gap:30px">
+        <div class="terminal">
+          <div class="bar"><i></i><i></i><i></i><span>range · web-exploit</span></div>
+          <pre><span class="tp"><span class="tc">./run.sh web-exploit</span></span>
 <span class="tp"><span class="tc">./scenarios/web-exploit/run-attack.sh</span></span>
-<span class="to"># narrate each step as it lands</span></pre>
-          </div>
-          <p class="note warn">Real requests against a real app — no theater. A person directs every step here; that's the point of Part I. If it hangs, <span class="mono">reset.sh</span> and narrate from the recording.</p>
+<span class="to"># real requests · a person directs every step</span></pre>
         </div>
-        <div class="figure" aria-hidden="true">
-          <svg viewBox="0 0 340 250">
+        <div class="figure" aria-hidden="true" style="max-width:320px; margin:0 auto">
+          <svg viewBox="0 0 340 210">
             <g font-family="ui-monospace,monospace" font-size="11">
-              <line x1="42" y1="30" x2="42" y2="220" stroke="#233140" stroke-width="2"/>
-              <g>
-                <circle cx="42" cy="42" r="7" fill="#2e5c98"/><text x="62" y="46" fill="#a7b4c6">Recon <tspan fill="#5aa2ff">T1595</tspan></text>
-                <circle cx="42" cy="88" r="7" fill="#5aa2ff"/><text x="62" y="92" fill="#a7b4c6">Exposed file <tspan fill="#f0a935">contested</tspan></text>
-                <circle cx="42" cy="134" r="7" fill="#5aa2ff"/><text x="62" y="138" fill="#a7b4c6">SQLi bypass <tspan fill="#5aa2ff">T1190</tspan></text>
-                <circle cx="42" cy="180" r="7" fill="#5aa2ff"/><text x="62" y="184" fill="#a7b4c6">Broken access <tspan fill="#5aa2ff">T1213</tspan></text>
-                <circle cx="42" cy="214" r="7" fill="#e2564f"/><text x="62" y="218" fill="#e9eef6">Account takeover <tspan fill="#e2564f">T1098</tspan></text>
-              </g>
+              <line x1="42" y1="20" x2="42" y2="188" stroke="#233140" stroke-width="2"/>
+              <circle cx="42" cy="30" r="6" fill="#2e5c98"/><text x="60" y="34" fill="#a7b4c6">Recon <tspan fill="#5aa2ff">T1595</tspan></text>
+              <circle cx="42" cy="70" r="6" fill="#5aa2ff"/><text x="60" y="74" fill="#a7b4c6">Exposed file <tspan fill="#f0a935">contested</tspan></text>
+              <circle cx="42" cy="110" r="6" fill="#5aa2ff"/><text x="60" y="114" fill="#a7b4c6">SQLi bypass <tspan fill="#5aa2ff">T1190</tspan></text>
+              <circle cx="42" cy="150" r="6" fill="#5aa2ff"/><text x="60" y="154" fill="#a7b4c6">Broken access <tspan fill="#5aa2ff">T1213</tspan></text>
+              <circle cx="42" cy="184" r="6" fill="#e2564f"/><text x="60" y="188" fill="#e9eef6">Account takeover <tspan fill="#e2564f">T1098</tspan></text>
             </g>
           </svg>
         </div>
       </div>
+      <div class="discuss">
+        <div class="dcol tech">
+          <div class="dh">Discussion — tactics <span>CYBER</span></div>
+          <ul>
+            <li>Which step is the <b>real breach</b>, and which is just noise?</li>
+            <li>Why did the independent detector catch it — and what would a quieter attacker change?</li>
+            <li>What actually <b>stops this chain</b>, and what's the next move if it's blocked?</li>
+          </ul>
+        </div>
+        <div class="dcol law">
+          <div class="dh">Discussion — legal exposure <span>JUSTICE</span></div>
+          <ul>
+            <li>Which law does <b>each step</b> break?</li>
+            <li>You're the prosecutor — what do you charge, and what's your <b>strongest count</b>?</li>
+            <li>Which step is the <b>weakest case</b>, and would you still bring it?</li>
+          </ul>
+        </div>
+      </div>
     </div>
-    <div class="sn"><b>Run it, narrate it.</b> Point at the statutes lighting up on the dashboard's paper panel. Flag the exposed-file step as the deliberately weak one — we return to it. The detector fires independently: that's the evidence trail.</div>
+    <div class="sn"><b>Run it, narrate it, then open the floor with these prompts.</b> Real requests against a real app — no theater. If it hangs, <span class="mono">reset.sh</span> and narrate from the recording. Don't answer the prompts yourself — let the room work them; slide 10 is the guide if they stall.</div>
   </section>
 
-  <!-- 10 LEGAL EXHIBITS -->
-  <section class="slide" data-part="1" data-title="The law, per step" data-partname="Part I · A person is behind it">
+  <!-- 10 DISCUSSION GUIDE -->
+  <section class="slide" data-part="1" data-title="A guide to move the room" data-partname="Part I · A person is behind it">
     <div class="wrap">
-      <div class="eyebrow">Exhibits · the charges as they land</div>
-      <div class="cols even" style="align-items:start; gap:34px">
-        <div class="stack">
-          <div class="exhibit contested" data-tag="Exhibit · contested"><div class="st">§1030(a)(2) · §18-5.5-102</div><div class="bd">Exposed file — no control was defeated because there wasn't one. Is an open URL even "unauthorized"? Courts have split (the <em>weev</em> case). The chain's weakest link, on purpose.</div></div>
-          <div class="exhibit" data-tag="Exhibit A"><div class="st">18 U.S.C. §1030(a)(2)</div><div class="bd">SQLi login bypass — a real gate defeated. Squarely CFAA, even after <em>Van Buren</em>.</div></div>
+      <div class="eyebrow">If the room stalls · from demo to argument</div>
+      <h2 class="serif" style="font-size:clamp(24px,3vw,36px); margin-bottom:2px">Some steps are settled. Others could go either way.</h2>
+      <div class="matrix">
+        <div></div>
+        <div class="ch tech"><i style="width:9px;height:9px;border-radius:2px;background:var(--blue);display:inline-block"></i>Cybersecurity lens</div>
+        <div class="ch law"><i style="width:9px;height:9px;border-radius:2px;background:var(--amber);display:inline-block"></i>Justice lens</div>
+
+        <div class="rh">Settled</div>
+        <div class="cell clear">
+          <div class="lbl">clear-cut</div>
+          <p><b>SQLi bypass</b> and <b>account takeover</b> — a real control defeated, a real account compromised. Independent detection fired on both.</p>
         </div>
-        <div class="stack">
-          <div class="exhibit" data-tag="Exhibit B"><div class="st">§1028A + Colo. §18-5-902</div><div class="bd">Account takeover — identity theft.</div><div class="pen"><b>+2 yrs mandatory &amp; consecutive</b> (federal) · <b>class 4 felony, 2–6 yrs</b> (Colorado)</div></div>
-          <div class="exhibit" data-tag="Exhibit C"><div class="st">Colo. §6-1-716</div><div class="bd">Breach notice — a duty on the victim organization.</div><div class="pen"><b>Notify within 30 days</b> — among the strictest deadlines in the U.S.</div></div>
+        <div class="cell clear law-c">
+          <div class="lbl">strong counts</div>
+          <p><b>Account takeover → identity theft</b> <span class="st">§1028A</span> (+2y) · <b>SQLi → CFAA</b> <span class="st">§1030(a)(2)</span>, Colo. <span class="st">§18-5.5-102</span>.</p>
+        </div>
+
+        <div class="rh">Arguable</div>
+        <div class="cell amb">
+          <div class="lbl">could go either way</div>
+          <p>Is <b>recon/scanning</b> an attack, or just looking? Is reading an <b>unlinked-but-public file</b> "hacking" when nothing was bypassed?</p>
+        </div>
+        <div class="cell amb law-c">
+          <div class="lbl">unsettled law</div>
+          <p>The <b>exposed file</b> — "unauthorized access"? Courts split; the <cite>weev</cite> conviction was vacated. <b>Broken-access</b> — clearly off-limits under <cite>Van Buren</cite>, or arguable?</p>
         </div>
       </div>
-      <p class="note" style="margin-top:22px">Same statutes and cases the live dashboard shows. Full detail in the reference exhibits at the end.</p>
+      <p class="note" style="margin-top:16px">Start with the settled cases to build footing, then push into the arguable ones — that's where the real argument lives. Full statute detail is in the reference exhibits.</p>
     </div>
-    <div class="sn">Slow down here for the CJ half. The paper exhibits are the legal thread made physical. Plant <em>Van Buren</em> and the <em>weev</em> contest — both pay off in Part II.</div>
+    <div class="sn"><b>The scaffold for when students don't know where to start.</b> Left is for the cyber half, right for the justice half; top row is safe ground, bottom row is the genuine argument (the <cite>weev</cite> split is real — a vacated conviction, not a settled rule). Tie each cell back to a step they just watched.</div>
   </section>
 
-  <!-- 11 CLEAN CASE -->
-  <section class="slide" data-part="1" data-title="Someone is accountable" data-partname="Part I · A person is behind it">
-    <div class="wrap cols">
-      <div>
-        <div class="eyebrow">Part I closes</div>
-        <h2 class="serif">With a person, both halves exist.</h2>
-        <p class="sub">There is a <span class="em">crime</span> — statutes that attach cleanly — and a <span class="em">culprit</span> — an identity the evidence can reach. Intent is provable: a person chose each step and knew the victim was real. Charges stack, and someone answers for it.</p>
-        <ul class="clean">
-          <li>Federal CFAA exposure up to <b>5 years</b></li>
-          <li><b>+2 years</b> mandatory, consecutive (§1028A)</li>
-          <li>A parallel Colorado <b>class 4 felony</b></li>
-        </ul>
-        <p class="lead" style="font-size:18px"><span class="fade">Hold onto how clean this is. Part II removes the culprit.</span></p>
+  <!-- 11 BEST PRACTICE -->
+  <section class="slide" data-part="1" data-title="A workable approach" data-partname="Part I · A person is behind it">
+    <div class="wrap">
+      <div class="eyebrow">From discussion to a working method</div>
+      <h2 class="serif" style="margin-bottom:16px">How each side would actually handle it.</h2>
+      <div class="discuss">
+        <div class="dcol tech">
+          <div class="dh">Defender / analyst <span>CYBER</span></div>
+          <ul>
+            <li>Map each step to <b>ATT&amp;CK</b>; confirm with <b>independent detection</b>, not the attacker's claims.</li>
+            <li>Contain at the <b>earliest reliable signal</b> — revoke the session, block the source.</li>
+            <li>Fix the <b>root cause</b> — the broken access control and the guessable reset — not just the symptom.</li>
+            <li>Preserve the proxy and detector logs as the <b>evidence record</b>.</li>
+          </ul>
+        </div>
+        <div class="dcol law">
+          <div class="dh">Investigator / prosecutor <span>JUSTICE</span></div>
+          <ul>
+            <li>Build on <b>artifacts, not narrative</b> — payloads and status codes show intent and success.</li>
+            <li>Lead with the <b>strongest count</b> — the completed takeover / identity theft.</li>
+            <li>Charge the <b>contested step in the alternative</b>; don't stake the case on it.</li>
+            <li>Track the victim-side duty — <b>breach notification</b> — separately.</li>
+          </ul>
+        </div>
       </div>
-      <div class="figure" aria-hidden="true">
-        <svg viewBox="0 0 340 300">
-          <rect x="20" y="30" width="140" height="240" rx="10" fill="#0f1620" stroke="#2e5c98"/>
-          <text x="90" y="60" text-anchor="middle" fill="#5aa2ff" font-family="ui-monospace,monospace" font-size="12" letter-spacing="1">THE CRIME</text>
-          <g fill="#a7b4c6" font-family="ui-sans-serif,system-ui" font-size="13"><text x="38" y="98">§1030(a)(2)</text><text x="38" y="130">§1028A</text><text x="38" y="162">§18-5.5-102</text><text x="38" y="194">§18-5-902</text><text x="38" y="226">§6-1-716</text></g>
-          <rect x="180" y="30" width="140" height="240" rx="10" fill="#efe7d6" stroke="#cdbf9f"/>
-          <text x="250" y="60" text-anchor="middle" fill="#9e3b46" font-family="ui-monospace,monospace" font-size="12" letter-spacing="1">THE CULPRIT</text>
-          <g transform="translate(250,150)"><circle r="34" fill="none" stroke="#9e3b46" stroke-width="2"/><circle cx="0" cy="-10" r="13" fill="#9e3b46"/><path d="M-22 26 a22 24 0 0 1 44 0" fill="#9e3b46"/></g>
-          <text x="250" y="238" text-anchor="middle" fill="#5c5240" font-family="ui-monospace,monospace" font-size="11">named · reachable</text>
-        </svg>
-      </div>
+      <p class="note" style="margin-top:18px">Demo → discussion → a method both tracks can defend. Part II keeps the method and removes the one thing it quietly assumed: a human at the other end.</p>
     </div>
-    <div class="sn">Say the numbers out loud. The visual — technical statutes on the dark side, a named person on the paper side — is the whole point: both halves present. That's the baseline Part II breaks.</div>
+    <div class="sn">Present as a clean, peer-level method — not a moral. The last line is the bridge to Part II: every step here assumed there was a person to detect, attribute, and charge.</div>
   </section>
 
   <!-- 12 PART II DIVIDER -->
@@ -709,13 +766,19 @@
         <p class="lead">We began with an operator undone by a reused avatar. We end with attackers that leave nothing behind, and a state licensing private offense because the old way no longer scales. The technique is racing ahead; accountability is still trying to find someone to hold. That gap is the work of the next decade — and possibly of the people in this room.</p>
       </div>
       <div class="figure" aria-hidden="true">
-        <svg viewBox="0 0 300 300">
-          <circle cx="150" cy="130" r="90" fill="none" stroke="#233140" stroke-width="2"/>
-          <g opacity=".9"><path d="M124 150 q-6 -30 8 -44 l-8 -18 l16 10 q14 -6 28 0 l16 -10 l-8 18 q14 14 8 44 q-30 12 -60 0 Z" fill="#31465b"/></g>
-          <g transform="translate(150,250)" stroke="#f0a935" stroke-width="2.4" fill="none" stroke-linecap="round">
-            <line x1="0" y1="-30" x2="0" y2="10"/><line x1="-34" y1="-26" x2="34" y2="-26"/>
-            <path d="M-34 -26 L-46 -4 M-34 -26 L-22 -4 M-46 -4 a12 7 0 0 0 24 0"/><path d="M34 -26 L22 -4 M34 -26 L46 -4 M22 -4 a12 7 0 0 0 24 0"/><line x1="-12" y1="10" x2="12" y2="10"/>
+        <svg viewBox="0 0 360 270">
+          <!-- human: leaves a print -->
+          <g fill="none" stroke="#5aa2ff" stroke-width="2" stroke-linecap="round">
+            <path d="M96 56 a74 74 0 0 1 0 148"/>
+            <path d="M96 74 a56 56 0 0 1 0 112"/>
+            <path d="M96 92 a38 38 0 0 1 0 76"/>
+            <path d="M96 110 a20 20 0 0 1 0 40"/>
           </g>
+          <circle cx="96" cy="130" r="4" fill="#5aa2ff"/>
+          <text x="96" y="238" text-anchor="middle" fill="#a7b4c6" font-family="ui-monospace,monospace" font-size="11.5">leaves a mark</text>
+          <!-- machine: leaves nothing -->
+          <circle cx="266" cy="130" r="74" fill="none" stroke="#31465b" stroke-width="2" stroke-dasharray="3 9"/>
+          <text x="266" y="238" text-anchor="middle" fill="#6d7d92" font-family="ui-monospace,monospace" font-size="11.5">leaves none</text>
         </svg>
       </div>
     </div>

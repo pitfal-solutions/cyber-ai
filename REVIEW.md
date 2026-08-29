@@ -41,6 +41,32 @@ not a log.
 
 ---
 
+## 2026-08-29 (deck feedback round) — graphics cleanup, real field case, demo→discussion→best-practice
+
+Founder review of the redesign. Changes:
+- **Removed the hand-drawn "scales of justice"** (title + close slides) — it
+  read as clip-art. Title now stands on the network-constellation mark; the
+  close uses a fingerprint-vs-empty-frame motif ("leaves a mark" /
+  "leaves none"). Redrew the TeamPCP **cat** as a clean line icon.
+- **Slide 3 now carries a real, local field case** the founder worked: a
+  Denver-metro organized-burglary investigation (charged under the Colorado
+  Organized Crime Control Act) in which the crew used devices to disable
+  **Wi-Fi-based security systems** — replacing the generic EXIF anecdote.
+  Sourced from the 18th Judicial DA's public release; kept the defendant
+  unnamed. New matching graphic (jammed Wi-Fi camera). No longer flagged
+  optional.
+- **Part I reworked into demo → discussion → best-practice.** Slide 9 gains a
+  two-column class-discussion band (tactics for cyber, charging decisions for
+  justice). Slide 10 becomes a **settled-vs-arguable guide** split by
+  Cyber/Justice lens — surfacing the genuinely contested cases (the vacated
+  *weev* conviction; recon/scanning; the unauthenticated file) as the place
+  the argument actually lives, tied back to demo steps. Slide 11 replaced the
+  "crime vs culprit / someone goes to prison" framing (talked down to the
+  room) with a clean, peer-level **best-practice method for each side**.
+
+Legal content unchanged and still in sync with the dashboard legal-maps.
+Verified the changed slides render clean at 1280×720. Deck file re-exported.
+
 ## 2026-08-29 (deck redesign) — restructured to two parts, new visual identity, expanded case study
 
 **What / why.** Founder review of the first deck landed several changes:
