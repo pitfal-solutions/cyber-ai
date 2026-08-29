@@ -41,6 +41,22 @@ not a log.
 
 ---
 
+## 2026-08-29 (deck feedback round 2) — two-question setup, Part II gets the same discussion arc
+
+- **Slide 2 rebuilt as the setup.** The old agenda (an abstract Part I/Part II
+  timeline that "gave away the structure") is replaced by the two guiding
+  questions the whole talk answers — *how does AI change the attack?* and
+  *who does the law hold responsible?* — with a converging-threads graphic
+  (technique + law pulled together by AI). No roadmap; the questions are the
+  spine.
+- **Part II now mirrors Part I's demo → discussion → best-practice arc.**
+  Slide 14 (AI-vs-AI demo) gains a discussion band (tactics for cyber,
+  accountability for justice); a new best-practice slide was added after the
+  precedent timeline — how each side handles an attacker with no identity
+  (behavioral attribution + agent-access scoping for cyber; climbing the
+  human chain, provenance, and the shift to policy for justice), bridging
+  into the state's hack-back response. Deck is now 26 slides.
+
 ## 2026-08-29 (deck feedback round) — graphics cleanup, real field case, demo→discussion→best-practice
 
 Founder review of the redesign. Changes:

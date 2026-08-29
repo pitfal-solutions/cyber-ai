@@ -49,14 +49,18 @@ first-hand work on a Wi-Fi-jamming organized-burglary investigation) →
 **Part I** (TeamPCP: who / what / how caught · the attribution principle ·
 live demo + class-discussion prompts · a settled-vs-arguable discussion
 guide · a best-practice method for each side) → **Part II** (autonomous
-attacks are real · AI-vs-AI demo · the ladder with no rungs · the lineup ·
-precedent timeline · the state's response · the legal inversion · close) →
-reference exhibits.
+attacks are real · AI-vs-AI demo + discussion prompts · the ladder with no
+rungs · the lineup · precedent timeline · a best-practice method for each
+side · the state's response · the legal inversion · close) → reference
+exhibits.
 
-Part I follows a **demo → discussion → best-practice** arc: run the
-scenario, prompt the room (tactics for the cyber half, charging decisions
-for the justice half), use the settled-vs-arguable guide if they stall, then
-land a clean method both tracks can defend.
+**Both parts follow the same demo → discussion → best-practice arc:** run
+the scenario, prompt the room (tactics for the cyber half, charging /
+accountability decisions for the justice half), work the discussion (the
+settled-vs-arguable guide in Part I; the lineup + precedent in Part II), then
+land a clean method both tracks can defend. The two setup questions on
+slide 2 — how AI changes the attack, and who the law can hold responsible —
+are what every later slide answers.
 
 ## Keep it in sync
 
