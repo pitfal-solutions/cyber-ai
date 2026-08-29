@@ -41,6 +41,63 @@ not a log.
 
 ---
 
+## 2026-08-28 (legal refresh) — verified penalties + case law added to all three legal-maps; dashboard renders a new Case-law line
+
+**What happened / why.** While building a guest-lecture deck (the "Who goes
+to prison when the AI did it?" talk), ran a real verification pass on the
+legal content so the deck and the on-screen dashboard overlay wouldn't
+drift. Updated `penalty` text and added a new `case_law` field to every
+entry in all three scenario legal-maps (`web-exploit`, `agentic`,
+`network-intrusion`), and taught the core dashboard renderer
+(`core/range-dashboard/server.py`) to display `case_law` as a "Case law:"
+line. The field is optional and backward-compatible — entries without it
+(e.g. `co-6-1-716`, a civil notification duty, deliberately has none)
+render exactly as before.
+
+**What was verified (2026-08-28) and how.**
+- **Colorado sentencing ranges** refreshed to current post-**SB21-271**
+  values (C.R.S. § 18-1.3-401): F3 4–12y, F4 2–6y, F5 1–3y, F6 1–1.5y, plus
+  mandatory-parole terms; M1 ≤364d, M2 ≤120d. The old maps only named the
+  offense *class*; they now carry the actual years. § 18-5.5-102 value tiers
+  and § 18-5-902 (class 4 felony) confirmed.
+- **Federal** § 1030(c)(2) ladder (1y → 5y on gain/furtherance/>$5,000 →
+  10y repeat) confirmed against House OLRC text + the USSC 2021 Computer
+  Crimes primer. § 1028A mandatory-consecutive-2y confirmed on the statute
+  face.
+- **Case law** added where it does real work: *Van Buren* (141 S. Ct. 1648
+  (2021)) on `cfaa-1030a2` / `co-18-5.5-102`; *Morris* (928 F.2d 504) on
+  `cfaa-1030a2`; *Auernheimer/weev* (748 F.3d 525) on
+  `cfaa-1030a2-misconfig`; *Flores-Figueroa* (556 U.S. 646 (2009)) on
+  `identity-theft-1028`.
+
+**Pre-ship checklist notes.**
+- *Every legal claim cites a real, verified source?* — Prison/sentence
+  ranges: yes (primary/authoritative). **Exact fine caps remain
+  practitioner-sourced** and are flagged as such in the `penalty` text —
+  not upgraded to "verified." § 1030(a)(5) for the AI marker-write is still
+  **deliberately not asserted** (see `network-intrusion` `_note`).
+- *reset → run → reset actually run?* — **No.** This is a data + renderer
+  change only; no live scenario run or rehearsal-gate was performed this
+  change. Renderer change is a one-line optional field in the existing
+  template; `py_compile` passes and all three JSONs validate. **Before the
+  lecture, do one `run` of each scenario and eyeball the new Case-law line
+  on the projector** (readability from the back of the room, working
+  agreement + projector checklist item).
+- *README?* — Not changed. README describes the overlay at the level of
+  "statute, elements, penalty" (lines ~9–10, ~155) and doesn't enumerate
+  fields; the added Case-law line doesn't change quick-start, status, or how
+  a student runs anything. If a later pass expands the README's dashboard
+  description, mention the case-law line then.
+
+**Open risk (unchanged from prior entries).** This is still **not** a final
+primary-source legal-review pass in the sense of
+[routines/refresh-legal-citations.md](routines/refresh-legal-citations.md)
+step 1–2 for every number (fine caps especially). It's a real, sourced
+upgrade over the prior secondary-only content, and honest about what's still
+practitioner-sourced. The talk-track's "Legal Reference Pack" (kept with the
+deck work) mirrors these exact numbers/cases so the two surfaces stay in
+sync.
+
 ## 2026-08-28 (session handoff) — context cleared after this; read this first next session
 
 A consolidation note for whoever picks this up next — the per-change detail

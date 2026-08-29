@@ -279,6 +279,7 @@ function render(events, legalMap) {
       <div class="statute">${escapeHtml(ref.statute || ev.legal_ref)} ${tbd ? '<span class="badge-tbd">PENALTY TBD</span>' : ''}</div>
       <div class="plain">${escapeHtml(ref.plain_language || '')}</div>
       ${ref.penalty && ref.penalty !== 'TBD' ? `<div class="meta"><strong>Penalty:</strong> ${escapeHtml(ref.penalty)}</div>` : ''}
+      ${ref.case_law ? `<div class="meta"><strong>Case law:</strong> ${escapeHtml(ref.case_law)}</div>` : ''}
       ${ref.evidentiary_note ? `<div class="meta"><strong>Evidence:</strong> ${escapeHtml(ref.evidentiary_note)}</div>` : ''}
     </div>`);
   });
