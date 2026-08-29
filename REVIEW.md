@@ -41,6 +41,69 @@ not a log.
 
 ---
 
+## 2026-08-28 (session handoff) — context cleared after this; read this first next session
+
+A consolidation note for whoever picks this up next — the per-change detail
+is in the dated entries below; this is the "where things stand + what to do
+next" summary.
+
+**What shipped this session (all pushed to `main`, public repo):**
+1. `demos/v1-cyber-range/setup.sh` — one-command machine setup
+   (Colima/Docker/Ollama install + start, model pulls, pre-build all
+   scenario images). Idempotent. README quick-start now covers all three
+   scenarios, not just web-exploit.
+2. Bugfix — orphaned containers when switching scenarios (`--remove-orphans`
+   added to `run.sh` + all three `reset.sh`). Root cause: no compose file
+   sets a project `name`, so all scenarios share one implicit project.
+3. Bugfix — incident-report evidence was being written to the
+   `cyberrange_events` Docker volume, which `reset.sh`'s `down -v` deletes;
+   moved to a host bind mount `demos/v1-cyber-range/evidence/` (gitignored).
+4. Feature — `plant_marker` attacker tool (network-intrusion): writes a real
+   "ATTACKER WON" file to a backdoored host and reads it back. The SMB
+   confidential-file exfil the founder also mentioned already existed
+   (`smb_download` of `confidential-layoffs.txt`).
+5. Balance — attacker-vs-defender is now a real toss-up via a per-run coin
+   flip on whether an earned block lands (`BLOCK_SUCCESS_PROB`, default 0.5).
+
+**Lessons learned (the non-obvious ones):**
+- **Balance can't be tuned by timing.** The attacker/defender win ratio is
+  dominated by the presenter's live speed dropdown, not by block thresholds
+  — measured 5/6 then 7/7 defender at Normal pace with two different
+  threshold tunes. The coin flip is what actually decouples balance from
+  pace. `BLOCK_SUCCESS_PROB` is the one dial now (raise >0.5 to favour the
+  defender); measured ~5/3 attacker over 8 runs at Normal @ 0.5.
+- **Re-check balance with the committed harness:**
+  `scenarios/network-intrusion/measure-balance.sh [runs] [delay_ms]` (dev
+  tool, not a demo step). Each run is a full two-LLM scenario, so 8 runs
+  takes ~15-20 min — run it in the background.
+- **Docker gotchas specific to this repo:** shared implicit compose project
+  (always use `--remove-orphans`); `down -v` destroys named volumes, so
+  anything that must survive a reset needs a host bind mount, not `/data`.
+
+**Next steps / open items:**
+- **Re-rehearse network-intrusion.** The plant_marker + coin-flip changes
+  are new behavior; the prior 4 rehearsal runs no longer cover the current
+  code. The 3-consecutive-clean-runs gate (working agreement #1) restarts
+  for this scenario. Same for the real `bench-models.sh` pick on the actual
+  48GB demo laptop (all rehearsal so far was on a smaller dev machine).
+- **Known UX gap, NOT fixed:** the dashboard speed dropdown is shown and
+  enabled for every scenario, but web-exploit (scripted) ignores it — it
+  uses a fixed `STEP_DELAY` env var and never reads `/control`. Verified the
+  control itself works for the agentic scenarios (pace() timed exactly to
+  delay_ms; a real run went ~13s/turn at Slow vs ~7s at Instant). Consider
+  disabling/greying the dropdown when a scripted scenario is active so it
+  isn't misleadingly clickable.
+- Unchanged pre-lecture items (from ROADMAP): founder-only wifi-disconnected
+  test, final legal-citation pass against primary statute text, which
+  state's statute pairs with CFAA (institution-dependent, still unknown).
+
+**Environment state at handoff:** machine left clean (no running
+containers). Colima + host-native Ollama (models `qwen2.5:7b-instruct` +
+`qwen2.5:3b-instruct` present). `setup.sh` reproduces the whole setup on a
+fresh machine.
+
+---
+
 ## 2026-08-25 (balance) — network-intrusion: defender rebalanced to ~50/50 via a coin-flip block outcome
 
 **What:** Founder reported the defender almost always lost (the earlier

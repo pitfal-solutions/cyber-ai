@@ -45,6 +45,10 @@ with federal CFAA depends on the institution — not yet known. See
    `context/legal-framework.md`).
 5. ✅ Rehearsal: `reset → run → reset → run` cycle completed twice, ~22s per
    reset, identical results both times, zero manual intervention.
+6. ✅ One-command machine setup (added 2026-08-28):
+   `demos/v1-cyber-range/setup.sh` installs + starts Colima/Docker/Ollama,
+   pulls the models, and pre-builds every scenario's images (offline-at-
+   showtime prep). Idempotent; see [demos/README.md](demos/README.md).
 
 **Pre-lecture checks:**
 - ✅ Projector legibility — checked and **fixed**, not just confirmed fine.
@@ -105,11 +109,23 @@ this is a target/toolset swap, not a rebuild. Full design, the real CVE/
 tooling research, and the bugs found rehearsing it:
 [specs/network-intrusion.md](specs/network-intrusion.md).
 
+**Updated 2026-08-28 — two behavior changes landed this session (see
+[REVIEW.md](REVIEW.md)):** (1) a `plant_marker` attacker tool that writes a
+real "ATTACKER WON" file to a backdoored host and reads it back (the
+"visible win" the founder asked for; the SMB confidential-file exfil already
+existed), and (2) the attacker-vs-defender outcome is now balanced to a real
+toss-up via a per-run coin flip on whether an earned block lands
+(`BLOCK_SUCCESS_PROB`, default 0.5) — timing tuning alone could not produce
+a stable ratio. Measured ~5/3 attacker over 8 runs at Normal pace.
+
 **Still open before this can be presented:** same as Phase 2 above — a
 real `bench-models.sh` pick on the actual demo laptop, and the
-3-consecutive-clean-runs gate. Also additive, not a replacement — both
-Phase 2 and Phase 2c are optional; the scripted Phase 1 scenario is the
-only guaranteed lecture deliverable either way.
+3-consecutive-clean-runs gate. **The gate clock effectively restarts for
+this scenario:** the prior 4 rehearsal runs predate the plant_marker +
+coin-flip changes, so the 3 clean runs must be re-done against the current
+code. Also additive, not a replacement — both Phase 2 and Phase 2c are
+optional; the scripted Phase 1 scenario is the only guaranteed lecture
+deliverable either way.
 
 ## Phase 3 — Additional scenarios (post-lecture, reuse-driven)
 

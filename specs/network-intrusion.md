@@ -153,7 +153,10 @@ screen as a deliberate ~50/50 chance outcome, **not** a real detection or
 evasion result — same honesty bar as the legal citations: the room is never
 shown a coin flip dressed up as a technical fact. Set `BLOCK_SUCCESS_PROB`
 to `0.0` or `1.0` on the `tool-api` service to force a scripted outcome for
-a rehearsed run.
+a rehearsed run. To re-check the ratio after any change, run the dev
+harness `scenarios/network-intrusion/measure-balance.sh [runs] [delay_ms]`
+(runs the full two-LLM scenario N times and classifies each from the real
+event stream — not part of the demo run path).
 
 ## Real bugs found by actually running it, not by review
 
