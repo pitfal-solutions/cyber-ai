@@ -186,13 +186,22 @@
   .ov[data-part="1"],.ov[data-part="intro"]{border-top:2px solid var(--blue)} .ov[data-part="2"]{border-top:2px solid var(--amber)} .ov[data-part="ref"]{border-top:2px solid var(--line2)}
   .ov .rm{align-self:flex-start; font-size:9px; letter-spacing:.1em; color:var(--amber); border:1px solid var(--amber-dim); border-radius:4px; padding:1px 5px; font-family:ui-monospace,monospace}
 
-  /* speaker notes */
-  #notes{position:fixed; left:0; right:0; bottom:46px; z-index:22; transform:translateY(calc(100% + 60px)); transition:transform .25s ease;
-    background:linear-gradient(0deg,var(--panel2),var(--panel)); border-top:1px solid var(--accent); padding:16px clamp(20px,4vw,60px); max-height:44vh; overflow:auto; box-shadow:0 -20px 50px -20px rgba(0,0,0,.7)}
-  body.notes #notes{transform:none}
-  #notes .nh{font-family:ui-monospace,monospace; font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:var(--accent); margin:0 0 10px}
-  #notes .nc{font-size:15px; line-height:1.55; color:var(--ink-soft); max-width:92ch} #notes .nc b{color:var(--ink)} #notes .nc .say{color:var(--blue)}
-  .sn{display:none}
+  /* password gate */
+  #gate{position:fixed; inset:0; z-index:60; display:flex; align-items:center; justify-content:center; padding:24px;
+    background:radial-gradient(130% 100% at 100% 0%, rgba(90,162,255,.06), transparent 55%), linear-gradient(180deg,var(--bg),var(--bg2))}
+  #gate.hidden{display:none}
+  .gate-card{width:100%; max-width:440px}
+  .gate-eyebrow{font-family:ui-monospace,monospace; font-size:12px; letter-spacing:.26em; text-transform:uppercase; color:var(--accent); display:flex; align-items:center; gap:12px; margin-bottom:18px}
+  .gate-eyebrow::before{content:""; width:30px; height:2px; background:var(--accent)}
+  .gate-card h1{font-size:clamp(26px,4vw,38px); line-height:1.08; letter-spacing:-.01em; margin:0 0 10px; font-weight:600}
+  .gate-card p{color:var(--ink-soft); font-size:16px; margin:0 0 22px}
+  #gateForm{display:flex; gap:10px}
+  #gatePw{flex:1; background:var(--panel2); border:1px solid var(--line2); border-radius:10px; padding:12px 14px; color:var(--ink); font-family:ui-monospace,monospace; font-size:15px; outline:none}
+  #gatePw:focus{border-color:var(--blue); box-shadow:0 0 0 3px rgba(90,162,255,.15)}
+  #gateForm button{background:var(--blue); color:#06121f; border:none; border-radius:10px; padding:12px 22px; font-weight:700; font-size:15px; cursor:pointer; font-family:inherit}
+  #gateForm button:hover{filter:brightness(1.08)}
+  .gate-err{color:var(--red); font-family:ui-monospace,monospace; font-size:13px; margin-top:14px}
+  .gate-err[hidden]{display:none}
 
   @media (max-width:860px){ .cols,.cols.wide-left,.cols.even{grid-template-columns:1fr; gap:24px} .stats{grid-template-columns:1fr 1fr} .lineup{grid-template-columns:1fr 1fr} }
   @media (prefers-reduced-motion:reduce){ .slide.active{animation:none} *{transition:none!important} }
@@ -203,6 +212,20 @@
 <body>
 
 <div id="progress"></div>
+
+<div id="gate">
+  <div class="gate-card">
+    <div class="gate-eyebrow">Protected</div>
+    <h1 class="serif">Attack, Autonomy &amp; Accountability</h1>
+    <p>Enter the password to view the deck.</p>
+    <form id="gateForm">
+      <input id="gatePw" type="password" autocomplete="off" spellcheck="false" placeholder="Password" aria-label="Password" />
+      <button type="submit">Unlock</button>
+    </form>
+    <div id="gateErr" class="gate-err" hidden>Incorrect password — try again.</div>
+  </div>
+</div>
+
 <div id="statusbar">
   <span class="brand">AI · CYBER · LAW</span><span class="sep"></span><span class="part" id="sbPart">Introduction</span>
   <span class="legend"><span class="chip tech"><i></i>Technical</span><span class="chip law"><i></i>Legal</span></span>
@@ -239,7 +262,6 @@
         </svg>
       </div>
     </div>
-    <div class="sn"><b>Set the frame, not a spoiler.</b> This is a briefing on how AI changes offensive cyber and the law that has to answer for it. Two parts: when a person is behind the attack, and when no one is.</div>
   </section>
 
   <!-- 2 SETUP: TWO QUESTIONS -->
@@ -276,7 +298,6 @@
         </svg>
       </div>
     </div>
-    <div class="sn"><b>The whole talk in two questions — pose them, don't answer them.</b> Everything that follows is one or both. Q1 is the technique thread (watch blue); Q2 is the legal thread (watch amber). Let the questions do the setup; don't preview the structure.</div>
   </section>
 
   <!-- 3 FIELD EXPERIENCE -->
@@ -310,7 +331,6 @@
         </svg>
       </div>
     </div>
-    <div class="sn"><b>Ground it in real, local work.</b> A Colorado case you worked — the wireless-attack devices used to disable Wi-Fi cameras and alarms, prosecuted as organized crime. Two points for the room: offensive cyber technique is already standard kit in ordinary crime, and even a crew that beat the cameras left a trail that identified them. Technique advancing while attribution and the law keep pace — that tension is the whole talk.</div>
   </section>
 
   <!-- 4 PART I DIVIDER -->
@@ -333,7 +353,6 @@
         </svg>
       </div>
     </div>
-    <div class="sn">Frame Part I plainly: humans, increasingly AI-assisted, still commit these crimes — and can still be found. The case study makes that concrete.</div>
   </section>
 
   <!-- 5 TeamPCP WHO -->
@@ -370,7 +389,6 @@
         </svg>
       </div>
     </div>
-    <div class="sn"><b>Who.</b> Real, current, financially-motivated group. The rotating aliases matter — that reuse is exactly what undoes them later. The cat avatar is the thread; plant it here.</div>
   </section>
 
   <!-- 6 TeamPCP WHAT/HOW -->
@@ -406,7 +424,6 @@
         <div class="stat"><div class="v a">300+ GB</div><div class="k">data<br>exfiltrated</div></div>
       </div>
     </div>
-    <div class="sn"><b>What & how.</b> Emphasize self-propagation — this is why it scaled, and why it's more like an epidemic than a single break-in. The stat tiles are the "why they needed to be stopped." One striking beat: on May 11 they pushed 84 malicious versions across 42 packages in ~6 minutes.</div>
   </section>
 
   <!-- 7 TeamPCP HOW CAUGHT -->
@@ -446,7 +463,6 @@
       </div>
       <p class="note" style="margin-top:22px"><span class="em">The lesson for Part I:</span> attribution didn't come from breaking the malware. It came from a human being human — reusing a handle, a password, an avatar.</p>
     </div>
-    <div class="sn"><b>How caught + why it matters.</b> This is the hinge of the whole talk. The malware was excellent; the operator's OPSEC was not. Say it directly: <span class="say">"we didn't out-hack them — they leaked themselves."</span> Hold that, because Part II takes it away.</div>
   </section>
 
   <!-- 8 THE PRINCIPLE / attribution ladder -->
@@ -470,7 +486,6 @@
         </svg>
       </div>
     </div>
-    <div class="sn">Generalize the case into a rule with a second quick example (Ochoa/EXIF). The visual ladder makes the "rungs" literal — because in Part II we show a ladder with none.</div>
   </section>
 
   <!-- 9 DEMO CUE 1 + DISCUSSION -->
@@ -516,7 +531,6 @@
         </div>
       </div>
     </div>
-    <div class="sn"><b>Run it, narrate it, then open the floor with these prompts.</b> Real requests against a real app — no theater. If it hangs, <span class="mono">reset.sh</span> and narrate from the recording. Don't answer the prompts yourself — let the room work them; slide 10 is the guide if they stall.</div>
   </section>
 
   <!-- 10 DISCUSSION GUIDE -->
@@ -551,7 +565,6 @@
       </div>
       <p class="note" style="margin-top:16px">Start with the settled cases to build footing, then push into the arguable ones — that's where the real argument lives. Full statute detail is in the reference exhibits.</p>
     </div>
-    <div class="sn"><b>The scaffold for when students don't know where to start.</b> Left is for the cyber half, right for the justice half; top row is safe ground, bottom row is the genuine argument (the <cite>weev</cite> split is real — a vacated conviction, not a settled rule). Tie each cell back to a step they just watched.</div>
   </section>
 
   <!-- 11 BEST PRACTICE -->
@@ -581,7 +594,6 @@
       </div>
       <p class="note" style="margin-top:18px">Demo → discussion → a method both tracks can defend. Part II keeps the method and removes the one thing it quietly assumed: a human at the other end.</p>
     </div>
-    <div class="sn">Present as a clean, peer-level method — not a moral. The last line is the bridge to Part II: every step here assumed there was a person to detect, attribute, and charge.</div>
   </section>
 
   <!-- 12 PART II DIVIDER -->
@@ -606,7 +618,6 @@
         </svg>
       </div>
     </div>
-    <div class="sn">Frame Part II as the focus of the talk: autonomous agents. Everything technical and legal from here answers one question — when the machine acts alone, who answers for it?</div>
   </section>
 
   <!-- 13 AUTONOMOUS REAL -->
@@ -630,7 +641,6 @@
         </svg>
       </div>
     </div>
-    <div class="sn">Keep it factual and sober, not alarmist. The point is capability, not spectacle: an agent can chain the steps, adapt, and scale — which is exactly what makes the human the optional part.</div>
   </section>
 
   <!-- 14 DEMO CUE 2 + DISCUSSION -->
@@ -676,7 +686,6 @@
         </div>
       </div>
     </div>
-    <div class="sn">Run it to the marker-write, freeze — <span class="say">"a real intrusion just happened, and no person chose any of it"</span> — then open these prompts. They feed straight into the lineup and precedent slides; let the room attempt answers first.</div>
   </section>
 
   <!-- 15 THE QUESTION / ladder collapses -->
@@ -696,7 +705,6 @@
         </svg>
       </div>
     </div>
-    <div class="sn"><b>The pivot.</b> Show the same ladder, rungs gone. Then open the floor before the next slide: <span class="say">"same crime occurred — who do you charge?"</span></div>
   </section>
 
   <!-- 16 LINEUP -->
@@ -713,7 +721,6 @@
       </div>
       <p class="note" style="margin-top:20px">And two the chain often can't reach: the <span class="em">AI itself</span>, and the <span class="em">state sheltering the operator</span>.</p>
     </div>
-    <div class="sn">Run it as a real debate — don't resolve too fast. The core question is <span class="say">"whose intent counts, and can you prove it?"</span></div>
   </section>
 
   <!-- 17 PRECEDENT TIMELINE -->
@@ -745,7 +752,6 @@
       </div>
       <p class="note warn" style="margin-top:18px">Newer backstops: <b>California</b> — "it acted autonomously" is no defense; a <b>2026 executive order</b> directs prosecutors to apply CFAA to AI-run intrusion.</p>
     </div>
-    <div class="sn">Walk the timeline left to right — the law has done pieces of this before. But note the honest gap: no case squarely resolves the <em>no-human</em> attacker. That's the open question, and it's the point.</div>
   </section>
 
   <!-- 17b BEST PRACTICE (Part II) -->
@@ -774,7 +780,6 @@
       </div>
       <p class="note" style="margin-top:18px">That last line is why the next slides turn to the state, not the courtroom — when there's no one to charge, the response moves to policy.</p>
     </div>
-    <div class="sn">Mirror of the Part I best-practice, for the harder case. The bridge line sets up the state's response (hack-back) as the policy answer to "no reachable human."</div>
   </section>
 
   <!-- 18 STATE RESPONSE -->
@@ -797,7 +802,6 @@
         </svg>
       </div>
     </div>
-    <div class="sn">Fold the policy in here: the state's answer to an accountability gap is to outsource offense — an old move (privateers → PMCs) in a new, borderless domain. Both tracks care: who's trustworthy to do it, and who's liable when it goes wrong.</div>
   </section>
 
   <!-- 19 INVERSION -->
@@ -816,7 +820,6 @@
         </div>
       </div>
     </div>
-    <div class="sn">The intellectual payoff. The same conduct from Part I is, for some actors, now a sanctioned tool. Ask: what happens when a licensed strike hits the wrong target — and who answers then?</div>
   </section>
 
   <!-- 20 CLOSE -->
@@ -844,7 +847,6 @@
         </svg>
       </div>
     </div>
-    <div class="sn">Land the last line and stop. Let the question sit before discussion — this is the note the room should leave on.</div>
   </section>
 
   <!-- 21 DISCUSSION -->
@@ -855,7 +857,6 @@
       <div class="rule"></div>
       <p class="sub">Developer, deployer, operator, user — or no one? Is licensed "hack-back" a fix, or a new problem? The reference exhibits follow for specifics.</p>
     </div>
-    <div class="sn">Have the reference exhibits ready. If the room goes technical, jump to the step→law→case exhibit; if legal, the statutes and sentencing table.</div>
   </section>
 
   <!-- 22 REF FEDERAL -->
@@ -874,7 +875,6 @@
         </table>
       </div>
     </div>
-    <div class="sn">Prison ranges cited confidently; §1030(a)(5) stays "argued, not asserted." Sourcing on the last exhibit.</div>
   </section>
 
   <!-- 23 REF COLORADO -->
@@ -908,7 +908,6 @@
         </div>
       </div>
     </div>
-    <div class="sn">Colorado prosecutes computer crime under §18-5.5-102 far more often than the feds run CFAA. State and federal can both charge.</div>
   </section>
 
   <!-- 24 REF CHEAT -->
@@ -930,7 +929,6 @@
       </div>
       <p class="sub" style="font-size:16px; margin-top:16px; max-width:none"><span class="amberk">The answer, doctrinally:</span> can't charge the AI (no mens rea) → climb user → operator → deployer → developer. <cite>Morris</cite> puts the launcher on the hook; <cite>Flores-Figueroa</cite> is the wall ("who knew?"); <cite>Global-Tech</cite> closes the "I didn't know" exit. The open rung: no reachable human at all.</p>
     </div>
-    <div class="sn">Your Q&amp;A anchor — one glance maps any demo moment to its statute and case.</div>
   </section>
 
   <!-- 25 REF SOURCES -->
@@ -951,18 +949,16 @@
         </div>
       </div>
     </div>
-    <div class="sn">If pressed on a number you're unsure of, name the tier it's sourced at. That honesty reads well with a CJ audience — it's the project's whole legal bar.</div>
   </section>
 
 </main>
 
-<div id="notes"><div class="nh" id="notesHead">Speaker notes</div><div class="nc" id="notesBody"></div></div>
 <div id="overview"><h5>Overview — click a slide to jump · <span class="mono">O</span> / <span class="mono">Esc</span> to close</h5><div class="ovgrid" id="ovgrid"></div></div>
 
 <div id="rail">
   <span class="count"><b id="cur">01</b> / <span id="tot">25</span></span>
   <span class="rtitle" id="railTitle"></span>
-  <span class="hint"><kbd>←</kbd><kbd>→</kbd> move · <kbd>O</kbd> overview · <kbd>N</kbd> notes · <kbd>F</kbd> full</span>
+  <span class="hint"><kbd>←</kbd><kbd>→</kbd> move · <kbd>O</kbd> overview · <kbd>F</kbd> full</span>
 </div>
 
 <script>
@@ -970,9 +966,22 @@
   var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
   var N = slides.length, i = 0;
   var elCur=document.getElementById('cur'), elTot=document.getElementById('tot'), elPart=document.getElementById('sbPart'),
-      elProg=document.getElementById('progress'), elTitle=document.getElementById('railTitle'), elNotesBody=document.getElementById('notesBody'),
+      elProg=document.getElementById('progress'), elTitle=document.getElementById('railTitle'),
       ov=document.getElementById('overview'), ovgrid=document.getElementById('ovgrid');
   elTot.textContent=String(N);
+
+  // --- simple password gate --- change PASSWORD to whatever you share with the class
+  var PASSWORD = "range2026";
+  var unlocked = false;
+  var gate = document.getElementById('gate');
+  var gpw = document.getElementById('gatePw'), gerr = document.getElementById('gateErr');
+  try { if(sessionStorage.getItem('deck_ok')==='1') unlocked = true; } catch(e){}
+  function unlock(){ unlocked = true; try{ sessionStorage.setItem('deck_ok','1'); }catch(e){} gate.classList.add('hidden'); }
+  if(unlocked){ gate.classList.add('hidden'); } else { setTimeout(function(){ gpw && gpw.focus(); }, 60); }
+  document.getElementById('gateForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    if(gpw.value === PASSWORD){ unlock(); } else { gerr.hidden = false; gpw.select(); }
+  });
   function pad(n){return (n<10?'0':'')+n;}
   function render(){
     slides.forEach(function(s,k){ s.classList.toggle('active', k===i); });
@@ -982,32 +991,30 @@
     elCur.textContent=pad(i+1);
     elProg.style.width=((i)/(N-1)*100)+'%';
     document.body.setAttribute('data-part', s.getAttribute('data-part'));
-    var sn=s.querySelector('.sn');
-    elNotesBody.innerHTML = sn ? sn.innerHTML : '<span style="color:var(--ink-mute)">No notes.</span>';
     if(location.hash!=='#'+(i+1)) history.replaceState(null,'','#'+(i+1));
   }
   function go(n){ i=Math.max(0,Math.min(N-1,n)); render(); }
   function next(){ go(i+1); } function prev(){ go(i-1); }
   document.addEventListener('keydown', function(e){
     if(e.metaKey||e.ctrlKey||e.altKey) return;
+    if(!unlocked) return;
     var k=e.key;
     if(ov.classList.contains('on')){ if(k==='o'||k==='O'||k==='Escape'){ov.classList.remove('on');} return; }
     if(k==='ArrowRight'||k==='PageDown'||k===' '){e.preventDefault(); next();}
     else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault(); prev();}
     else if(k==='Home'){go(0);} else if(k==='End'){go(N-1);}
-    else if(k==='n'||k==='N'){document.body.classList.toggle('notes');}
     else if(k==='o'||k==='O'){toggleOverview();}
     else if(k==='f'||k==='F'){ if(!document.fullscreenElement){document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen();} else {document.exitFullscreen&&document.exitFullscreen();} }
-    else if(k==='Escape'){document.body.classList.remove('notes');}
   });
   document.getElementById('deck').addEventListener('click', function(e){
+    if(!unlocked) return;
     if(e.target.closest('a,button,input,textarea,select')) return;
     var x=e.clientX, w=window.innerWidth;
     if(x>w*0.62) next(); else if(x<w*0.38) prev();
   });
   var sx=null;
   document.addEventListener('touchstart',function(e){sx=e.touches[0].clientX;},{passive:true});
-  document.addEventListener('touchend',function(e){ if(sx==null)return; var dx=e.changedTouches[0].clientX-sx; if(Math.abs(dx)>50){dx<0?next():prev();} sx=null;},{passive:true});
+  document.addEventListener('touchend',function(e){ if(!unlocked){sx=null;return;} if(sx==null)return; var dx=e.changedTouches[0].clientX-sx; if(Math.abs(dx)>50){dx<0?next():prev();} sx=null;},{passive:true});
   function buildOverview(){
     ovgrid.innerHTML='';
     slides.forEach(function(s,k){

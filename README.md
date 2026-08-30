@@ -17,10 +17,11 @@ web vulnerabilities without breaking any law or touching anyone else's
 system. See [Responsible use](#responsible-use) below.
 
 > **Presenting, not just running?** The guest-lecture slide deck that drives
-> all of this — the demos cued in place, plus the full federal/Colorado
-> legal reference — lives in [`demos/lecture-deck/`](demos/lecture-deck/). It
-> is one self-contained HTML file: open it in a browser, no build or
-> internet needed.
+> all of this lives in [`demos/lecture-deck/`](demos/lecture-deck/) — a
+> single self-contained, password-gated HTML deck (in
+> [`site/`](demos/lecture-deck/site/)) ready to deploy to Vercel and share
+> with a class, plus the presenter's speaker notes and legal reference kept
+> separately. See that folder's README to deploy.
 
 ## What you'll see
 
@@ -225,7 +226,7 @@ of the demo, not an incidental risk of it: don't be the case study.
 | Path | What's there |
 |---|---|
 | [`demos/v1-cyber-range/`](demos/v1-cyber-range/) | The actual runnable demo — start here to run it. |
-| [`demos/lecture-deck/`](demos/lecture-deck/) | The guest-lecture slide deck (self-contained HTML) + speaker script and legal reference pack. |
+| [`demos/lecture-deck/`](demos/lecture-deck/) | The guest-lecture slide deck — a password-gated, Vercel-deployable HTML site (`site/`), plus presenter speaker notes and legal reference. |
 | [`specs/`](specs/) | How it's built and why, including corrections made along the way. |
 | [`context/`](context/) | The business/teaching context: audience, legal framework, tech research. |
 | [`customers/`](customers/) | Who this is built for — the instructor and both student tracks. |

@@ -41,6 +41,29 @@ not a log.
 
 ---
 
+## 2026-08-30 (deck → deployable) — Vercel static site, notes removed, password gate
+
+Founder is sharing the deck with the class, not handing out a file. Changes:
+- **Deployable static site.** The deck now lives at
+  `demos/lecture-deck/site/index.html` (+ a minimal `vercel.json`). `site/`
+  holds *only* those two files so nothing private ships when Vercel serves
+  the folder. Deploy: `cd demos/lecture-deck/site && npx vercel --prod`, or
+  connect the repo with Root Directory = `demos/lecture-deck/site`. Replaced
+  the old `attack-autonomy-accountability.html`.
+- **Instructor notes removed** from the deck and extracted to
+  `demos/lecture-deck/speaker-notes.md` (kept *outside* `site/` so students
+  can't fetch them). The `N` notes drawer and its key are gone.
+- **Simple password gate.** A full-screen gate unlocks the deck on a string
+  match (`PASSWORD` constant in `index.html`, default `range2026`),
+  remembered per-session via `sessionStorage`; nav (keys/click/swipe) is
+  locked until unlocked. Deliberately **not bulletproof** — the check is
+  client-side and readable in source, per the founder's "keep it simple"
+  call. A serverless-function + env-var upgrade is a quick follow-up if real
+  gating is ever wanted.
+
+Verified the gate → unlock → navigate flow and that all 26 slides still
+render (served locally, checked in-browser). Legal content unchanged.
+
 ## 2026-08-29 (deck feedback round 2) — two-question setup, Part II gets the same discussion arc
 
 - **Slide 2 rebuilt as the setup.** The old agenda (an abstract Part I/Part II

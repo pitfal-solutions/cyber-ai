@@ -1,50 +1,81 @@
 # Lecture deck — "Attack, Autonomy & Accountability"
 
 The guest-lecture slide deck this repo supports: a dual-track talk
-(cybersecurity + criminal-justice students in one room) on how AI is
+(cybersecurity + criminal-justice students in one room) on how technology is
 reshaping offensive cyber — and straining a legal system built on the idea
-that every crime has a person behind it. It runs the cyber-range scenarios
-live and is built around a single arc:
+that every crime has a person behind it.
 
-- **Part I — when a person is behind it.** Attacks are still run by people
-  (now AI-accelerated). One real campaign end to end — the **TeamPCP**
-  supply-chain worm — shows what it did, how it spread, and how its
-  operators were identified and charged. Then the presenter runs the
-  scripted `web-exploit` scenario and the statutes land per step.
-- **Part II — when no one is behind it.** Autonomous agents run an intrusion
-  end to end. The presenter runs an AI-vs-AI scenario; the attribution
-  ladder loses its rungs; the room debates who is accountable (developer /
-  deployer / operator / user) against real precedent — and the state's
-  answer (licensed private "hack-back") is folded in here.
+The deployable deck lives in [`site/`](site/) as a single self-contained
+`index.html` — no build step, no dependencies, no web fonts. It carries a
+simple **password gate** and **no instructor notes** (those live in
+[`speaker-notes.md`](speaker-notes.md), kept out of the deployed site), so
+it's safe to share with a class.
+
+## Deploy to Vercel
+
+The deck is a static site; **`site/` is the deploy root** (it holds only
+`index.html` + `vercel.json`, so nothing private ships with it).
+
+**Quickest — Vercel CLI:**
+
+```bash
+cd demos/lecture-deck/site
+npx vercel          # first run links/creates a project, gives a preview URL
+npx vercel --prod   # production URL to share with the class
+```
+
+**Or connect the GitHub repo** in the Vercel dashboard and set **Root
+Directory = `demos/lecture-deck/site`** (Framework preset: *Other* — no build
+command). Every push to the repo then redeploys.
+
+Either way you get a URL like `https://<name>.vercel.app` to hand out with
+the password.
+
+## The password gate
+
+A simple string password unlocks the deck. It's deliberately **not
+bulletproof** — it keeps casual or early access out, nothing more. Change it
+in one place, the `PASSWORD` constant near the top of the `<script>` in
+[`site/index.html`](site/index.html):
+
+```js
+var PASSWORD = "range2026";   // <- change this, then redeploy
+```
+
+The check runs client-side, so anyone who views source can read it. If you
+ever want real gating, it becomes a one-file Vercel serverless function
+reading the password from an environment variable — ask and it's a quick
+add.
 
 ## Files
 
 | File | What it is |
 |---|---|
-| [`attack-autonomy-accountability.html`](attack-autonomy-accountability.html) | The deck. One self-contained HTML file — no build step, no internet, no web fonts. Open it in any browser. |
-| [`talk-track.md`](talk-track.md) | The Legal Reference Pack (federal + Colorado statutes, current sentencing ranges, the five anchor cases, and a demo-step → law → case cheat sheet). **Note:** its slide-by-slide script predates the two-part restructure; the authoritative, current speaker notes now live *inside the deck* — press `N`. |
+| [`site/index.html`](site/index.html) | The deployable deck — self-contained, password-gated, no notes. |
+| [`site/vercel.json`](site/vercel.json) | Minimal Vercel static config. |
+| [`speaker-notes.md`](speaker-notes.md) | **Presenter-only.** Per-slide speaker notes, kept *outside* `site/` so students never see them. |
+| [`talk-track.md`](talk-track.md) | Legal Reference Pack (statutes, sentencing, cases, cheat sheet) + the superseded original script. |
 
 ## Presenting it
 
-Open `attack-autonomy-accountability.html` in a browser and go fullscreen.
+Open the deployed URL (or `site/index.html` locally), enter the password,
+then:
 
 | Key | Action |
 |---|---|
-| `←` / `→` / `Space` | Previous / next slide (or click the left / right half of the screen) |
-| `O` | Overview grid — jump to any slide |
-| `N` | Speaker notes (hidden by default, so they never hit the projector) |
-| `F` | Fullscreen |
-| `#12` in the URL | Deep-link straight to slide 12 |
+| `←` / `→` / `Space` | previous / next slide (or click the left / right half of the screen) |
+| `O` | overview grid — jump to any slide |
+| `F` | fullscreen |
+| `#12` in the URL | deep-link straight to slide 12 |
 
-**Offline / air-gapped venues:** the file is fully standalone — copy it to
-the demo laptop and open it locally (`file://…`). Nothing loads from the
-network. It also prints to PDF cleanly (one slide per page) as a fallback.
-Designed for 16:9; on very narrow displays (< ~860px) two-column slides
-stack vertically.
+Runs offline too — `site/index.html` opens straight from disk (the article
+link on slide 3 needs internet, but nothing else does). Prints to PDF (one
+slide per page) as a fallback. Designed for 16:9; below ~860px wide,
+two-column slides stack vertically.
 
 ## Structure at a glance
 
-Introduction (title · agenda · a field case from Colorado — the presenter's
+Introduction (title · two guiding questions · a field case from Colorado —
 first-hand work on a Wi-Fi-jamming organized-burglary investigation) →
 **Part I** (TeamPCP: who / what / how caught · the attribution principle ·
 live demo + class-discussion prompts · a settled-vs-arguable discussion
@@ -54,22 +85,18 @@ rungs · the lineup · precedent timeline · a best-practice method for each
 side · the state's response · the legal inversion · close) → reference
 exhibits.
 
-**Both parts follow the same demo → discussion → best-practice arc:** run
-the scenario, prompt the room (tactics for the cyber half, charging /
-accountability decisions for the justice half), work the discussion (the
-settled-vs-arguable guide in Part I; the lineup + precedent in Part II), then
-land a clean method both tracks can defend. The two setup questions on
-slide 2 — how AI changes the attack, and who the law can hold responsible —
-are what every later slide answers.
+**Both parts follow the same demo → discussion → best-practice arc**, and
+the two setup questions on slide 2 — how technology changes the attack, and
+who the law can hold responsible — are what every later slide answers.
 
 ## Keep it in sync
 
 The deck's legal content mirrors the cyber-range's on-screen legal overlay
-exactly — the same statutes, penalties, and cases live in each scenario's
+exactly — same statutes, penalties, and cases as each scenario's
 `legal-map.json`. If you re-run
 [`routines/refresh-legal-citations.md`](../../routines/refresh-legal-citations.md)
 and a number changes, update **both** the `legal-map.json` files and this
-deck's exhibits so the two surfaces don't drift. Same honesty bar: prison
-ranges verified against primary/authoritative sources; exact fine caps
-flagged practitioner-sourced; 18 U.S.C. § 1030(a)(5) is not asserted for the
-AI marker-write without a primary pass.
+deck's exhibits. Same honesty bar: prison ranges verified against
+primary/authoritative sources; exact fine caps flagged practitioner-sourced;
+18 U.S.C. § 1030(a)(5) is not asserted for the AI marker-write without a
+primary pass.
