@@ -33,10 +33,12 @@ the password.
 
 ## The password gate
 
-A simple string password unlocks the deck. It's deliberately **not
-bulletproof** — it keeps casual or early access out, nothing more. Change it
-in one place, the `PASSWORD` constant near the top of the `<script>` in
-[`site/index.html`](site/index.html):
+A simple string password unlocks the deck — on first view, and again each
+time a viewer enters a new **Part** (I / II / III), so you can reveal the
+deck to the class one section at a time. It's remembered per browser session
+and is deliberately **not bulletproof** — it keeps casual or early access
+out, nothing more. Change it in one place, the `PASSWORD` constant near the
+top of the `<script>` in [`site/index.html`](site/index.html):
 
 ```js
 var PASSWORD = "range2026";   // <- change this, then redeploy
@@ -80,14 +82,16 @@ first-hand work on a Wi-Fi-jamming organized-burglary investigation) →
 **Part I** (TeamPCP: who / what / how caught · the attribution principle ·
 live demo + class-discussion prompts · a settled-vs-arguable discussion
 guide · a best-practice method for each side) → **Part II** (autonomous
-attacks are real · AI-vs-AI demo + discussion prompts · the ladder with no
-rungs · the lineup · precedent timeline · a best-practice method for each
-side · the state's response · the legal inversion · close) → reference
-exhibits.
+attacks are real · AI-vs-AI demo + discussion prompts) → **Part III — the
+current predicament** (the accountability gap · the law improvising over the
+last 12 months, Colorado-first · what defenders actually do now · the state's
+hack-back response · the legal inversion · close) → reference exhibits.
 
-**Both parts follow the same demo → discussion → best-practice arc**, and
-the two setup questions on slide 2 — how technology changes the attack, and
-who the law can hold responsible — are what every later slide answers.
+Parts I and II each run a **demo → discussion → best-practice** beat; Part
+III grounds it all in the last twelve months of real case law, policy, and
+defensive practice. The two setup questions on slide 2 — how technology
+changes the attack, and who the law can hold responsible — are what every
+later slide answers. **Each Part divider is password-gated** (see below).
 
 ## Keep it in sync
 

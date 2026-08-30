@@ -51,26 +51,28 @@ Keep it factual and sober, not alarmist. The point is capability, not spectacle:
 **14 · ▶ Demo — agent vs agent**  
 Run it to the marker-write, freeze — "a real intrusion just happened, and no person chose any of it" — then open these prompts. They feed straight into the lineup and precedent slides; let the room attempt answers first.
 
-**15 · No rungs**  
-**The pivot.** Show the same ladder, rungs gone. Then open the floor before the next slide: "same crime occurred — who do you charge?"
+## Part III · The current predicament
 
-**16 · The lineup**  
-Run it as a real debate — don't resolve too fast. The core question is "whose intent counts, and can you prove it?"
+**15 · Part III — the current predicament**  
+*(Password-gated — viewers re-enter the password to open Part III.)* Frame it plainly: the tools moved first; the law and defenses are catching up in real time. Everything here is from the last year.
 
-**17 · The precedent**  
-Walk the timeline left to right — the law has done pieces of this before. But note the honest gap: no case squarely resolves the *no-human* attacker. That's the open question, and it's the point.
+**16 · The accountability gap**  
+Run it as a real debate — don't resolve too fast. The four tests (intent, foreseeability, control, safeguards) rarely point cleanly at one person; that's the gap.
 
-**18 · A workable approach**  
-Mirror of the Part I best-practice, for the harder case. The bridge line sets up the state's response (hack-back) as the policy answer to "no reachable human."
+**17 · The law, improvising**  
+Walk the timeline left to right — all last-12-months. Lead with Colorado: first-in-the-nation AI Act, then postponed, stayed, repealed and rewritten inside a year — the clearest sign the rules aren't settled. Then the federal moves and the honest "no settled case" gap. The $893M FBI figure is the scale forcing it.
+
+**18 · What defenders do now**  
+Concrete, current techniques — behavioral detection (the DROP TABLE example lands well), MITRE ATLAS as the AI ATT&CK, runtime containment, zero-trust scoping, provider takedowns. The through-line: defense moves from *who did it* to *what is this doing right now*.
 
 **19 · The state's response**  
-Fold the policy in here: the state's answer to an accountability gap is to outsource offense — an old move (privateers → PMCs) in a new, borderless domain. Both tracks care: who's trustworthy to do it, and who's liable when it goes wrong.
+The policy answer to the accountability gap: outsource offense — an old move (privateers → PMCs) in a new, borderless domain. Both tracks care: who's trustworthy to do it, and who's liable when it goes wrong.
 
 **20 · The inversion**  
-The intellectual payoff. The same conduct from Part I is, for some actors, now a sanctioned tool. Ask: what happens when a licensed strike hits the wrong target — and who answers then?
+The intellectual payoff. The same §1030 conduct is, for some actors, now a sanctioned tool. Ask: what happens when a licensed strike hits the wrong target — and who answers then?
 
 **21 · Where this leaves us**  
-Land the last line and stop. Let the question sit before discussion — this is the note the room should leave on.
+Land the last line and stop. None of it is settled; closing the gap is the work ahead. Let it sit before discussion.
 
 **22 · Discussion**  
 Have the reference exhibits ready. If the room goes technical, jump to the step→law→case exhibit; if legal, the statutes and sentencing table.

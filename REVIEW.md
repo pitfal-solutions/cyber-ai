@@ -41,6 +41,33 @@ not a log.
 
 ---
 
+## 2026-08-30 (deck) — per-Part gates + new Part III grounded in the last 12 months
+
+Founder feedback after the Vercel deploy:
+- **Per-Part password gates.** The gate now fires on first view *and* on
+  entering each Part (dividers carry `data-gate` p1/p2/p3; nav is intercepted
+  and the same password re-prompts, with a Part-specific message). Unlocks
+  are remembered per session in `sessionStorage`. Lets the presenter reveal
+  the deck section by section. Same client-side password.
+- **New Part III — "The current predicament"** (its own red accent). Page 15
+  is now the Part III divider (was the "no rungs" pivot). The back half was
+  reworked from generic accountability wording into a fact-based section
+  covering the **last 12 months**: the accountability gap (intent /
+  foreseeability / control / safeguards); a last-12-months legal timeline led
+  by **Colorado's AI-law whiplash** (SB24-205 postponed → enforcement stayed
+  → repealed & replaced by SB26-189 within a year); the honest "no settled
+  case" gap; the FBI's ~$893M AI-fraud figure; and **real current defensive
+  techniques** (AI-native behavioral detection, MITRE ATLAS, runtime
+  containment, zero-trust microsegmentation, provider-side takedowns). The
+  old classic-precedent timeline (Morris/Van Buren/…) moved out of the main
+  flow; those cases remain in the reference exhibits.
+- Researched and cited: Colorado AI Act saga (SB24-205 / SB25B-004 /
+  SB26-189, CO AG rulemaking), FBI IC3 2025, MITRE ATLAS, 2026 agentic-defense
+  guidance. Deck is now 26 slides; `speaker-notes.md` updated for Part III.
+
+Verified the full gate flow (entry → Part I → Part III, each with the right
+prompt) and the Part III slides rendering at 1280×720. Redeployed to Vercel.
+
 ## 2026-08-30 (deck → deployable) — Vercel static site, notes removed, password gate
 
 Founder is sharing the deck with the class, not handing out a file. Changes:
