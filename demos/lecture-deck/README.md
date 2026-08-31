@@ -85,10 +85,11 @@ two-column slides stack vertically.
 ## Structure at a glance
 
 Introduction (title · two guiding questions · a field case from Colorado —
-first-hand work on a Wi-Fi-jamming organized-burglary investigation) →
-**Part I** (TeamPCP: who / what / how caught · the attribution principle ·
-live demo + class-discussion prompts · a settled-vs-arguable discussion
-guide · a best-practice method for each side) → **Part II** (autonomous
+first-hand work on the Castro Garzon Wi-Fi-jamming burglary case, presented
+as a factual case file) → **Part I** (TeamPCP: who / what / how caught · a
+live demo whose discussion prompts reveal a suggested answer as you scroll
+forward · a settled-vs-arguable discussion guide · a best-practice method
+for each side) → **Part II** (autonomous
 attacks are real · AI-vs-AI demo + discussion prompts) → **Part III — the
 current predicament** (the accountability gap · the law improvising over the
 last 12 months, Colorado-first · what defenders actually do now · the state's

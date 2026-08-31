@@ -41,6 +41,30 @@ not a log.
 
 ---
 
+## 2026-08-30 (deck) — factual case file (slide 3), cut a slide, reveal-on-scroll answers
+
+Founder edits:
+- **Slide 3 is now a real case file**, not editorial prose: *People v. Castro
+  Garzon* — the Denver-metro Wi-Fi-jamming burglary ring. Researched and
+  cited the jury conviction: COCCA racketeering + conspiracy (F2), 2nd-degree
+  burglary ×6 (F3), theft counts (F3/F4/F6), up to 72 years, 15 jurisdictions,
+  900+ trial exhibits, seized jammers/trackers/weapons. Statutes shown
+  (C.R.S. §§18-17-104, 18-4-203, 18-4-401). Includes a **booking-photo
+  placeholder** — swap in the real image (`<img src="booking.jpg">` + drop the
+  file in `site/`); left as a placeholder to avoid shipping a copyrighted
+  news photo on a public page.
+- **Removed the old attribution-ladder slide** (the TeamPCP "how caught" slide
+  already carries that point). Deck now 27 slides.
+- **Reveal-on-scroll:** a lightweight fragment system (`.reveal` elements;
+  `next()` reveals the next one before advancing, `prev()` hides the last,
+  `render()` resets on slide entry). The demo slide's six discussion prompts
+  now each reveal a suggested answer as you scroll forward, scrolling it into
+  view. Also made the bonus-challenge copy terse (no hint where the password
+  is).
+
+Verified: case file renders with all data; the removed slide is gone; the
+demo answers reveal one per forward-press then the slide advances. Redeployed.
+
 ## 2026-08-30 (deck) — dropped the gates; password is now an end-of-deck bonus
 
 Founder changed direction: no gate on the deck at all. Instead the password
