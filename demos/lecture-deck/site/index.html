@@ -72,6 +72,8 @@
   p.lead{font-size:clamp(17px,1.65vw,22px); line-height:1.5; color:var(--ink-soft); max-width:60ch; margin:12px 0 0}
   .sub{font-size:clamp(15px,1.5vw,19px); color:var(--ink-mute); line-height:1.5; max-width:64ch}
   .em{color:var(--ink); font-weight:600} .blue{color:var(--blue)} .amberk{color:var(--amber)} .redk{color:var(--red)} .fade{color:var(--ink-mute)}
+  .num{color:var(--amber); font-weight:700; font-size:1.24em; font-variant-numeric:tabular-nums; letter-spacing:-.01em}
+  .cite-s{font-family:ui-monospace,monospace; font-size:11.5px; color:var(--ink-mute); display:block; margin-top:3px}
   strong{color:var(--ink); font-weight:700} em{font-style:italic; color:var(--ink)}
 
   /* layout helpers */
@@ -587,26 +589,24 @@
     </div>
   </section>
 
-  <!-- 13 AUTONOMOUS REAL -->
+  <!-- AI IN ATTACKS — HARD NUMBERS -->
   <section class="slide" data-part="2" data-title="Already real" data-partname="Part II · No one is behind it">
-    <div class="wrap cols">
-      <div>
-        <div class="eyebrow">This is not hypothetical</div>
-        <h2 class="serif">Agents are already running the whole attack.</h2>
-        <p class="sub">In a documented 2025 campaign (tracked as <span class="mono">GTG-1002</span>), a state-linked group manipulated an AI coding agent into executing the operation itself — the model performed the large majority of the work against roughly <strong>30 organizations</strong>, with humans stepping in only at a few decision points. Similar autonomous-agent activity has since been reported against government and research targets.</p>
+    <div class="wrap">
+      <div class="eyebrow">This is not hypothetical · the last 12 months</div>
+      <h2 class="serif" style="margin-bottom:18px">AI is already in the attacks — measured, not predicted.</h2>
+      <div class="cols even" style="gap:38px; align-items:start">
+        <ul class="clean">
+          <li><span class="num">+89%</span> year-over-year growth in AI-enabled adversary operations.<span class="cite-s">CrowdStrike 2026 Global Threat Report</span></li>
+          <li><span class="num">45%</span> of AI-driven attacks studied used deepfakes.<span class="cite-s">CrowdStrike, 2026</span></li>
+          <li><span class="num">62%</span> of organizations hit by a deepfake-enabled attack in the past year.<span class="cite-s">Gartner survey, 302 security leaders</span></li>
+        </ul>
+        <ul class="clean">
+          <li><span class="num">$1.1B+</span> in U.S. deepfake-fraud losses in 2025 (~1,600 documented incidents).<span class="cite-s">Resemble AI 2025 report</span></li>
+          <li><span class="num">1,633%</span> surge in cloned-voice "vishing" attacks.<span class="cite-s">Q1 2025</span></li>
+          <li><span class="num">90+</span> organizations had malicious prompts injected into their own AI tools.<span class="cite-s">CrowdStrike, H1 2026</span></li>
+        </ul>
       </div>
-      <div class="figure" aria-hidden="true">
-        <svg viewBox="0 0 320 260">
-          <!-- donut: ~85% autonomous -->
-          <g transform="translate(120,120)">
-            <circle r="70" fill="none" stroke="#233140" stroke-width="22"/>
-            <circle r="70" fill="none" stroke="#f0a935" stroke-width="22" stroke-dasharray="374 66" stroke-dashoffset="110" transform="rotate(-90)"/>
-            <text x="0" y="-2" text-anchor="middle" class="serif" font-size="34" fill="#e9eef6" font-weight="600">~85%</text>
-            <text x="0" y="22" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10" fill="#a7b4c6">agent-run</text>
-          </g>
-          <g font-family="ui-monospace,monospace" font-size="12" fill="#a7b4c6"><text x="228" y="96">~30</text><text x="228" y="112" fill="#6d7d92">targets</text><text x="228" y="150">state</text><text x="228" y="166" fill="#6d7d92">linked</text></g>
-        </svg>
-      </div>
+      <p class="note" style="margin-top:20px">Aggregate figures from the past year — not a single case. The demo next shows what "AI-run" looks like up close.</p>
     </div>
   </section>
 
@@ -895,6 +895,7 @@
           <li>Autonomous campaigns &amp; the 2026 hack-back memo — contemporaneous reporting.</li>
           <li>Colorado AI Act saga — SB24-205, SB25B-004, SB26-189; CO AG rulemaking (coag.gov/ai).</li>
           <li>Scale &amp; defenses — FBI IC3 2025 report; MITRE ATLAS; 2026 agentic-defense guidance.</li>
+          <li>AI-attack figures — CrowdStrike 2026 Global Threat Report; Gartner deepfake survey; Resemble AI 2025 fraud report.</li>
         </ul>
         <div class="stack">
           <p class="note warn"><b>Verified 2026-08-28.</b> Prison/sentence ranges checked against primary/authoritative sources. <b>Exact fine caps remain practitioner-sourced.</b> §1030(a)(5) is not asserted for the marker-write without a primary pass.</p>
