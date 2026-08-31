@@ -88,7 +88,7 @@ Introduction (title · two guiding questions · a field case from Colorado —
 first-hand work on the Castro Garzon Wi-Fi-jamming burglary case, presented
 as a factual case file) → **Part I** (TeamPCP: who / what / how caught · a
 live demo whose discussion prompts reveal a suggested answer as you scroll
-forward · a settled-vs-arguable discussion guide · a best-practice method
+forward · a best-practice method
 for each side) → **Part II** (autonomous
 attacks are real · AI-vs-AI demo + discussion prompts) → **Part III — the
 current predicament** (the accountability gap · the law improvising over the
