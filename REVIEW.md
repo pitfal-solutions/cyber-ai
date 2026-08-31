@@ -41,6 +41,22 @@ not a log.
 
 ---
 
+## 2026-08-30 (deck) — real mobile fix (iOS dynamic viewport) + QR on title
+
+- **Mobile layout fix.** On real iPhone Safari the top of tall slides clipped
+  under the URL bar and the footer rail floated mid-screen — the classic iOS
+  dynamic-viewport bug with `position:fixed` bars sized to `100vh`. Rebuilt
+  the frame as a **`100dvh` flex column** (`body` is `display:flex;
+  flex-direction:column; height:100dvh`; `#statusbar`/`#rail` are in-flow
+  `flex:none`; `#deck` is `flex:1` with the slides absolute-filling it and
+  scrolling internally). Now the layout tracks the visible viewport as the
+  URL bar shows/hides. Also trimmed slide padding (the bars no longer overlap
+  the content). Verified desktop centering is unchanged and mobile no longer
+  clips.
+- **QR code on the title slide** (`site/qr.svg`, segno-generated, dark-on-
+  white) plus the URL text, so students can scan to open the deck. README
+  documents regenerating it if the URL changes.
+
 ## 2026-08-30 (deck) — factual case file (slide 3), cut a slide, reveal-on-scroll answers
 
 Founder edits:
