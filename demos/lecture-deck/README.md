@@ -31,6 +31,16 @@ command). Every push to the repo then redeploys.
 Either way you get a URL like `https://<name>.vercel.app` to hand out with
 the password.
 
+The **title slide shows a QR code** (`site/qr.svg`) and the URL text so the
+class can scan and follow along. Both point at the current deployment
+(`https://site-omega-kohl-61.vercel.app`). **If you change the URL**, update
+the `.qr-url` text on slide 1 and regenerate the QR:
+
+```bash
+pip install segno   # once
+python3 -c "import segno; segno.make('https://YOUR-URL').save('site/qr.svg', scale=12, border=2, dark='#0b0f15', light='#fff')"
+```
+
 ## The bonus objective (end of deck)
 
 The deck itself is **completely open** — no password to view any slide. The
