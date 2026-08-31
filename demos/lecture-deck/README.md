@@ -36,9 +36,10 @@ the password.
 The deck itself is **completely open** — no password to view any slide. The
 last two slides are an optional **capture-the-password** challenge:
 
-- **Slide 27 — "Bonus objective"** is locked. It tells the class a password
-  is hidden in plain text in this deck's public source and challenges them to
-  find it.
+- **Slide 27 — "Bonus objective"** is locked. It tells the class only that
+  the password is *publicly available* — no hint where — and wishes them luck.
+  (It's in this deck's public source, in git and in view-source; the point is
+  to let them figure that out.)
 - **Slide 28 — "Congratulations"** is reachable *only* by entering that
   password. It reveals the point: a password sitting in source and committed
   to a public repo is one of the most common real breaches there is —
