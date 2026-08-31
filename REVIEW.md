@@ -49,10 +49,10 @@ Founder edits:
   cited the jury conviction: COCCA racketeering + conspiracy (F2), 2nd-degree
   burglary ×6 (F3), theft counts (F3/F4/F6), up to 72 years, 15 jurisdictions,
   900+ trial exhibits, seized jammers/trackers/weapons. Statutes shown
-  (C.R.S. §§18-17-104, 18-4-203, 18-4-401). Includes a **booking-photo
-  placeholder** — swap in the real image (`<img src="booking.jpg">` + drop the
-  file in `site/`); left as a placeholder to avoid shipping a copyrighted
-  news photo on a public page.
+  (C.R.S. §§18-17-104, 18-4-203, 18-4-401). Includes the **official Arapahoe
+  County Sheriff booking photo** (`site/booking.png`) — the mugshot the DA's
+  office itself published on its public government site with the conviction
+  release, so it's a public record, not a copyrighted news photo.
 - **Removed the old attribution-ladder slide** (the TeamPCP "how caught" slide
   already carries that point). Deck now 27 slides.
 - **Reveal-on-scroll:** a lightweight fragment system (`.reveal` elements;
