@@ -41,6 +41,29 @@ not a log.
 
 ---
 
+## 2026-08-30 (deck) — dropped the gates; password is now an end-of-deck bonus
+
+Founder changed direction: no gate on the deck at all. Instead the password
+became a **capture-the-flag bonus** at the end.
+- Removed the entire gate system (entry + per-Part gates, the full-screen
+  overlay, `data-gate` attrs, sessionStorage). The deck now opens straight to
+  slide 1 and every slide is freely viewable.
+- Added two slides: **27 "Bonus objective"** (a locked page telling the class
+  a password is hidden in the public source and to go find it) and **28
+  "Congratulations"** (reachable only by entering it). The congrats page ties
+  the puzzle to the real lesson — hard-coded secrets committed to public
+  repos are a top breach class; *don't put secrets in your source.*
+- Mechanics: the congrats slide is `data-locked`; `go()` redirects any attempt
+  to reach it (→ / hash / overview) back to the challenge until the password
+  is entered, and the locked page is excluded from the overview grid. The
+  `PASSWORD` constant is **intentionally in plaintext** in `site/index.html`
+  — finding it in git/view-source is the exercise; README warns not to move
+  or obfuscate it. Deck now 28 slides.
+
+Verified the full flow live: deck opens with no gate; the bonus page rejects
+a wrong password and stays locked; the correct password reveals the congrats
+page; the locked page isn't in the overview. Redeployed to Vercel.
+
 ## 2026-08-30 (deck) — per-Part gates + new Part III grounded in the last 12 months
 
 Founder feedback after the Vercel deploy:

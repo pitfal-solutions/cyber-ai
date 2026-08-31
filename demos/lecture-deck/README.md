@@ -31,37 +31,43 @@ command). Every push to the repo then redeploys.
 Either way you get a URL like `https://<name>.vercel.app` to hand out with
 the password.
 
-## The password gate
+## The bonus objective (end of deck)
 
-A simple string password unlocks the deck — on first view, and again each
-time a viewer enters a new **Part** (I / II / III), so you can reveal the
-deck to the class one section at a time. It's remembered per browser session
-and is deliberately **not bulletproof** — it keeps casual or early access
-out, nothing more. Change it in one place, the `PASSWORD` constant near the
-top of the `<script>` in [`site/index.html`](site/index.html):
+The deck itself is **completely open** — no password to view any slide. The
+last two slides are an optional **capture-the-password** challenge:
+
+- **Slide 27 — "Bonus objective"** is locked. It tells the class a password
+  is hidden in plain text in this deck's public source and challenges them to
+  find it.
+- **Slide 28 — "Congratulations"** is reachable *only* by entering that
+  password. It reveals the point: a password sitting in source and committed
+  to a public repo is one of the most common real breaches there is —
+  *don't put secrets in your source.*
+
+The password is **intentionally in plain text** in
+[`site/index.html`](site/index.html) — finding it there (or via view-source)
+*is* the exercise, so **don't move or obfuscate it**:
 
 ```js
-var PASSWORD = "range2026";   // <- change this, then redeploy
+var PASSWORD = "range2026";   // <- the bonus answer, left in plaintext on purpose
 ```
 
-The check runs client-side, so anyone who views source can read it. If you
-ever want real gating, it becomes a one-file Vercel serverless function
-reading the password from an environment variable — ask and it's a quick
-add.
+Change the value if you want a different answer, then redeploy. The locked
+page is kept out of the overview grid and can't be reached by URL/hash
+without the password.
 
 ## Files
 
 | File | What it is |
 |---|---|
-| [`site/index.html`](site/index.html) | The deployable deck — self-contained, password-gated, no notes. |
+| [`site/index.html`](site/index.html) | The deployable deck — self-contained, open to view, no notes (ends with a bonus password challenge). |
 | [`site/vercel.json`](site/vercel.json) | Minimal Vercel static config. |
 | [`speaker-notes.md`](speaker-notes.md) | **Presenter-only.** Per-slide speaker notes, kept *outside* `site/` so students never see them. |
 | [`talk-track.md`](talk-track.md) | Legal Reference Pack (statutes, sentencing, cases, cheat sheet) + the superseded original script. |
 
 ## Presenting it
 
-Open the deployed URL (or `site/index.html` locally), enter the password,
-then:
+Open the deployed URL (or `site/index.html` locally), then:
 
 | Key | Action |
 |---|---|
@@ -85,13 +91,15 @@ guide · a best-practice method for each side) → **Part II** (autonomous
 attacks are real · AI-vs-AI demo + discussion prompts) → **Part III — the
 current predicament** (the accountability gap · the law improvising over the
 last 12 months, Colorado-first · what defenders actually do now · the state's
-hack-back response · the legal inversion · close) → reference exhibits.
+hack-back response · the legal inversion · close) → reference exhibits → a
+**bonus password-hunt** (a locked page the class unlocks by finding the
+password in the source, then a congratulations page — see below).
 
 Parts I and II each run a **demo → discussion → best-practice** beat; Part
 III grounds it all in the last twelve months of real case law, policy, and
 defensive practice. The two setup questions on slide 2 — how technology
 changes the attack, and who the law can hold responsible — are what every
-later slide answers. **Each Part divider is password-gated** (see below).
+later slide answers.
 
 ## Keep it in sync
 
