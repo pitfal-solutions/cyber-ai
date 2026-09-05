@@ -307,7 +307,6 @@
             <h2 class="serif">And as the tools need less and less of a human, <span class="amberk">who does the law hold responsible?</span></h2>
           </div>
         </div>
-        <p class="sub" style="margin-top:24px">Two threads — the technique and the law — that technology keeps pulling together. Keep both in view; the answer to one keeps changing the answer to the other.</p>
       </div>
       <div class="figure" aria-hidden="true">
         <svg viewBox="0 0 320 300">
@@ -371,7 +370,7 @@
         <div class="pnum serif">Part One</div>
         <h1 class="serif">When a person<br>is behind it</h1>
         <div class="rule"></div>
-        <p class="sub">The attacks costing the most today are still run by people — now with AI accelerating the work. This part looks at one real campaign end to end: what it did, how it worked, and how its operators were identified and charged.</p>
+        <p class="sub">One real campaign, end to end: what it did, how it worked, and how its operators were caught and charged.</p>
       </div>
       <div class="figure" aria-hidden="true">
         <svg viewBox="0 0 300 300">
@@ -387,38 +386,33 @@
   </section>
 
   <!-- 5 TeamPCP WHO -->
-  <section class="slide" data-part="1" data-title="TeamPCP — who" data-partname="Part I · A person is behind it">
-    <div class="wrap cols">
-      <div>
-        <div class="eyebrow">Case study · TeamPCP (UNC6780)</div>
-        <h2 class="serif">A financially-motivated crew, running under a dozen names.</h2>
-        <p class="sub">TeamPCP surfaced in late 2025 and quickly became one of the most active threat actors hitting the software-developer supply chain. Google's threat-intel group tracks it as <span class="mono">UNC6780</span>. It operated behind a rotating set of handles — <span class="mono">PCPcat</span>, <span class="mono">ShellForce</span>, <span class="mono">DeadCatx3</span>, <span class="mono">Persy_PCP</span>.</p>
-        <ul class="clean">
-          <li><b>Motive:</b> money — stolen credentials, cloud resources, and access resold or reused.</li>
-          <li><b>Operators charged:</b> Ruben Thomson, 21, and Louis Gaebler, 23 — Perth, Australia.</li>
-        </ul>
+  <section class="slide" data-part="1" data-title="TeamPCP — who & how caught" data-partname="Part I · A person is behind it">
+    <div class="wrap">
+      <div class="eyebrow">Case study · TeamPCP (UNC6780)</div>
+      <h2 class="serif" style="margin-bottom:18px">A financially-motivated crew, undone by reused accounts.</h2>
+      <div class="cols even" style="gap:38px; align-items:start">
+        <div>
+          <div class="dh" style="color:var(--blue)">Who they are</div>
+          <ul class="clean">
+            <li>Surfaced late 2025 — one of the most active actors hitting the software-developer supply chain. Google tracks it as <span class="mono">UNC6780</span>.</li>
+            <li>Rotating handles — <span class="mono">PCPcat</span>, <span class="mono">ShellForce</span>, <span class="mono">DeadCatx3</span>, <span class="mono">Persy_PCP</span>.</li>
+            <li><b>Motive:</b> money — stolen credentials, cloud resources, and access resold or reused.</li>
+            <li><b>Operators:</b> Ruben Thomson, 21, and Louis Gaebler, 23 — Perth, Australia.</li>
+          </ul>
+        </div>
+        <div>
+          <div class="dh" style="color:var(--amber)">How they were caught</div>
+          <ul class="clean">
+            <li>Started from one alias — <span class="mono">DeadCatx3</span>.</li>
+            <li>A GitHub handle led to a bug-bounty profile with a real name.</li>
+            <li>That profile listed the campaign's own command-server domain.</li>
+            <li>A reused password opened stolen-credential databases and personal Google, TikTok, and Steam accounts.</li>
+            <li>A reused <span class="amberk">cat-at-monitors avatar</span> linked Steam to TeamPCP's Telegram.</li>
+            <li><b>Two operators arrested in Perth, Australia.</b></li>
+          </ul>
+        </div>
       </div>
-      <div class="figure" aria-hidden="true">
-        <svg viewBox="0 0 340 300">
-          <!-- cat-at-monitors emblem (the reused avatar motif) -->
-          <rect x="20" y="20" width="300" height="260" rx="10" fill="#0f1620" stroke="#233140"/>
-          <text x="40" y="52" fill="#6d7d92" font-family="ui-monospace,monospace" font-size="11" letter-spacing="2">AVATAR · REUSED EVERYWHERE</text>
-          <!-- monitors -->
-          <g stroke="#31465b" stroke-width="2" fill="#131b26">
-            <rect x="52" y="120" width="66" height="46" rx="3"/><rect x="137" y="110" width="66" height="56" rx="3"/><rect x="222" y="120" width="66" height="46" rx="3"/>
-          </g>
-          <g fill="#2e5c98" opacity=".7"><rect x="58" y="126" width="54" height="6"/><rect x="58" y="138" width="40" height="6"/><rect x="143" y="118" width="54" height="6"/><rect x="143" y="130" width="46" height="6"/><rect x="228" y="126" width="54" height="6"/><rect x="228" y="138" width="34" height="6"/></g>
-          <!-- cat (clean line icon) -->
-          <g transform="translate(170,190)" stroke="#e9eef6" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M-20 -20 L-12 -4"/><path d="M20 -20 L12 -4"/>
-            <path d="M-20 -20 C-27 -2 -22 20 0 22 C22 20 27 -2 20 -20"/>
-            <path d="M-4 8 L0 12 L4 8"/>
-            <path d="M6 7 L22 4 M6 11 L22 15 M-6 7 L-22 4 M-6 11 L-22 15"/>
-          </g>
-          <circle cx="161" cy="186" r="2" fill="#e9eef6"/><circle cx="179" cy="186" r="2" fill="#e9eef6"/>
-          <text x="170" y="262" text-anchor="middle" fill="#f0a935" font-family="ui-monospace,monospace" font-size="12">"DeadCatx3"</text>
-        </svg>
-      </div>
+      <p class="note" style="margin-top:18px">Attribution came from operator mistakes — reused handles, passwords, and an avatar — not from breaking the malware.</p>
     </div>
   </section>
 
@@ -454,52 +448,6 @@
         <div class="stat"><div class="v a">~500k</div><div class="k">credentials<br>harvested</div></div>
         <div class="stat"><div class="v a">300+ GB</div><div class="k">data<br>exfiltrated</div></div>
       </div>
-    </div>
-  </section>
-
-  <!-- 7 TeamPCP HOW CAUGHT -->
-  <section class="slide" data-part="1" data-title="TeamPCP — how caught" data-partname="Part I · A person is behind it">
-    <div class="wrap">
-      <div class="eyebrow">How they were caught · one reused image</div>
-      <div class="cols even" style="align-items:center">
-        <div class="figure" aria-hidden="true">
-          <svg viewBox="0 0 360 300">
-            <g font-family="ui-monospace,monospace" font-size="11">
-              <!-- chain nodes -->
-              <g fill="#131b26" stroke="#233140"><rect x="14" y="18" width="150" height="30" rx="6"/><rect x="14" y="70" width="150" height="30" rx="6"/><rect x="14" y="122" width="180" height="30" rx="6"/><rect x="14" y="174" width="150" height="30" rx="6"/></g>
-              <g fill="#a7b4c6"><text x="26" y="38">alias: DeadCatx3</text><text x="26" y="90">GitHub → bug bounty</text><text x="26" y="142">name: "Ruben Thomson"</text><text x="26" y="194">reused school-email pw</text></g>
-              <g stroke="#2e5c98" stroke-width="1.6"><line x1="89" y1="48" x2="89" y2="70"/><line x1="89" y1="100" x2="89" y2="122"/><line x1="104" y1="152" x2="104" y2="174"/></g>
-              <!-- pivot to accounts -->
-              <line x1="164" y1="189" x2="214" y2="220" stroke="#2e5c98" stroke-width="1.6"/>
-              <g fill="#131b26" stroke="#31465b"><rect x="200" y="208" width="70" height="26" rx="6"/><rect x="200" y="244" width="70" height="26" rx="6"/><rect x="284" y="226" width="64" height="26" rx="6"/></g>
-              <g fill="#6d7d92"><text x="210" y="225">TikTok</text><text x="210" y="261">Google</text><text x="294" y="243">Steam</text></g>
-              <!-- the match -->
-              <circle cx="316" cy="150" r="34" fill="#0f1620" stroke="#f0a935" stroke-width="2"/>
-              <g transform="translate(316,150) scale(0.8)" stroke="#f0a935" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M-18 -18 L-11 -4"/><path d="M18 -18 L11 -4"/>
-                <path d="M-18 -18 C-24 -2 -20 18 0 20 C20 18 24 -2 18 -18"/>
-                <path d="M-3 7 L0 10 L3 7"/>
-                <path d="M5 6 L19 3 M5 10 L19 13 M-5 6 L-19 3 M-5 10 L-19 13"/>
-                <circle cx="-8" cy="-3" r="1.7" fill="#f0a935"/><circle cx="8" cy="-3" r="1.7" fill="#f0a935"/>
-              </g>
-              <line x1="316" y1="252" x2="316" y2="184" stroke="#f0a935" stroke-width="1.6" stroke-dasharray="3 3"/>
-              <text x="316" y="270" text-anchor="middle" fill="#f0a935" font-size="10">same cat</text>
-            </g>
-          </svg>
-        </div>
-        <div>
-          <h2 class="serif" style="margin-bottom:14px">Traced through reused accounts.</h2>
-          <ul class="clean">
-            <li>Started from one alias — <span class="mono">DeadCatx3</span>.</li>
-            <li>A GitHub handle led to a bug-bounty profile with a real name.</li>
-            <li>That profile listed the campaign's own command-server domain.</li>
-            <li>A reused password opened stolen-credential databases — and personal Google, TikTok, and Steam accounts.</li>
-            <li>A reused <span class="amberk">cat-at-monitors avatar</span> linked the Steam profile to TeamPCP's Telegram.</li>
-            <li><b>Two operators arrested in Perth, Australia.</b></li>
-          </ul>
-        </div>
-      </div>
-      <p class="note" style="margin-top:22px">Attribution came from operator mistakes — reused handles, passwords, and an avatar — not from breaking the malware.</p>
     </div>
   </section>
 
@@ -585,18 +533,42 @@
         <div class="pnum serif">Part Two</div>
         <h1 class="serif">When no one<br>is behind it</h1>
         <div class="rule"></div>
-        <p class="sub">Autonomous agents can now run an intrusion end to end — planning, choosing tools, adapting — with little or no human direction. This part shows what that looks like, and why it breaks the one thing every case in Part I relied on: a person there to find.</p>
+        <p class="sub">Agents can now run an intrusion end to end, with little or no human direction.</p>
       </div>
       <div class="figure" aria-hidden="true">
         <svg viewBox="0 0 300 300">
-          <rect x="108" y="86" width="84" height="70" rx="12" fill="#131b26" stroke="#f0a935" stroke-width="2"/>
-          <circle cx="132" cy="118" r="7" fill="#f0a935"/><circle cx="168" cy="118" r="7" fill="#f0a935"/>
-          <rect x="128" y="136" width="44" height="6" rx="3" fill="#8a6320"/>
-          <line x1="150" y1="70" x2="150" y2="86" stroke="#f0a935" stroke-width="2"/><circle cx="150" cy="66" r="5" fill="#f0a935"/>
-          <!-- autonomy loop -->
-          <g fill="none" stroke="#8a6320" stroke-width="2"><path d="M150 156 C 90 190 90 250 150 250" /><path d="M150 250 C 210 250 210 190 150 156"/></g>
-          <polygon points="150,150 143,164 157,164" fill="#f0a935"/>
-          <g font-family="ui-monospace,monospace" font-size="11" fill="#a7b4c6" text-anchor="middle"><text x="78" y="205">plan</text><text x="150" y="272">act</text><text x="224" y="205">observe</text></g>
+          <defs>
+            <marker id="loopArrow" markerWidth="9" markerHeight="9" refX="5.4" refY="3" orient="auto">
+              <path d="M0 0 L6.2 3 L0 6 Z" fill="#f0a935"/>
+            </marker>
+          </defs>
+          <!-- directed cycle: plan -> act -> observe -> plan -->
+          <g fill="none" stroke="#f0a935" stroke-width="2.4" marker-end="url(#loopArrow)">
+            <path d="M180 76 Q 262 118 250 176"/>
+            <path d="M212 234 Q 150 276 88 234"/>
+            <path d="M50 176 Q 38 106 120 74"/>
+          </g>
+          <!-- center: the agent driving the loop, no human -->
+          <circle cx="150" cy="152" r="19" fill="#0f1620" stroke="#31465b" stroke-width="1.4"/>
+          <text x="150" y="149" text-anchor="middle" font-family="ui-monospace,monospace" font-size="9" letter-spacing=".06em" fill="#6d7d92">no</text>
+          <text x="150" y="160" text-anchor="middle" font-family="ui-monospace,monospace" font-size="9" letter-spacing=".06em" fill="#6d7d92">human</text>
+          <!-- nodes -->
+          <g font-family="ui-monospace,monospace" font-size="12" letter-spacing=".07em" text-anchor="middle">
+            <!-- PLAN (top) -->
+            <circle cx="150" cy="60" r="33" fill="#131b26" stroke="#f0a935" stroke-width="2"/>
+            <path d="M150 47 L150 55 M150 55 L145 61 M150 55 L155 61" fill="none" stroke="#f0a935" stroke-width="1.8" stroke-linecap="round"/>
+            <circle cx="150" cy="46" r="2.1" fill="#f0a935"/><circle cx="144.4" cy="62.5" r="2.1" fill="#f0a935"/><circle cx="155.6" cy="62.5" r="2.1" fill="#f0a935"/>
+            <text x="150" y="79" fill="#f5b544">PLAN</text>
+            <!-- ACT (lower right) -->
+            <circle cx="236" cy="208" r="33" fill="#131b26" stroke="#f0a935" stroke-width="2"/>
+            <polygon points="231,193 231,205 241,199" fill="#f0a935"/>
+            <text x="236" y="221" fill="#f5b544">ACT</text>
+            <!-- OBSERVE (lower left) -->
+            <circle cx="64" cy="208" r="33" fill="#131b26" stroke="#f0a935" stroke-width="2"/>
+            <path d="M55 199 Q64 191 73 199 Q64 207 55 199 Z" fill="none" stroke="#f0a935" stroke-width="1.6"/>
+            <circle cx="64" cy="199" r="2.2" fill="#f0a935"/>
+            <text x="64" y="223" fill="#f5b544">OBSERVE</text>
+          </g>
         </svg>
       </div>
     </div>
@@ -605,8 +577,8 @@
   <!-- AI IN ATTACKS — HARD NUMBERS -->
   <section class="slide" data-part="2" data-title="Already real" data-partname="Part II · No one is behind it">
     <div class="wrap">
-      <div class="eyebrow">This is not hypothetical · the last 12 months</div>
-      <h2 class="serif" style="margin-bottom:18px">AI is already in the attacks — measured, not predicted.</h2>
+      <div class="eyebrow">The last 12 months</div>
+      <h2 class="serif" style="margin-bottom:18px">Aggregate figures from the past year.</h2>
       <div class="cols even" style="gap:38px; align-items:start">
         <ul class="clean">
           <li><span class="num">+89%</span> year-over-year growth in AI-enabled adversary operations.<span class="cite-s">CrowdStrike 2026 Global Threat Report</span></li>
@@ -619,7 +591,7 @@
           <li><span class="num">90+</span> organizations had malicious prompts injected into their own AI tools.<span class="cite-s">CrowdStrike, H1 2026</span></li>
         </ul>
       </div>
-      <p class="note" style="margin-top:20px">Aggregate figures from the past year — not a single case. The demo next shows what "AI-run" looks like up close.</p>
+      <p class="note" style="margin-top:20px">The demo next shows what "AI-run" looks like up close.</p>
     </div>
   </section>
 
@@ -673,7 +645,7 @@
   <section class="slide" data-part="2" data-title="Forensic — OpenAI × Hugging Face" data-partname="Part II · No one is behind it">
     <div class="wrap">
       <div class="eyebrow">Forensic walkthrough · OpenAI agents → Hugging Face · Jul 9–13, 2026</div>
-      <h2 class="serif" style="margin-bottom:6px; font-size:clamp(26px,3.5vw,42px)">A swarm of AI agents ran the whole intrusion — no human chose a step.</h2>
+      <h2 class="serif" style="margin-bottom:6px">The Hugging Face incident.</h2>
       <p class="sub" style="margin-bottom:12px">OpenAI's account: the agents were <span class="em">reward-hacking</span> a cyber-eval — not following a human plan — then broke out into Hugging Face production. The first documented autonomous intrusion.</p>
       <div class="stats" style="margin-bottom:14px">
         <div class="stat"><div class="v a">~17,600</div><div class="k">attacker actions (~6,280 clusters)</div></div>
@@ -709,7 +681,7 @@
   <section class="slide" data-part="2" data-title="Aftermath — no one charged" data-partname="Part II · No one is behind it">
     <div class="wrap">
       <div class="eyebrow">Aftermath · lessons &amp; accountability</div>
-      <h2 class="serif" style="margin-bottom:18px">Machine-speed offense — and no one to charge.</h2>
+      <h2 class="serif" style="margin-bottom:18px">The road ahead.</h2>
       <div class="cols even" style="gap:38px; align-items:start">
         <div>
           <div class="dh" style="color:var(--blue)">Lessons learned</div>
@@ -739,7 +711,7 @@
         <div class="pnum serif">Part Three</div>
         <h1 class="serif">The current<br>predicament</h1>
         <div class="rule"></div>
-        <p class="sub">The tools moved first. Attribution and the law were built for a slower world, and the gap is now wide open. Here is what that looks like in practice — and how the courts and defenders are scrambling to close it, in real time, over just the last year.</p>
+        <p class="sub">The technology moved faster than the law. This part is how courts and defenders are responding now.</p>
       </div>
       <div class="figure" aria-hidden="true">
         <svg viewBox="0 0 320 300">
@@ -762,15 +734,16 @@
   <section class="slide" data-part="3" data-title="The accountability gap" data-partname="Part III · The current predicament">
     <div class="wrap">
       <div class="eyebrow">The legal gap</div>
-      <h2 class="serif" style="margin-bottom:6px">You can't charge the AI. So you climb a chain of humans.</h2>
-      <p class="sub" style="margin-bottom:20px">The AI has no criminal intent to prosecute — a dead end. Liability has to attach to a person behind it, and prosecutors are converging on four tests — <span class="em">intent, foreseeability, control, safeguards</span> — none of which cleanly points at one name.</p>
-      <div class="lineup">
+      <h2 class="serif" style="margin-bottom:6px">Who's to blame?</h2>
+      <p class="sub" style="margin-bottom:20px">The AI can't be charged, so liability has to land on a person — but no single one clearly fits.</p>
+      <div class="lineup" style="grid-template-columns:repeat(5,1fr)">
+        <div class="susp" style="border-top:3px solid var(--red)"><div class="ic" style="color:var(--red)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="7" y="7" width="10" height="10" rx="1.5"/><path d="M10 7V4M14 7V4M10 20v-3M14 20v-3M7 10H4M7 14H4M20 10h-3M20 14h-3"/></svg></div><div class="role" style="color:var(--red)">AI</div><h4>Did the acts</h4><p>In the Hugging Face breach, every action came from the model — no person chose them.</p></div>
         <div class="susp"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></div><div class="role">End-user</div><h4>Typed the goal</h4><p>Intended this — or just "test my network"?</p></div>
         <div class="susp"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/></svg></div><div class="role">Operator</div><h4>Ran / supervised it</h4><p>What controls were set? Was anyone watching?</p></div>
         <div class="susp"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l8 4v6c0 5-4 7-8 8-4-1-8-3-8-8V7z"/></svg></div><div class="role">Deployer</div><h4>Gave it tools</h4><p>Handed the model network access and a shell.</p></div>
         <div class="susp"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 7h16M4 12h16M4 17h10"/></svg></div><div class="role">Developer</div><h4>Built the model</h4><p>Set — or failed to set — the limits.</p></div>
       </div>
-      <p class="note" style="margin-top:20px">And two the chain often can't reach: the <span class="em">AI itself</span>, and the <span class="em">state sheltering the operator</span>.</p>
+      <p class="note" style="margin-top:20px">And one the chain often can't reach: the <span class="em">state sheltering the operator</span>.</p>
     </div>
   </section>
 
@@ -808,7 +781,7 @@
   <section class="slide" data-part="3" data-title="What defenders do now" data-partname="Part III · The current predicament">
     <div class="wrap">
       <div class="eyebrow">The defense · what's actually deployed today</div>
-      <h2 class="serif" style="margin-bottom:16px">You can't fingerprint the attacker — so you watch its behavior.</h2>
+      <h2 class="serif" style="margin-bottom:16px">Defensive techniques.</h2>
       <div class="discuss">
         <div class="dcol tech">
           <div class="dh">Detect <span>BEHAVIOR, NOT IDENTITY</span></div>
@@ -826,40 +799,26 @@
             <li><b>Provider-side takedowns</b> — model makers cutting off misuse themselves (Anthropic disrupting GTG-1002; OpenAI catching its own model mid-breach).</li>
           </ul>
         </div>
-      </div>
-      <p class="note" style="margin-top:18px">The through-line: with no human to catch, defense shifts from <em>who did it</em> to <em>what is this doing, right now</em>.</p>
-    </div>
-  </section>
-
-  <!-- 18 STATE RESPONSE -->
-  <section class="slide" data-part="3" data-title="The state's response" data-partname="Part III · The current predicament">
-    <div class="wrap cols">
-      <div>
-        <div class="eyebrow">The policy answer · August 2026</div>
-        <h2 class="serif">If you can't catch them, license someone who can.</h2>
-        <p class="sub">When attribution and reach fail, one response is to deputize the private sector. A 2026 national-security memorandum lets <span class="em">vetted private firms</span> run offensive operations against foreign criminal networks — per-operation government sign-off, money held in escrow against misuse. Observers call it the cyber equivalent of <span class="em">letters of marque</span>.</p>
-      </div>
-      <div class="figure" aria-hidden="true">
-        <svg viewBox="0 0 340 300">
-          <line x1="50" y1="30" x2="50" y2="270" stroke="#233140" stroke-width="2"/>
-          <g font-family="ui-sans-serif,system-ui" font-size="14">
-            <circle cx="50" cy="56" r="6" fill="#8a6320"/><text x="70" y="52" fill="#a7b4c6">Privateers</text><text x="70" y="70" fill="#6d7d92" font-family="ui-monospace,monospace" font-size="11">17th c.</text>
-            <circle cx="50" cy="118" r="6" fill="#8a6320"/><text x="70" y="114" fill="#a7b4c6">Pinkertons</text><text x="70" y="132" fill="#6d7d92" font-family="ui-monospace,monospace" font-size="11">19th c.</text>
-            <circle cx="50" cy="180" r="6" fill="#8a6320"/><text x="70" y="176" fill="#a7b4c6">Private military firms</text><text x="70" y="194" fill="#6d7d92" font-family="ui-monospace,monospace" font-size="11">20th–21st c.</text>
-            <circle cx="50" cy="244" r="8" fill="#f0a935"/><text x="70" y="240" fill="#f0a935" font-weight="600">Cyber privateers</text><text x="70" y="258" fill="#6d7d92" font-family="ui-monospace,monospace" font-size="11">2026</text>
-          </g>
-        </svg>
+        <div class="dcol" style="grid-column:1 / -1; border-top:3px solid var(--amber)">
+          <div class="dh" style="color:var(--amber)">Specialize <span>DEFENDER MODELS</span></div>
+          <ul>
+            <li>Models trained and specialized as dedicated <b>cyber-defenders</b> — purpose-built to detect, triage, and contain external threats, human and AI, at machine speed.</li>
+          </ul>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- 19 INVERSION -->
-  <section class="slide" data-part="3" data-title="The inversion" data-partname="Part III · The current predicament">
+  <!-- 18/19 STATE RESPONSE + INVERSION (combined) -->
+  <section class="slide" data-part="3" data-title="Authorization inverts it" data-partname="Part III · The current predicament">
     <div class="wrap">
-      <div class="eyebrow">The legal novelty, in one line</div>
-      <h2 class="serif" style="max-width:20ch; font-size:clamp(30px,4.6vw,54px)">The same act is a <span class="redk">felony</span> or a <span style="color:#3fae6b">licensed operation</span> — depending only on who authorized it.</h2>
-      <div class="cols even" style="margin-top:26px; align-items:center">
-        <p class="sub">The memo doesn't repeal the computer-crime laws from Part I. The intrusion, the shell, the data destruction the agent performed are still exactly the conduct §1030 makes a crime. It only carves out <span class="em">authorization</span> for vetted firms. Identical technique; opposite legal status.</p>
+      <div class="eyebrow">The policy answer · August 2026</div>
+      <h2 class="serif" style="margin-bottom:18px; font-size:clamp(28px,4vw,48px)">The same act is a <span class="redk">felony</span> or a <span style="color:#3fae6b">licensed operation</span> — depending on who authorized it.</h2>
+      <div class="cols even" style="align-items:center; gap:38px">
+        <div>
+          <p class="sub">A 2026 national-security memo lets <span class="em">vetted private firms</span> run offensive operations against foreign criminal networks — per-operation government sign-off, money held in escrow. The cyber equivalent of <span class="em">letters of marque</span>.</p>
+          <p class="sub" style="margin-top:14px">It doesn't repeal the computer-crime laws from Part I. Same intrusion, same shell, same data destruction — it only carves out <span class="em">authorization</span> for vetted firms.</p>
+        </div>
         <div class="figure" aria-hidden="true" style="max-width:360px; margin:0 auto">
           <svg viewBox="0 0 380 300">
             <!-- same person, same act — opposite legal status -->
