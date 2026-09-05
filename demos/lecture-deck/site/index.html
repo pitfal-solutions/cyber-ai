@@ -12,6 +12,7 @@
     --blue:#5aa2ff; --blue-dim:#2e5c98; --blue-deep:#0f2036;
     --amber:#f0a935; --amber-dim:#8a6320;
     --red:#e2564f; --red-dim:#7c2b2b;
+    --teal:#37c2b9; --teal-dim:#1f6b66;
     /* paper exhibit */
     --paper:#efe7d6; --paper2:#e6dcc6; --paper-ink:#241f17; --paper-soft:#5c5240; --paper-line:#cdbf9f; --burgundy:#9e3b46;
     --grid:rgba(120,150,190,.045);
@@ -28,6 +29,7 @@
   .mono{font-family:ui-monospace,"SF Mono","JetBrains Mono",Menlo,Consolas,monospace;}
   [data-part="intro"]{--accent:var(--blue)} [data-part="1"]{--accent:var(--blue)}
   [data-part="2"]{--accent:var(--amber)} [data-part="3"]{--accent:var(--red)} [data-part="ref"]{--accent:var(--ink-soft)}
+  [data-part="dark"]{--accent:var(--teal)}
 
   /* frame */
   #deck{position:relative; flex:1 1 auto; min-height:0; overflow:hidden}
@@ -36,6 +38,7 @@
     background:radial-gradient(130% 100% at 100% 0%, rgba(90,162,255,.05), transparent 55%), linear-gradient(180deg,var(--bg),var(--bg2));}
   [data-part="2"].slide{background:radial-gradient(130% 100% at 100% 0%, rgba(240,169,53,.055), transparent 55%), linear-gradient(180deg,var(--bg),var(--bg2));}
   [data-part="3"].slide{background:radial-gradient(130% 100% at 100% 0%, rgba(226,86,79,.06), transparent 55%), linear-gradient(180deg,var(--bg),var(--bg2));}
+  [data-part="dark"].slide{background:radial-gradient(130% 100% at 100% 0%, rgba(55,194,185,.06), transparent 55%), linear-gradient(180deg,var(--bg),var(--bg2));}
   .slide.active{display:flex; animation:fin .45s cubic-bezier(.2,.7,.2,1)}
   @keyframes fin{from{opacity:0; transform:translateY(12px)} to{opacity:1; transform:none}}
   .slide::before{content:""; position:absolute; inset:0; pointer-events:none;
@@ -137,6 +140,20 @@
   .susp .role{font-family:ui-monospace,monospace; font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--accent)}
   .susp h4{margin:5px 0 6px; font-size:17px; font-weight:600} .susp p{margin:0; font-size:13px; color:var(--ink-mute); line-height:1.4}
 
+  /* path chooser */
+  .pathgrid{display:grid; grid-template-columns:1fr 1fr; gap:22px; margin-top:6px}
+  .pathcard{display:block; width:100%; text-align:left; font-family:inherit; border:1px solid var(--line2); border-radius:16px;
+    padding:26px 26px 24px; background:linear-gradient(180deg,var(--panel),var(--panel2)); cursor:pointer; transition:border-color .15s, transform .15s}
+  .pathcard:hover,.pathcard:focus-visible{transform:translateY(-3px); outline:none}
+  .pathcard.ai{border-top:3px solid var(--blue)} .pathcard.ai:hover,.pathcard.ai:focus-visible{border-color:var(--blue)}
+  .pathcard.dark{border-top:3px solid var(--amber)} .pathcard.dark:hover,.pathcard.dark:focus-visible{border-color:var(--amber)}
+  .pathcard .pk{font-family:ui-monospace,monospace; font-size:12px; letter-spacing:.12em; text-transform:uppercase; margin-bottom:10px}
+  .pathcard.ai .pk{color:var(--blue)} .pathcard.dark .pk{color:var(--amber)}
+  .pathcard h3{font-size:clamp(21px,2.3vw,29px); margin:0 0 8px; font-weight:600; color:var(--ink)}
+  .pathcard p{margin:0; color:var(--ink-mute); font-size:15px; line-height:1.5}
+  .pathcard .go{display:inline-block; margin-top:16px; font-family:ui-monospace,monospace; font-size:13px; color:var(--ink-soft)}
+  .pathcard.ai:hover .go,.pathcard.ai:focus-visible .go{color:var(--blue)} .pathcard.dark:hover .go,.pathcard.dark:focus-visible .go{color:var(--amber)}
+
   /* note */
   .note{font-size:13.5px; color:var(--ink-mute); border-left:2px solid var(--line2); padding-left:13px; line-height:1.5}
   .note.warn{border-left-color:var(--amber); color:var(--ink-soft)}
@@ -205,7 +222,7 @@
   .ov{aspect-ratio:16/10; background:var(--panel2); border:1px solid var(--line); border-radius:9px; padding:12px; cursor:pointer; display:flex; flex-direction:column; gap:6px; overflow:hidden; transition:border-color .15s,transform .15s}
   .ov:hover{border-color:var(--accent); transform:translateY(-2px)} .ov .oi{font-family:ui-monospace,monospace; font-size:11px; color:var(--accent)}
   .ov .ot{font-size:13px; font-weight:600; line-height:1.25; color:var(--ink)} .ov .oa{margin-top:auto; font-family:ui-monospace,monospace; font-size:10px; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-mute)}
-  .ov[data-part="1"],.ov[data-part="intro"]{border-top:2px solid var(--blue)} .ov[data-part="2"]{border-top:2px solid var(--amber)} .ov[data-part="3"]{border-top:2px solid var(--red)} .ov[data-part="ref"]{border-top:2px solid var(--line2)}
+  .ov[data-part="1"],.ov[data-part="intro"]{border-top:2px solid var(--blue)} .ov[data-part="2"]{border-top:2px solid var(--amber)} .ov[data-part="3"]{border-top:2px solid var(--red)} .ov[data-part="ref"]{border-top:2px solid var(--line2)} .ov[data-part="dark"]{border-top:2px solid var(--teal)}
   .ov .rm{align-self:flex-start; font-size:9px; letter-spacing:.1em; color:var(--amber); border:1px solid var(--amber-dim); border-radius:4px; padding:1px 5px; font-family:ui-monospace,monospace}
 
   /* bonus challenge (inline, end of deck) */
@@ -219,7 +236,7 @@
   .gate-err{color:var(--red); font-family:ui-monospace,monospace; font-size:13px; margin-top:14px}
   .gate-err[hidden]{display:none}
 
-  @media (max-width:860px){ .cols,.cols.wide-left,.cols.even{grid-template-columns:1fr; gap:24px} .stats{grid-template-columns:1fr 1fr} .lineup{grid-template-columns:1fr 1fr} }
+  @media (max-width:860px){ .cols,.cols.wide-left,.cols.even{grid-template-columns:1fr; gap:24px} .stats{grid-template-columns:1fr 1fr} .lineup{grid-template-columns:1fr 1fr!important} .pathgrid{grid-template-columns:1fr} }
   @media (max-width:600px){
     #statusbar{gap:10px; font-size:10px; padding:0 14px}
     #statusbar .brand{display:none}
@@ -363,8 +380,31 @@
     </div>
   </section>
 
+  <!-- 3b PATH CHOOSER -->
+  <section class="slide" id="path-chooser" data-part="intro" data-title="Choose a path" data-partname="Introduction">
+    <div class="wrap">
+      <div class="eyebrow">Choose a path</div>
+      <h2 class="serif" style="margin-bottom:6px">Two tracks from here.</h2>
+      <p class="sub" style="margin-bottom:26px">Pick one to follow. Both tracks end at the same optional challenge.</p>
+      <div class="pathgrid">
+        <button type="button" class="pathcard ai" data-path-jump="path-ai">
+          <div class="pk">Track 1</div>
+          <h3>AI &amp; Cyber</h3>
+          <p>How attacks work when software runs them, and who the law holds responsible. Parts I–III, plus the reference exhibits.</p>
+          <span class="go">Start Part I →</span>
+        </button>
+        <button type="button" class="pathcard dark" data-path-jump="path-dark">
+          <div class="pk">Track 2</div>
+          <h3>The Dark &amp; Deep Web</h3>
+          <p>What the deep and dark web actually are, how the criminal economy runs, and Colorado cases from the record.</p>
+          <span class="go">Enter the dark web →</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
   <!-- 4 PART I DIVIDER -->
-  <section class="slide divider" data-part="1" data-title="Part I" data-partname="Part I · A person is behind it">
+  <section class="slide divider" id="path-ai" data-part="1" data-title="Part I" data-partname="Part I · A person is behind it">
     <div class="wrap cols wide-left">
       <div>
         <div class="pnum serif">Part One</div>
@@ -940,6 +980,140 @@
     </div>
   </section>
 
+  <!-- ============ TRACK 2 · DARK & DEEP WEB ============ -->
+  <!-- D1 DARK WEB DIVIDER -->
+  <section class="slide divider" id="path-dark" data-part="dark" data-title="The dark web" data-partname="Dark &amp; Deep Web">
+    <div class="wrap cols wide-left">
+      <div>
+        <div class="pnum serif">Track Two</div>
+        <h1 class="serif">The dark web</h1>
+        <div class="rule"></div>
+        <p class="sub">A small, anonymized corner of the internet where a real criminal economy operates. This track covers what it is, how the money moves, and where it shows up in Colorado.</p>
+      </div>
+      <div class="figure" aria-hidden="true">
+        <svg viewBox="0 0 300 300">
+          <g font-family="ui-monospace,monospace" font-size="12">
+            <rect x="60" y="40" width="180" height="40" rx="8" fill="#131b26" stroke="#5aa2ff" stroke-width="2"/>
+            <text x="150" y="58" text-anchor="middle" fill="#5aa2ff">Surface</text>
+            <text x="150" y="72" text-anchor="middle" fill="#6d7d92" font-size="10">indexed · ~4–10%</text>
+            <rect x="34" y="92" width="232" height="120" rx="8" fill="#131b26" stroke="#233140" stroke-width="2"/>
+            <text x="150" y="140" text-anchor="middle" fill="#a7b4c6">Deep</text>
+            <text x="150" y="158" text-anchor="middle" fill="#6d7d92" font-size="10">behind logins · ~90%+</text>
+            <rect x="104" y="224" width="92" height="40" rx="8" fill="#0f1620" stroke="#37c2b9" stroke-width="2"/>
+            <text x="150" y="242" text-anchor="middle" fill="#37c2b9">Dark</text>
+            <text x="150" y="256" text-anchor="middle" fill="#6d7d92" font-size="10">Tor · ~0.01%</text>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- D2 DEEP VS DARK — ONE-PAGER -->
+  <section class="slide" data-part="dark" data-title="Surface, deep, dark" data-partname="Dark &amp; Deep Web">
+    <div class="wrap">
+      <div class="eyebrow">The map</div>
+      <h2 class="serif" style="margin-bottom:16px">Most of the web isn't on Google.</h2>
+      <div class="tblwrap" style="max-height:none">
+        <table>
+          <thead><tr><th>Layer</th><th>What it is</th><th>How you reach it</th><th>Share</th></tr></thead>
+          <tbody>
+            <tr><td><b>Surface web</b></td><td>Pages search engines index — the sites anyone can Google.</td><td>Any browser</td><td class="mono">~4–10%</td></tr>
+            <tr><td><b>Deep web</b></td><td>Real content behind a login or paywall — email, banking, medical and court records, company databases.</td><td>Normal browser + credentials</td><td class="mono">~90%+</td></tr>
+            <tr><td><b>Dark web</b></td><td>Sites deliberately hidden and anonymized; the part built to conceal who runs and visits it.</td><td>Tor browser (<span class="mono">.onion</span>)</td><td class="mono">~0.01%</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note" style="margin-top:18px">The dark web is a small corner of the deep web, not a separate internet. Most of the deep web is ordinary private data. Tor carries roughly <b>2–3 million</b> daily users, and not all of that is crime — it also serves journalists, activists, and people evading censorship.</p>
+    </div>
+  </section>
+
+  <!-- D3 ECONOMICS — THE MARKETPLACE -->
+  <section class="slide" data-part="dark" data-title="The marketplace" data-partname="Dark &amp; Deep Web">
+    <div class="wrap">
+      <div class="eyebrow">The economy · how it's sold</div>
+      <h2 class="serif" style="margin-bottom:16px">It runs like a marketplace.</h2>
+      <div class="cols even" style="gap:38px; align-items:start">
+        <div>
+          <div class="dh" style="color:var(--teal)">What stolen data costs</div>
+          <ul class="clean">
+            <li>Social Security number — <b>$1–$6</b></li>
+            <li>Credit card with CVV — <b>$5–$30</b></li>
+            <li>Full identity ("fullz") — <b>$15–$100</b></li>
+            <li>Online banking login — <b>$200–$1,000+</b></li>
+            <li>Corporate network access (RDP/VPN) — <b>$500–$3,000</b></li>
+            <li>Domain-admin at a large firm — <b>up to $50,000</b></li>
+          </ul>
+        </div>
+        <div>
+          <div class="dh" style="color:var(--teal)">How the market works</div>
+          <ul class="clean">
+            <li>Listings, prices, and star ratings, like any storefront.</li>
+            <li>Escrow holds the payment until delivery is confirmed.</li>
+            <li>Sellers who ship dead data get bad reviews and get banned.</li>
+            <li>Prices track freshness — data stolen yesterday is worth more than data stolen last year.</li>
+            <li>Payment is in crypto; stablecoins now carry about <b>84%</b> of illicit flows.</li>
+          </ul>
+        </div>
+      </div>
+      <p class="note" style="margin-top:16px">Prices: dark-web market monitoring, 2025. Stablecoin share: Chainalysis 2026 Crypto Crime Report.</p>
+    </div>
+  </section>
+
+  <!-- D4 ECONOMICS — FOLLOW THE MONEY -->
+  <section class="slide" data-part="dark" data-title="Follow the money" data-partname="Dark &amp; Deep Web">
+    <div class="wrap">
+      <div class="eyebrow">The economy · where the money is</div>
+      <h2 class="serif" style="margin-bottom:16px">Crime sold as a service.</h2>
+      <div class="cols even" style="gap:38px; align-items:start">
+        <div>
+          <div class="dh" style="color:var(--teal)">The business model</div>
+          <ul class="clean">
+            <li>Ransomware-as-a-service runs like a franchise: operators build the tools, affiliates run the attacks.</li>
+            <li>Affiliates keep <b>60–90%</b> of each ransom; operators take a cut of everything, without touching a victim.</li>
+            <li>Initial access brokers specialize in breaking in, then resell the foothold.</li>
+            <li>Phishing kits sell for under <b>$25</b> — no coding required.</li>
+          </ul>
+        </div>
+        <div>
+          <div class="stats two" style="gap:14px">
+            <div class="stat"><div class="v" style="color:var(--teal)">$154B</div><div class="k">illicit crypto received in 2025 (+162% YoY)</div></div>
+            <div class="stat"><div class="v" style="color:var(--teal)">~$820M</div><div class="k">ransomware payments in 2025</div></div>
+            <div class="stat"><div class="v" style="color:var(--teal)">42+</div><div class="k">active dark-web markets, early 2026</div></div>
+            <div class="stat"><div class="v" style="color:var(--teal)">~$1,250</div><div class="k">typical dark-web worker's monthly pay</div></div>
+          </div>
+        </div>
+      </div>
+      <p class="note" style="margin-top:16px">The platform owners get rich; most people doing the work earn near minimum wage. Figures: Chainalysis 2026 Crypto Crime Report; FBI IC3 2025; "Inside the Dark Web Economy" (Marcus Explains).</p>
+    </div>
+  </section>
+
+  <!-- D5 COLORADO & RECENT CASES -->
+  <section class="slide" data-part="dark" data-title="Colorado cases" data-partname="Dark &amp; Deep Web">
+    <div class="wrap">
+      <div class="eyebrow">From the record · Colorado &amp; recent</div>
+      <h2 class="serif" style="margin-bottom:16px">Colorado is in the case files.</h2>
+      <div class="cols even" style="gap:38px; align-items:start">
+        <div>
+          <div class="dh" style="color:var(--teal)">Colorado</div>
+          <ul class="clean">
+            <li>Two Colorado men resold about <b>50 kg of cocaine</b> through a darknet vendor account, shipped by U.S. Mail and paid in Bitcoin — sentenced to 5½ and ~4 years.</li>
+            <li>A Denver man, 27, built the <span class="mono">"PartyCrew"</span> darknet trafficking group, selling drugs for Bitcoin and Monero via USPS — <b>100 months</b> in prison.</li>
+            <li>The District of Colorado was one of 50+ districts in the first nationwide undercover darknet-vendor sting — 35+ arrests, $23.6M seized.</li>
+          </ul>
+        </div>
+        <div>
+          <div class="dh" style="color:var(--teal)">Recent enforcement</div>
+          <ul class="clean">
+            <li><b>Operation RapTor</b> (May 2025) — 270 arrested across four continents; $200M+ and two tons of drugs, including 144 kg of fentanyl, seized.</li>
+            <li>The <b>Incognito Market</b> owner was arrested; the site moved $100M+ in narcotics before closing in 2024.</li>
+            <li>Markets keep re-emerging within weeks of every takedown.</li>
+          </ul>
+        </div>
+      </div>
+      <p class="note" style="margin-top:16px">Sources: U.S. DOJ &amp; HSI/ICE press releases (District of Colorado; Operation RapTor; Incognito Market). Enforcement walkthrough: "How the FBI Hunts Dark Web Crime."</p>
+    </div>
+  </section>
+
   <!-- 27 BONUS CHALLENGE -->
   <section class="slide" data-part="ref" data-title="Bonus objective" data-partname="Bonus objective" data-challenge="1">
     <div class="wrap" style="max-width:780px">
@@ -979,6 +1153,16 @@
 (function(){
   var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
   var N = slides.length, i = 0;
+  // --- branching paths: AI/Cyber vs Dark/Deep Web, converging on the shared ending ---
+  var activePath = 'ai';
+  function slideIdx(id){ for(var k=0;k<slides.length;k++){ if(slides[k].id===id) return k; } return -1; }
+  var chooserIdx = slideIdx('path-chooser'), darkStartIdx = slideIdx('path-dark');
+  function inPath(n){
+    if(darkStartIdx<0) return true;                          // no branch present -> linear
+    if(n<=chooserIdx) return true;                           // intro + chooser (shared)
+    if(challengeIndex>=0 && n>=challengeIndex) return true;  // bonus + congrats (shared ending)
+    return (n<darkStartIdx) ? activePath==='ai' : activePath==='dark';
+  }
   var elCur=document.getElementById('cur'), elTot=document.getElementById('tot'), elPart=document.getElementById('sbPart'),
       elProg=document.getElementById('progress'), elTitle=document.getElementById('railTitle'),
       ov=document.getElementById('overview'), ovgrid=document.getElementById('ovgrid');
@@ -1000,10 +1184,22 @@
     });
   }
 
+  // path chooser cards jump to the start of a track and set the active path
+  Array.prototype.forEach.call(document.querySelectorAll('[data-path-jump]'), function(btn){
+    btn.addEventListener('click', function(e){
+      e.preventDefault();
+      var t=document.getElementById(btn.getAttribute('data-path-jump')); if(!t) return;
+      var k=slides.indexOf(t); if(k<0) return;
+      if(k>chooserIdx && (challengeIndex<0 || k<challengeIndex)) activePath=(k<darkStartIdx)?'ai':'dark';
+      go(k);
+    });
+  });
+
   function pad(n){return (n<10?'0':'')+n;}
   function render(){
     slides.forEach(function(s,k){ s.classList.toggle('active', k===i); });
     var s=slides[i];
+    if(darkStartIdx>=0 && i>chooserIdx && (challengeIndex<0 || i<challengeIndex)){ activePath=(i<darkStartIdx)?'ai':'dark'; }
     Array.prototype.forEach.call(s.querySelectorAll('.reveal.shown'), function(el){ el.classList.remove('shown'); });
     elPart.textContent=s.getAttribute('data-partname')||'';
     elTitle.textContent=s.getAttribute('data-title')||'';
@@ -1018,8 +1214,8 @@
     if(slides[n].hasAttribute('data-locked') && !bonusUnlocked){ n = (challengeIndex>=0 ? challengeIndex : Math.max(0,n-1)); }
     i = n; render();
   }
-  function next(){ var f=slides[i].querySelectorAll('.reveal:not(.shown)'); if(f.length){ f[0].classList.add('shown'); try{f[0].scrollIntoView({behavior:'smooth',block:'center'});}catch(e){} return; } go(i+1); }
-  function prev(){ var f=slides[i].querySelectorAll('.reveal.shown'); if(f.length){ f[f.length-1].classList.remove('shown'); return; } go(i-1); }
+  function next(){ var f=slides[i].querySelectorAll('.reveal:not(.shown)'); if(f.length){ f[0].classList.add('shown'); try{f[0].scrollIntoView({behavior:'smooth',block:'center'});}catch(e){} return; } var n=i+1; while(n<N && !inPath(n)) n++; if(n<N) go(n); }
+  function prev(){ var f=slides[i].querySelectorAll('.reveal.shown'); if(f.length){ f[f.length-1].classList.remove('shown'); return; } var n=i-1; while(n>=0 && !inPath(n)) n--; if(n>=0) go(n); }
   document.addEventListener('keydown', function(e){
     if(e.metaKey||e.ctrlKey||e.altKey) return;
     if(e.target && /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)){ if(e.key==='Escape') e.target.blur(); return; }
