@@ -134,7 +134,7 @@ real evasion. See [specs/network-intrusion.md](specs/network-intrusion.md)
 ```bash
 ./run.sh network-intrusion
 cd scenarios/network-intrusion
-./run-network-intrusion.sh
+./scenarios/network-intrusion/run-network-intrusion.sh
 ```
 
 Reset:
